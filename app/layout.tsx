@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { Inter, Cinzel } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 import GlobalMiniPlayer from '@/components/player/GlobalMiniPlayer';
 import { AuthProvider } from '@/context/AuthContext';
 import { PlayerProvider } from '@/context/PlayerContext';
@@ -80,6 +81,7 @@ export default function RootLayout({
           <PlayerProvider>
             <Navbar />
             <main className="pb-24">{children}</main>
+            <Footer />
             <GlobalMiniPlayer />
             <Toaster
               position="bottom-right"
