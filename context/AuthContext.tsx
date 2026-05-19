@@ -1,149 +1,176 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase/client';
-import { User, Session } from '@supabase/supabase-js';
+/**
+ * Global auth provider — wires Supabase session to platform profile (Prisma).
+ * Implementation delegates to modules/auth services.
+ */
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useRouter } from 'next/navigation';
+import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import toast from 'react-hot-toast';
+import { supabase } from '@/lib/supabase/client';
+import {
+  signInWithPassword,
+  signUp,
+  signInWithGoogle,
+  signOut,
+  sendPasswordResetEmail,
+  updatePassword,
+} from '@/modules/auth/services/auth.client';
+import { fetchUserProfile } from '@/modules/auth/services/profile.client';
+import type {
+  AuthContextValue,
+  AuthUser,
+  LoginInput,
+  RegisterInput,
+  UserProfile,
+} from '@/modules/auth/types';
 
-interface AuthContextType {
-  user: any | null; // Merged Supabase + Prisma user
-  session: Session | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<{ error?: string }>;
-  register: (email: string, password: string, fullName: string) => Promise<{ error?: string }>;
-  loginWithGoogle: () => Promise<void>;
-  logout: () => Promise<void>;
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+function mergeUser(supabaseUser: AuthUser, profile: UserProfile | null): AuthUser {
+  if (!profile) return supabaseUser;
+  return {
+    ...supabaseUser,
+    fullName: profile.fullName,
+    role: profile.role,
+    avatarUrl: profile.avatarUrl,
+    bio: profile.bio,
+  };
 }
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchProfile = async (id: string) => {
-    try {
-      const res = await fetch(`/api/auth/profile?id=${id}`);
-      if (res.ok) {
-        const profile = await res.json();
-        return profile;
-      }
-    } catch (err) {
-      console.error('Failed to fetch profile:', err);
-    }
-    return null;
-  };
+  const loadProfile = useCallback(async (userId: string) => {
+    const data = await fetchUserProfile(userId);
+    setProfile(data);
+    return data;
+  }, []);
 
-  const mapAuthError = (message: string) => {
-    if (message.includes('Invalid login credentials')) return 'Incorrect email or password.';
-    if (message.includes('User already registered')) return 'An account with this email already exists.';
-    if (message.includes('Email not confirmed')) return 'Please check your email to confirm your account.';
-    return message;
-  };
+  const hydrateUser = useCallback(
+    async (supabaseUser: AuthUser | null) => {
+      if (!supabaseUser) {
+        setUser(null);
+        setProfile(null);
+        return;
+      }
+      const data = await loadProfile(supabaseUser.id);
+      setUser(mergeUser(supabaseUser, data));
+    },
+    [loadProfile]
+  );
 
   useEffect(() => {
-    const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setUser({ ...session.user, ...profile });
-      }
+    const init = async () => {
+      const {
+        data: { session: currentSession },
+      } = await supabase.auth.getSession();
+      setSession(currentSession);
+      await hydrateUser((currentSession?.user as AuthUser | undefined) ?? null);
       setLoading(false);
     };
 
-    initAuth();
+    void init();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: any, session: any) => {
-      setSession(session);
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id);
-        setUser({ ...session.user, ...profile });
-      } else {
-        setUser(null);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      async (event: AuthChangeEvent, nextSession: Session | null) => {
+        setSession(nextSession);
+        await hydrateUser((nextSession?.user as AuthUser | undefined) ?? null);
+        setLoading(false);
+
+        if (event === 'PASSWORD_RECOVERY') {
+          router.push('/reset-password');
+        }
       }
-      setLoading(false);
-    });
+    );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [hydrateUser, router]);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { error: mapAuthError(error.message) };
-      return {};
-    } catch (err: any) {
-      return { error: 'An unexpected error occurred.' };
-    }
-  };
+  const login = useCallback(async (input: LoginInput) => signInWithPassword(input), []);
 
-  const register = async (email: string, password: string, fullName: string) => {
-    try {
-      const { data, error } = await supabase.auth.signUp({ 
-        email, 
-        password,
-        options: {
-          data: { full_name: fullName }
-        }
-      });
+  const register = useCallback(async (input: RegisterInput) => signUp(input), []);
 
-      if (error) return { error: mapAuthError(error.message) };
+  const loginWithGoogle = useCallback(
+    async (redirectTo = '/') => signInWithGoogle(redirectTo),
+    []
+  );
 
-      if (data.user) {
-        // Create Prisma profile
-        await fetch('/api/auth/create-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: data.user.id, email, fullName })
-        });
-      }
+  const resetPassword = useCallback(
+    async (email: string) => sendPasswordResetEmail(email),
+    []
+  );
 
-      return {};
-    } catch (err: any) {
-      return { error: 'An unexpected error occurred.' };
-    }
-  };
+  const updatePasswordHandler = useCallback(
+    async (password: string) => updatePassword(password),
+    []
+  );
 
-  const loginWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
+  const logout = useCallback(async () => {
+    await signOut();
     setUser(null);
+    setProfile(null);
     setSession(null);
     router.push('/login');
     toast.success('Logged out successfully');
-  };
+  }, [router]);
 
-  return (
-    <AuthContext.Provider value={{
+  const refreshProfile = useCallback(async () => {
+    if (!session?.user) return;
+    await hydrateUser(session.user as AuthUser);
+  }, [session?.user, hydrateUser]);
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
       user,
+      profile,
+      session,
+      loading,
+      isAdmin: profile?.role === 'ADMIN',
+      login,
+      register,
+      loginWithGoogle,
+      resetPassword,
+      updatePassword: updatePasswordHandler,
+      logout,
+      refreshProfile,
+    }),
+    [
+      user,
+      profile,
       session,
       loading,
       login,
       register,
       loginWithGoogle,
-      logout
-    }}>
-      {children}
-    </AuthContext.Provider>
+      resetPassword,
+      updatePasswordHandler,
+      logout,
+      refreshProfile,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
