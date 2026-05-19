@@ -1,0 +1,133 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "editor", "user"] },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "lastLogin": { "type": "number" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "Portfolio": {
+      "title": "Portfolio",
+      "description": "A portfolio item with image or video.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["photo", "video"] },
+        "category": { "type": "string" },
+        "mediaUrls": { "type": "array", "items": { "type": "string" } },
+        "thumbnailUrl": { "type": "string" },
+        "location": { "type": "string" },
+        "dateCreated": { "type": "number" },
+        "createdBy": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "isFeatured": { "type": "boolean" }
+      },
+      "required": ["title", "description", "type", "category", "mediaUrls", "dateCreated", "createdBy"]
+    },
+    "Devotion": {
+      "title": "Devotion",
+      "description": "A daily devotion post.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "scriptureReference": { "type": "string" },
+        "scriptureText": { "type": "string" },
+        "content": { "type": "string" },
+        "reflectionQuestions": { "type": "array", "items": { "type": "string" } },
+        "prayer": { "type": "string" },
+        "category": { "type": "string" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "scriptureReference", "content", "category", "authorId", "createdAt", "updatedAt"]
+    },
+    "Music": {
+      "title": "Music",
+      "description": "An uploaded music track.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "artist": { "type": "string" },
+        "album": { "type": "string" },
+        "category": { "type": "string" },
+        "audioUrl": { "type": "string" },
+        "coverImageUrl": { "type": "string" },
+        "duration": { "type": "number" },
+        "isPaid": { "type": "boolean" },
+        "price": { "type": "number" },
+        "downloadCount": { "type": "number" },
+        "uploadedBy": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "artist", "category", "audioUrl", "uploadedBy", "createdAt"]
+    },
+    "Featured": {
+      "title": "Featured",
+      "description": "Featured content for the homepage.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["portfolio", "devotion", "music"] },
+        "itemId": { "type": "string" },
+        "priority": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["type", "itemId", "priority", "isActive", "createdAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A contact message.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "status": { "type": "string", "enum": ["new", "read", "replied"] }
+      },
+      "required": ["name", "email", "subject", "message", "createdAt", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles and roles."
+    },
+    "/portfolio/{docId}": {
+      "schema": { "$ref": "#/entities/Portfolio" },
+      "description": "Stores portfolio media."
+    },
+    "/devotions/{docId}": {
+      "schema": { "$ref": "#/entities/Devotion" },
+      "description": "Stores daily devotion posts."
+    },
+    "/music/{docId}": {
+      "schema": { "$ref": "#/entities/Music" },
+      "description": "Stores uploaded music tracks."
+    },
+    "/featured/{docId}": {
+      "schema": { "$ref": "#/entities/Featured" },
+      "description": "Stores featured items for the homepage."
+    },
+    "/messages/{docId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores contact messages."
+    }
+  }
+}

@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Inter:wght@300..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Playfair Display", "Cinzel", serif;
+  --color-gold: #C8A24A;
+  --color-primary-base: #0A0A0A;
+  --color-surface-base: #121212;
+  --color-surface: #1A1A1A;
+  --color-surface-hover: #27272A;
+}
+
+:root {
+  --gold: #C8A24A;
+  --gold-dark: #B38A3D;
+  --bg: #0A0A0A;
+  --surface: #121212;
+  --card: #1A1A1A;
+  --text: #FFFFFF;
+  --text-secondary: #A1A1AA;
+}
+
+.glass {
+  background: rgba(18, 18, 18, 0.85); /* #121212 based */
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(200, 162, 74, 0.15); /* #C8A24A */
+}
+
+.gold-glow {
+  box-shadow: 0 0 30px rgba(200, 162, 74, 0.25);
+}
+
+.accent-glow {
+  box-shadow: 0 0 15px rgba(200, 162, 74, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.accent-glow:hover {
+  box-shadow: 0 0 25px rgba(200, 162, 74, 0.6);
+}
+
+/* Subtle light rays from top */
+.divine-light-rays {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: radial-gradient(ellipse at top, rgba(200, 162, 74, 0.12) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body {
+  background-color: var(--color-primary-base);
+  color: #FFFFFF;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-primary-base); 
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2); 
+}
+
+/* =========================================
+   CHRIST LIGHT MEDIA - ANIMATION SYSTEM
+   ========================================= */
+
+/* 1. LIGHT & GLORY EFFECTS */
+@keyframes divine-pulse {
+  0%, 100% { 
+    opacity: 0.8; 
+    filter: drop-shadow(0 0 15px rgba(200, 162, 74, 0.2)); 
+    transform: scale(1); 
+  }
+  50% { 
+    opacity: 1; 
+    filter: drop-shadow(0 0 35px rgba(200, 162, 74, 0.6)); 
+    transform: scale(1.02); 
+  }
+}
+
+@keyframes ray-sweep {
+  0% { transform: translateY(-100%) rotate(15deg); opacity: 0; }
+  50% { opacity: 0.15; }
+  100% { transform: translateY(200%) rotate(15deg); opacity: 0; }
+}
+
+/* 2. ENTRANCE ANIMATIONS */
+@keyframes fade-up-sacred {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.98); 
+    filter: blur(8px); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+    filter: blur(0); 
+  }
+}
+
+@keyframes fade-in-holy {
+  0% { opacity: 0; filter: blur(12px) brightness(1.5); }
+  100% { opacity: 1; filter: blur(0) brightness(1); }
+}
+
+@keyframes light-reveal {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0; }
+  100% { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+/* 3. HOVER & INTERACTION */
+@keyframes float-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* 4. LOADING / SPIRITUAL SPINNER */
+@keyframes spirit-spin {
+  0% { 
+    transform: rotate(0deg); 
+    border-color: rgba(200, 162, 74, 1) transparent rgba(200, 162, 74, 0.2) transparent; 
+  }
+  100% { 
+    transform: rotate(360deg); 
+    border-color: rgba(200, 162, 74, 0.2) transparent rgba(200, 162, 74, 1) transparent; 
+  }
+}
+
+/* 5. PRAYER & WORSHIP SPECIFIC */
+@keyframes prayer-rise {
+  0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+  30% { opacity: 1; transform: translateY(-5px) scale(1.1); filter: drop-shadow(0 0 8px rgba(200,162,74,0.8)); }
+  100% { opacity: 0; transform: translateY(-30px) scale(1); }
+}
+
+/* 6. TEXT SHINE / GOLD EFFECTS */
+@keyframes gold-text-shine {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* =========================================
+   UTILITY CLASSES
+   ========================================= */
+
+/* Light & Glory */
+.animate-divine-pulse { 
+  animation: divine-pulse 4s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+}
+.ray-element {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(200, 162, 74, 0.1), transparent);
+  animation: ray-sweep 6s linear infinite;
+  pointer-events: none;
+}
+
+/* Entrances (Use with intersection observers or on mount) */
+.animate-fade-up-sacred { 
+  opacity: 0;
+  animation: fade-up-sacred 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+.animate-fade-in-holy {
+  opacity: 0;
+  animation: fade-in-holy 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-light-reveal { 
+  opacity: 0;
+  animation: light-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+}
+
+/* Staggered Delay Utilities */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* Effects */
+.animate-sacred-float { 
+  animation: float-up 6s ease-in-out infinite; 
+}
+.animate-spirit-spin { 
+  border-radius: 50%;
+  border: 2px solid;
+  animation: spirit-spin 2s linear infinite; 
+}
+.prayer-particle {
+  position: absolute;
+  color: var(--gold);
+  animation: prayer-rise 1.5s ease-out forwards;
+}
+
+/* Gorgeous Text Effect */
+.animate-gold-shine { 
+  background: linear-gradient(90deg, #B38A3D 0%, #FFF 50%, #B38A3D 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gold-text-shine 5s linear infinite; 
+}
+
+/* Scroll Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(60px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes lightRevealScroll {
+  from { opacity: 0; filter: brightness(0.7); }
+  to { opacity: 1; filter: brightness(1); }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+}
+
+.fade-up.visible { animation: fadeUp 0.9s ease-out forwards; }
+.fade-in-scale.visible { animation: fadeInScale 1s ease-out forwards; }
+.light-reveal.visible { animation: lightRevealScroll 1.2s ease-out forwards; }

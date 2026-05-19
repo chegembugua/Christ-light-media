@@ -1,0 +1,222 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  fullName      String?
+  role          Role      @default(USER)
+  avatarUrl     String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  prayerRequests PrayerRequest[]
+  comments      Comment[]
+  enrollments   Enrollment[]
+  donations     Donation[]
+  notifications Notification[]
+  votes         PrayerVote[]
+  movement      MovementMember?
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Media {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coverImage  String?
+  audioUrl    String?
+  videoUrl    String?
+  type        MediaType
+  category    String?
+  speaker     String?
+  duration    String?
+  playCount   Int      @default(0)
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  podcastShowId String?
+  podcastShow PodcastShow? @relation(fields: [podcastShowId], references: [id])
+  comments    Comment[]
+}
+
+enum MediaType {
+  SERMON
+  PODCAST
+  MUSIC
+  WORSHIP
+  RADIO
+}
+
+model PodcastShow {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coverImage  String?
+  category    String?
+  episodes    Media[]
+}
+
+model Devotion {
+  id          String   @id @default(uuid())
+  title       String
+  verse       String?
+  verseText   String?
+  reflection  String?
+  date        DateTime @default(now())
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String?
+  excerpt     String?
+  coverImage  String?
+  category    String?
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model PrayerRequest {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  category    String?
+  isAnswered  Boolean  @default(false)
+  isPublic    Boolean  @default(true)
+  prayerCount Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  votes       PrayerVote[]
+}
+
+model PrayerVote {
+  id              String   @id @default(uuid())
+  userId          String
+  prayerRequestId String
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+  prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  userId    String
+  mediaId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  media     Media    @relation(fields: [mediaId], references: [id])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  coverImage  String?
+  price       Float    @default(0)
+  isFree      Boolean  @default(true)
+  category    String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  modules     CourseModule[]
+  enrollments Enrollment[]
+}
+
+model CourseModule {
+  id        String   @id @default(uuid())
+  title     String
+  order     Int
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id        String   @id @default(uuid())
+  title     String
+  videoUrl  String?
+  notes     String?
+  duration  String?
+  order     Int
+  moduleId  String
+  module    CourseModule @relation(fields: [moduleId], references: [id])
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
+  progress   Int      @default(0)
+  enrolledAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  course     Course   @relation(fields: [courseId], references: [id])
+}
+
+model Donation {
+  id            String   @id @default(uuid())
+  userId        String?
+  amount        Float
+  currency      String   @default("USD")
+  type          DonationType
+  project       String?
+  status        String   @default("PENDING")
+  paymentMethod String?
+  transactionId String?
+  createdAt     DateTime @default(now())
+  user          User?    @relation(fields: [userId], references: [id])
+}
+
+enum DonationType {
+  ONE_TIME
+  MONTHLY
+  PROJECT
+}
+
+model MovementMember {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  joinedAt     DateTime @default(now())
+  challengeDay Int      @default(1)
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model RadioSchedule {
+  id          String   @id @default(uuid())
+  title       String
+  host        String?
+  type        String?
+  startTime   String
+  endTime     String
+  dayOfWeek   Int
+  isActive    Boolean  @default(true)
+}

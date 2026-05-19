@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 10, 10, 10;
+  --background-end-rgb: 0, 0, 0;
+
+  --gold: #C8A24A;
+  --gold-dark: #B38A3D;
+  --bg: #0A0A0A;
+  --surface: #121212;
+  --card: #1A1A1A;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+  }
+
+  .gold-glow {
+    @apply shadow-[0_0_20px_rgba(200,162,74,0.2)];
+  }
+
+  .text-shine {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-gold via-white to-gold bg-[length:200%_auto] animate-textShine;
+  }
+}
+
+.divine-rays {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100vh;
+  background: radial-gradient(circle at top, rgba(200,162,74,0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
