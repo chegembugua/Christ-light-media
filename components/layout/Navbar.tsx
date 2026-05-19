@@ -35,9 +35,9 @@ export default function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
-      scrolled ? 'bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/5 py-4' : 'bg-transparent py-6'
+      scrolled ? 'bg-[#090909]/90 backdrop-blur-xl border-b border-white/10 py-4 shadow-xl shadow-black/20' : 'bg-transparent py-6'
     }`}>
-      <div className="container mx-auto px-6 flex items-center justify-between">
+      <div className="container mx-auto max-w-7xl px-6 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group shrink-0">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gold to-amber-500 flex items-center justify-center shadow-xl shadow-gold/20 group-hover:shadow-[0_0_25px_rgba(200,162,74,0.5)] transition-all">
@@ -70,10 +70,12 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button className="p-2 text-gray-400 hover:text-gold transition-colors">
+          <button
+            aria-label="Search"
+            className="p-2 text-gray-400 hover:text-gold transition-colors"
+          >
             <Search size={20} />
           </button>
-          
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="relative">

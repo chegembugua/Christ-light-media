@@ -19,13 +19,12 @@ export function Card({ children, className, variant = 'default', hover = true }:
     <div
       className={cn(
         variants[variant],
-        hover && 'transition-all duration-300 hover:border-gold/30 hover:shadow-lg hover:shadow-gold/5 hover:bg-[#1E1E1E]',
+        hover && 'transition-all duration-300 hover:-translate-y-1 hover:border-gold/30 hover:shadow-2xl hover:shadow-gold/10 hover:bg-[#1E1E1E]',
         'group relative overflow-hidden',
         className
       )}
     >
       {children}
-      {/* Subtle corner glow on hover */}
       {hover && (
         <div className="absolute -bottom-2 -right-2 w-32 h-32 bg-gold/0 rounded-tl-full blur-2xl group-hover:bg-gold/5 transition-all duration-500 pointer-events-none" />
       )}

@@ -13,6 +13,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      container: {
+        center: true,
+        padding: '1rem',
+      },
       colors: {
         gold: '#C8A24A',
         'gold-dark': '#B38A3D',

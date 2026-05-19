@@ -38,7 +38,7 @@ export default function Footer() {
       {/* Gold accent line */}
       <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
-      <div className="container mx-auto px-6 pt-20 pb-12">
+      <div className="container mx-auto max-w-7xl px-6 pt-20 pb-12">
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
           {/* Brand */}
@@ -140,13 +140,19 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
-          <p className="text-xs text-gray-600 font-inter">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
+          <p className="text-xs text-gray-500 font-inter">
             © {new Date().getFullYear()} Christ Light Media. All rights reserved.
           </p>
-          <p className="text-xs text-gray-600 font-inter flex items-center gap-1.5">
-            Built with <Heart size={12} className="text-gold fill-gold" /> for the Kingdom
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-gray-500 font-inter">
+            <p>Privacy Policy</p>
+            <span className="hidden sm:block">•</span>
+            <p>Terms of Service</p>
+            <span className="hidden sm:block">•</span>
+            <p className="flex items-center gap-1.5">
+              Built with <Heart size={12} className="text-gold fill-gold" /> for the Kingdom
+            </p>
+          </div>
         </div>
       </div>
     </footer>

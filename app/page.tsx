@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Play, BookOpen, Music, Radio, Mic, ChevronRight, Heart, Users, MessageSquare } from "lucide-react";
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import ScrollReveal from "@/components/animations/ScrollReveal";
 import StaggerContainer from "@/components/animations/StaggerContainer";
 
@@ -8,35 +10,56 @@ export default function Home() {
   return (
     <div className="relative overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center pt-20">
+      <section className="relative min-h-[75vh] overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-          <Image 
+          <Image
             src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073"
             alt="Hero Background"
             fill
-            className="object-cover opacity-30 grayscale"
+            className="object-cover object-center opacity-30 grayscale"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0A0A0A]/50 to-[#0A0A0A]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0A0A0A]/70 via-[#0A0A0A]/95 to-[#0A0A0A]" />
         </div>
 
-        <div className="container mx-auto px-6 relative z-10 text-center">
+        <div className="container mx-auto max-w-6xl px-6 relative z-10">
           <ScrollReveal>
-            <p className="text-gold tracking-[0.4em] uppercase text-sm mb-6 font-medium">BEYOND THE LIGHT</p>
-            <h1 className="text-6xl md:text-8xl font-cinzel font-bold mb-8 tracking-tighter text-shine leading-tight">
-              A Movement <br /> Of Grace
-            </h1>
-            <p className="text-gray-400 max-w-2xl mx-auto text-lg md:text-xl font-inter mb-12 leading-relaxed">
-              Equipping this generation with high-quality Christian media, 
-              deep theology, and an unwavering commitment to the truth of Christ.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/sermons" className="bg-gold text-black px-10 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gold-dark transition-all transform hover:scale-105 shadow-xl shadow-gold/20">
-                Explore Sermons
-              </Link>
-              <Link href="/movement" className="glass px-10 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-white/10 transition-all">
-                Join the Movement
-              </Link>
+            <div className="rounded-[2rem] border border-white/10 bg-black/40 backdrop-blur-2xl p-10 md:p-14 shadow-2xl shadow-black/40">
+              <div className="flex flex-col lg:flex-row lg:items-center gap-10">
+                <div className="max-w-2xl">
+                  <p className="text-gold tracking-[0.35em] uppercase text-sm mb-4 font-semibold">BEYOND THE LIGHT</p>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold mb-6 leading-tight text-white">
+                    Professional Christian media built for modern ministry.
+                  </h1>
+                  <p className="text-gray-300 max-w-xl text-base md:text-lg leading-relaxed mb-8">
+                    Experience sermons, podcasts, worship, and devotional resources with a premium digital feel — designed to help your community connect, grow, and thrive.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link href="/sermons" className="inline-block">
+                      <Button variant="gold" size="lg" className="px-8">Explore Sermons</Button>
+                    </Link>
+                    <Link href="/movement" className="inline-block">
+                      <Button variant="ghost" size="lg" className="px-8">Join the Movement</Button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { title: 'Live Worship', subtitle: '24/7 station with curated praise.', icon: Music },
+                    { title: 'Daily Devotions', subtitle: 'Brief, powerful scripture reflections.', icon: BookOpen },
+                    { title: 'Community', subtitle: 'Prayer wall, chat, and impact stories.', icon: Users },
+                  ].map((item, index) => (
+                    <Card key={index} variant="compact" className="border-white/10 bg-white/5">
+                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gold/10 text-gold mb-4">
+                        <item.icon size={22} />
+                      </div>
+                      <h3 className="font-semibold text-white text-lg mb-2">{item.title}</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">{item.subtitle}</p>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
           </ScrollReveal>
         </div>

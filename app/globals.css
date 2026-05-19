@@ -20,9 +20,11 @@
 /* ─── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   body {
-    @apply bg-bg text-white antialiased;
+    @apply bg-bg text-white antialiased text-base leading-relaxed;
     color: rgb(var(--foreground));
     background-color: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -31,8 +33,13 @@
   h4,
   h5,
   h6 {
-    @apply font-cinzel;
+    @apply font-cinzel leading-tight;
   }
+
+  /* Responsive heading sizes */
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.25rem; }
 
   /* Smooth scrolling */
   html {
