@@ -53,7 +53,7 @@ export default function Home() {
                 <p className="text-gold tracking-widest uppercase text-xs mb-3 font-bold">RESOURCES</p>
                 <h2 className="text-4xl md:text-5xl font-cinzel font-medium">Digital Ministry</h2>
               </div>
-              <Link href="/resources" className="text-gray-400 hover:text-gold transition-colors flex items-center gap-2 font-medium">
+              <Link href="/sermons" className="text-gray-400 hover:text-gold transition-colors flex items-center gap-2 font-medium">
                 View All <ChevronRight size={20} />
               </Link>
             </div>
@@ -107,7 +107,7 @@ export default function Home() {
                 Join Pastor David Chen as he explores the central theme of Christ as the Light of the World in John 8:12. 
                 A powerful exploration of hope, truth, and the transformation that occurs when we follow the Light.
               </p>
-              <Link href="/sermons/latest" className="inline-flex items-center gap-3 text-gold font-bold uppercase tracking-widest text-sm hover:gap-5 transition-all">
+              <Link href="/sermons" className="inline-flex items-center gap-3 text-gold font-bold uppercase tracking-widest text-sm hover:gap-5 transition-all">
                 Watch Now <ChevronRight size={18} />
               </Link>
             </ScrollReveal>

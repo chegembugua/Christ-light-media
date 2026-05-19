@@ -9,6 +9,7 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './context/**/*.{js,ts,jsx,tsx,mdx}',
+    './modules/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -48,6 +49,14 @@ const config: Config = {
           '0%': { backgroundPosition: '0% 50%' },
           '100%': { backgroundPosition: '100% 50%' },
         },
+        pulseLive: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.5)', opacity: '0' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
       },
       animation: {
         float: 'float 6s ease-in-out infinite',
@@ -56,6 +65,8 @@ const config: Config = {
         fadeUp: 'fadeUp 0.8s ease-out forwards',
         goldPulse: 'goldPulse 3s ease-in-out infinite',
         textShine: 'textShine 3s linear infinite',
+        pulseLive: 'pulseLive 2s ease-in-out infinite',
+        shimmer: 'shimmer 2s linear infinite',
       },
     },
   },

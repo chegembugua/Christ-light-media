@@ -30,7 +30,19 @@ export default function StaggerContainer({
       }}
       className={className}
     >
-      {children}
+      {Array.isArray(children)
+        ? children.map((child, index) => (
+            <motion.div
+              key={index}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0 },
+              }}
+            >
+              {child}
+            </motion.div>
+          ))
+        : children}
     </motion.div>
   );
 }

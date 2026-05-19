@@ -1,25 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
+import { getProfileById } from '@/modules/auth';
 
+/** GET /api/auth/profile?id= — returns Prisma profile for authenticated user only. */
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get('id');
+  const id = new URL(req.url).searchParams.get('id');
 
   if (!id) {
     return NextResponse.json({ error: 'User ID required' }, { status: 400 });
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id }
-    });
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (!user || user.id !== id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const profile = await getProfileById(id);
+
+    if (!profile) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json(user);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(profile);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

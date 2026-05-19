@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Search, Menu, LogIn, LogOut, Shield, User, ChevronDown, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
@@ -12,8 +12,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { user, logout } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  const { user, logout, isAdmin } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   useEffect(() => {
@@ -59,7 +58,9 @@ export default function Navbar() {
               key={link.name}
               href={link.path}
               className={`text-sm font-medium tracking-wide transition-colors ${
-                pathname === link.path ? 'text-gold' : 'text-gray-400 hover:text-white'
+                pathname === link.path || pathname.startsWith(`${link.path}/`)
+                  ? 'text-gold'
+                  : 'text-gray-400 hover:text-white'
               }`}
             >
               {link.name}

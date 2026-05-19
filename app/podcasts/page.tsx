@@ -24,7 +24,20 @@ const podcasts = [
   },
 ];
 
-const episodes = [
+type PodcastEpisode = {
+  id: string;
+  title: string;
+  podcastId: string;
+  artist: string;
+  coverImage: string;
+  audioUrl: string;
+  duration: string;
+  plays: number;
+  type: 'podcast';
+  date: string;
+};
+
+const episodes: PodcastEpisode[] = [
   {
     id: 'ep1', title: 'When God Feels Silent', podcastId: '1',
     artist: 'In for Christ Podcast', coverImage: '/images/podcast-ifc.jpg',
@@ -52,7 +65,7 @@ export default function PodcastsPage() {
   const isCurrentlyPlaying = (id: string) =>
     currentTrack?.id === id && isPlaying;
 
-  const handlePlay = (ep: typeof episodes[0]) => {
+  const handlePlay = (ep: PodcastEpisode) => {
     if (currentTrack?.id === ep.id && isPlaying) {
       pause();
     } else {
@@ -61,7 +74,7 @@ export default function PodcastsPage() {
     }
   };
 
-  const shareLink = (platform: 'twitter' | 'facebook' | 'copy', item: any) => {
+  const shareLink = (platform: 'twitter' | 'facebook' | 'copy', item: Pick<PodcastEpisode, 'id' | 'title'>) => {
     const url = typeof window !== 'undefined' ? `${window.location.origin}/podcasts/${item.id}` : '';
     const text = `Check out this episode: ${item.title}`;
     

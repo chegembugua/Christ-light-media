@@ -1,36 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 import { createClient } from '@/lib/supabase/server';
+import { ensureProfileForAuthUser } from '@/modules/auth/server/ensure-profile.server';
 
+/** POST /api/auth/create-profile — creates platform profile after Supabase signup. */
 export async function POST(req: NextRequest) {
   try {
+    const body = (await req.json()) as {
+      id?: string;
+      email?: string;
+      fullName?: string;
+    };
+
+    const { id, email, fullName } = body;
+
+    if (!id || !email) {
+      return NextResponse.json({ error: 'id and email are required' }, { status: 400 });
+    }
+
     const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    const { id, email, fullName } = await req.json();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    // Basic security check: user can only create their own profile
-    // Or if it's a new signup, the session might not be fully established in the same tick 
-    // but typically signUp returns a session or a user.
-    // For simplicity in this demo, we'll allow the upsert if ID matches or if session exists.
-    
-    const user = await prisma.user.upsert({
-      where: { id },
-      create: { 
-        id, 
-        email, 
-        fullName, 
-        role: 'USER' 
-      },
-      update: { 
-        email, 
-        fullName 
-      }
-    });
+    const result = await ensureProfileForAuthUser(
+      { id, email, fullName: fullName ?? null },
+      user?.id ?? null
+    );
 
-    return NextResponse.json({ user });
-  } catch (error: any) {
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error ?? 'Unauthorized' }, { status: 401 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Error creating profile:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
