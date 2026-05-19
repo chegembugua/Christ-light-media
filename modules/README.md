@@ -4,35 +4,36 @@ Each feature lives in `modules/<name>/` with a consistent layout:
 
 ```
 modules/<name>/
-├── types/          # TypeScript types & Zod schemas (future)
-├── lib/            # Pure helpers (errors, validators)
-├── services/       # Data access (client + server)
-├── components/     # UI components ('use client' where needed)
-├── hooks/          # React hooks
-└── index.ts        # Public API — import only from here
+├── types/          # TypeScript types
+├── lib/            # Pure helpers
+├── services/       # Client-side API calls
+├── server/         # Prisma & server-only logic
+├── components/     # UI
+└── index.ts        # Public API
 ```
 
-**App routes** (`app/`) stay thin: metadata + re-export module pages.
+## Phase 1 — Foundation ✅
 
-## Build order (Phase 1 → 5)
+| Module | Status | Routes |
+|--------|--------|--------|
+| `auth/` | ✅ | `/login`, `/register`, `/profile`, … |
+| `admin/` | ✅ | `/admin`, sidebar dashboard |
+| `devotions/` | ✅ | `/devotions`, `/admin/devotions` |
+| `media/` | ✅ | `/sermons` (published), `/admin/media` |
 
-| Phase | Module | Status |
-|-------|--------|--------|
-| 1 | `auth/` | ✅ Complete |
-| 1 | `admin/` | Pending |
-| 1 | `devotions/` | Pending |
-| 1 | `media/` (upload) | Pending |
-| 2 | `media/radio`, `music`, `worship`, `podcasts` | Pending |
-| 3 | `movement/`, `prayers/`, `chat/` | Pending |
-| 4 | `education/`, `donations/` | Pending |
-| 5 | Live streaming, certificates, mobile | Pending |
+### Admin setup
 
-## Import rule
+1. Set a user’s `role` to `ADMIN` in the database.
+2. Create a **public** Supabase Storage bucket named `media`.
+3. Add `SUPABASE_SERVICE_ROLE_KEY` to `.env.local` for uploads.
 
-```ts
-// ✅ Good
-import { LoginForm, type AuthUser } from '@/modules/auth';
+### API (admin)
 
-// ❌ Avoid deep imports outside the module
-import { LoginForm } from '@/modules/auth/components/LoginForm';
-```
+- `GET/POST /api/admin/devotions`
+- `GET/PATCH/DELETE /api/admin/devotions/[id]`
+- `GET/POST /api/admin/media` (multipart upload)
+- `PATCH/DELETE /api/admin/media/[id]`
+
+## Phase 2+ (next)
+
+Media sub-modules (radio scheduler, music library), community, education, donations.

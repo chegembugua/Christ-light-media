@@ -25,7 +25,10 @@ import {
   sendPasswordResetEmail,
   updatePassword,
 } from '@/modules/auth/services/auth.client';
-import { fetchUserProfile } from '@/modules/auth/services/profile.client';
+import {
+  fetchUserProfile,
+  syncPlatformProfile,
+} from '@/modules/auth/services/profile.client';
 import type {
   AuthContextValue,
   AuthUser,
@@ -67,7 +70,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setProfile(null);
         return;
       }
-      const data = await loadProfile(supabaseUser.id);
+      let data = await loadProfile(supabaseUser.id);
+
+      if (!data && supabaseUser.email) {
+        const fullName =
+          typeof supabaseUser.user_metadata?.full_name === 'string'
+            ? supabaseUser.user_metadata.full_name
+            : null;
+        await syncPlatformProfile({
+          id: supabaseUser.id,
+          email: supabaseUser.email,
+          fullName,
+        });
+        data = await loadProfile(supabaseUser.id);
+      }
+
       setUser(mergeUser(supabaseUser, data));
     },
     [loadProfile]
