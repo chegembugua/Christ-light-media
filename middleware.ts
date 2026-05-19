@@ -4,7 +4,7 @@
  * Protected routes:
  *   /profile/*        → login required
  *   /admin/*          → login + ADMIN role
- *   /school/*/lesson/* → login required
+ *   /school/[courseId]/lesson/[lessonId] → login required
  */
 import { type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
