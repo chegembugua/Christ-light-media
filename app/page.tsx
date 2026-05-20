@@ -157,6 +157,71 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <section className="py-32 bg-[#0A0A0A] relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="container mx-auto px-6 relative z-10">
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-gold tracking-widest uppercase text-xs mb-3 font-bold">IMPACT</p>
+              <h2 className="text-3xl md:text-5xl font-cinzel font-bold">Transformed Lives</h2>
+            </div>
+          </ScrollReveal>
+
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                text: "The 'Rooted in Grace' series completely shifted my perspective on God's love. I've never felt so free from performance anxiety in my faith.",
+                author: "Sarah Jenkins",
+                role: "Community Member",
+              },
+              {
+                text: "I tune in to Christ Light Radio every morning on my commute. It sets the tone for my entire day and keeps me anchored in truth.",
+                author: "Michael T.",
+                role: "Daily Listener",
+              },
+              {
+                text: "The prayer wall is my favorite feature. Knowing that believers around the world are standing with me in prayer is incredibly comforting.",
+                author: "Elena Rodriguez",
+                role: "Movement Partner",
+              }
+            ].map((testimonial, i) => (
+              <div key={i} className="bg-card/50 backdrop-blur-sm border border-white/5 rounded-3xl p-8 relative hover:-translate-y-2 transition-transform duration-500">
+                <span className="text-6xl text-gold/20 font-serif absolute top-4 left-6">"</span>
+                <p className="text-gray-300 font-inter leading-relaxed mb-8 relative z-10 pt-4">
+                  {testimonial.text}
+                </p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-gold font-bold">
+                    {testimonial.author[0]}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-white text-sm">{testimonial.author}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">{testimonial.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </StaggerContainer>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 bg-gradient-to-b from-[#0A0A0A] to-[#111]">
+        <div className="container mx-auto px-6 text-center">
+          <ScrollReveal>
+            <h2 className="text-4xl md:text-6xl font-cinzel font-bold mb-6">Ready to go deeper?</h2>
+            <p className="text-gray-400 max-w-2xl mx-auto text-lg mb-10 font-inter">
+              Join thousands of believers who are growing in their faith daily. 
+              Create a free account to track your progress, save favorites, and join the community.
+            </p>
+            <Link href="/register" className="inline-block bg-gold text-black px-12 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gold-dark transition-all transform hover:scale-105 shadow-xl shadow-gold/20">
+              Create Free Account
+            </Link>
+          </ScrollReveal>
+        </div>
+      </section>
     </div>
   );
 }

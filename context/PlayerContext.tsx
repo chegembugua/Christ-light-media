@@ -8,7 +8,7 @@ export interface Track {
   artist: string;
   coverImage: string;
   audioUrl: string;
-  type: 'music' | 'podcast' | 'sermon' | 'radio';
+  type: 'music' | 'podcast' | 'sermon' | 'radio' | 'worship';
   isLive?: boolean;
   listeners?: number;
   duration?: string;

@@ -7,6 +7,7 @@ import { Search, Menu, LogIn, LogOut, Shield, User, ChevronDown, X } from 'lucid
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import NotificationBell from '@/components/notifications/NotificationBell';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -76,6 +77,9 @@ export default function Navbar() {
           >
             <Search size={20} />
           </button>
+          
+          <NotificationBell />
+
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="relative">
