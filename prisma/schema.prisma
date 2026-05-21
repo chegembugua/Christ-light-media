@@ -42,14 +42,16 @@ model User {
   bio            String?
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  prayerRequests PrayerRequest[]
-  comments       Comment[]
-  enrollments    Enrollment[]
-  donations      Donation[]
-  notifications  Notification[]
-  votes          PrayerVote[]
-  movement       MovementMember?
-  messages       Message[]
+  prayerRequests       PrayerRequest[]
+  comments             Comment[]
+  enrollments          Enrollment[]
+  donations            Donation[]
+  notifications        Notification[]
+  votes                PrayerVote[]
+  movement             MovementMember?
+  messages             Message[]
+  challengeEnrollments ChallengeEnrollment[]
+  testimonies          Testimony[]
 }
 
 // ─── Media ───────────────────────────────────────────────────────────────────
@@ -225,11 +227,74 @@ model Donation {
 }
 
 model MovementMember {
-  id           String   @id @default(uuid())
-  userId       String   @unique
-  joinedAt     DateTime @default(now())
-  challengeDay Int      @default(1)
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String               @id @default(uuid())
+  userId                   String               @unique
+  joinedAt                 DateTime             @default(now())
+  challengeDay             Int                  @default(0)
+  totalChallengesCompleted Int                  @default(0)
+  user                     User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeEnrollments     ChallengeEnrollment[]
+}
+
+model Challenge {
+  id          String               @id @default(cuid())
+  slug        String               @unique
+  title       String
+  description String               @db.Text
+  duration    Int
+  category    String
+  difficulty  Int                  @default(3)
+  imageUrl    String?
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  enrollments ChallengeEnrollment[]
+  dailyPrompts DailyPrompt[]
+}
+
+model DailyPrompt {
+  id          String    @id @default(cuid())
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  day         Int
+  title       String
+  reflection  String    @db.Text
+  scripture   String?
+  actionStep  String?   @db.Text
+}
+
+model ChallengeEnrollment {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId     String
+  challenge       Challenge      @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  movementMemberId String?
+  movementMember  MovementMember? @relation(fields: [movementMemberId], references: [id], onDelete: SetNull)
+  enrolledAt      DateTime       @default(now())
+  daysCompleted   Int[]
+  isCompleted     Boolean        @default(false)
+  completedAt     DateTime?
+
+  @@unique([userId, challengeId])
+}
+
+model Testimony {
+  id          String    @id @default(cuid())
+  title       String
+  content     String    @db.Text
+  category    String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAnonymous Boolean   @default(false)
+  photoUrl    String?
+  authorTitle String?
+  location    String?
+  isPublished Boolean   @default(false)
+  isFeatured  Boolean   @default(false)
+  viewCount   Int       @default(0)
+  reactionCount Int     @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
 }
 
 // ─── Notifications & Radio ─────────────────────────────────────────────────────

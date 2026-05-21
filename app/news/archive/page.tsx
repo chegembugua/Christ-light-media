@@ -384,8 +384,8 @@ export default function NewsArchivePage() {
                 <TrendingUp className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
                 <button
                   onClick={(e) => {
-                    const el = e.currentTarget.nextElementSibling;
-                    el.classList.toggle('hidden');
+                    const el = e.currentTarget.nextElementSibling as HTMLElement | null;
+                    el?.classList.toggle('hidden');
                   }}
                   className="w-full flex items-center justify-between rounded-xl border border-white/10 bg-card py-3 pl-10 pr-4 text-sm text-white outline-none placeholder:text-gray-600 focus:border-gold/60"
                 >

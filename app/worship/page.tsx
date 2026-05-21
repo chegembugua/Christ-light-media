@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Clock, Disc3, Heart, Headphones, Loader2, Play, Pause, Shuffle } from 'lucide-react';

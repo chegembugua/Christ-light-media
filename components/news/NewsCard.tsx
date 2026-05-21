@@ -89,7 +89,7 @@ export default function NewsCard({
                     )}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={12} /> {formatDate(publishedDate)}
+                    <Calendar size={12} /> {publishedDate ? formatDate(publishedDate) : ""}
                   </span>
                   {viewCount !== undefined && (
                     <span className="flex items-center gap-1.5">
@@ -138,7 +138,7 @@ export default function NewsCard({
                   )}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Calendar size={12} /> {formatDate(publishedDate)}
+                  <Calendar size={12} /> {publishedDate ? formatDate(publishedDate) : ""}
                 </span>
                 {viewCount !== undefined && (
                   <span className="flex items-center gap-1.5">

@@ -143,7 +143,7 @@ export default function PrayerWallPage() {
             Share your prayer requests. Stand with the body of Christ in intercession.
           </p>
           <blockquote className="mt-4 border-l-2 border-gold/40 pl-4 text-sm italic text-gray-500">
-            "Therefore confess your sins to each other and pray for each other so that you may be healed." — James 5:16
+            &ldquo;Therefore confess your sins to each other and pray for each other so that you may be healed.&rdquo; — James 5:16
           </blockquote>
         </header>
 
