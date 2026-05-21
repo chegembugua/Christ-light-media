@@ -52,7 +52,7 @@ export function DevotionForm({ initial }: DevotionFormProps) {
       return;
     }
 
-    toast.success(isEdit ? 'Devotion updated' : 'Devotion created');
+    toast.success('Devotion saved successfully');
     router.push('/admin/devotions');
     router.refresh();
   };

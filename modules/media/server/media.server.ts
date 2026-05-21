@@ -1,22 +1,23 @@
 import prisma from '@/lib/prisma';
-import type { MediaType, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { CreateMediaInput, MediaDTO, UpdateMediaInput } from '../types';
 
 function toDTO(row: {
   id: string;
   title: string;
   description: string | null;
-  coverImage: string | null;
-  audioUrl: string | null;
+  coverImage: string;
+  audioUrl: string;
   videoUrl: string | null;
-  type: MediaType;
-  category: string | null;
-  speaker: string | null;
+  type: string;
+  category: string;
+  speaker: string;
   duration: string | null;
   playCount: number;
   isPublished: boolean;
   publishedAt: Date | null;
   createdAt: Date;
+  updatedAt?: Date;
 }): MediaDTO {
   return {
     id: row.id,
@@ -33,10 +34,11 @@ function toDTO(row: {
     isPublished: row.isPublished,
     publishedAt: row.publishedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt?.toISOString(),
   };
 }
 
-export async function listPublishedMedia(type?: MediaType): Promise<MediaDTO[]> {
+export async function listPublishedMedia(type?: string): Promise<MediaDTO[]> {
   const rows = await prisma.media.findMany({
     where: { isPublished: true, ...(type ? { type } : {}) },
     orderBy: { createdAt: 'desc' },
@@ -60,12 +62,12 @@ export async function createMedia(input: CreateMediaInput): Promise<MediaDTO> {
     data: {
       title: input.title,
       description: input.description ?? null,
-      coverImage: input.coverImage ?? null,
-      audioUrl: input.audioUrl ?? null,
+      coverImage: input.coverImage,
+      audioUrl: input.audioUrl,
       videoUrl: input.videoUrl ?? null,
       type: input.type,
-      category: input.category ?? null,
-      speaker: input.speaker ?? null,
+      category: input.category,
+      speaker: input.speaker,
       duration: input.duration ?? null,
       isPublished: publish,
       publishedAt: publish ? new Date() : null,

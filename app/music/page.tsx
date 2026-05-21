@@ -1,201 +1,378 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { Play, Pause, Clock, Headphones, Heart, Disc3, Shuffle, ListMusic } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Disc3, Loader2, Shuffle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { usePlayer } from '@/context/PlayerContext';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
-import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
+import { MusicCard } from '@/components/media/MusicCard';
+import { MusicRow } from '@/components/media/MusicRow';
+import { ViewToggle } from '@/components/media/ViewToggle';
 
-const GENRES = ['All', 'Worship', 'Gospel', 'Contemporary', 'Hymns', 'Afro-Gospel', 'Instrumental'];
-
-const FEATURED_ARTISTS = [
-  { name: 'Grace Melody', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200', tracks: 12 },
-  { name: 'The Lighthouse Band', avatar: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=200', tracks: 24 },
-  { name: 'David Kimani', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200', tracks: 18 },
-  { name: 'Mercy & Truth', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200', tracks: 9 },
+const GENRES = [
+  'All',
+  'Worship',
+  'Gospel',
+  'Instrumental',
+  'Prophetic Worship',
+  'Prayer Music',
+  'Contemporary',
 ];
 
-const ALBUMS = [
-  {
-    id: 'alb1', title: 'Throne Room', artist: 'Grace Melody', genre: 'Worship',
-    coverImage: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070', trackCount: 10,
-  },
-  {
-    id: 'alb2', title: 'Arise', artist: 'The Lighthouse Band', genre: 'Gospel',
-    coverImage: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2070', trackCount: 8,
-  },
-  {
-    id: 'alb3', title: 'Psalm 23', artist: 'David Kimani', genre: 'Contemporary',
-    coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070', trackCount: 12,
-  },
-];
+const PAGE_SIZE = 20;
 
-const TRACKS = [
-  { id: 'tr1', title: 'Holy Ground', artist: 'Grace Melody', genre: 'Worship', duration: '4:32', plays: 45200, coverImage: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070', audioUrl: '/audio/track1.mp3', type: 'music' as const },
-  { id: 'tr2', title: 'Your Name Is Higher', artist: 'The Lighthouse Band', genre: 'Gospel', duration: '5:18', plays: 38900, coverImage: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2070', audioUrl: '/audio/track2.mp3', type: 'music' as const },
-  { id: 'tr3', title: 'Shepherd of My Soul', artist: 'David Kimani', genre: 'Contemporary', duration: '3:55', plays: 52400, coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070', audioUrl: '/audio/track3.mp3', type: 'music' as const },
-  { id: 'tr4', title: 'Hallelujah (Live)', artist: 'Mercy & Truth', genre: 'Worship', duration: '6:12', plays: 28100, coverImage: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070', audioUrl: '/audio/track4.mp3', type: 'music' as const },
-  { id: 'tr5', title: 'Grace Abounds', artist: 'Grace Melody', genre: 'Hymns', duration: '4:05', plays: 33700, coverImage: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2070', audioUrl: '/audio/track5.mp3', type: 'music' as const },
-  { id: 'tr6', title: 'Draw Me Close', artist: 'The Lighthouse Band', genre: 'Contemporary', duration: '4:48', plays: 41300, coverImage: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070', audioUrl: '/audio/track6.mp3', type: 'music' as const },
-  { id: 'tr7', title: 'Milele (Forever)', artist: 'David Kimani', genre: 'Afro-Gospel', duration: '5:30', plays: 67800, coverImage: 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070', audioUrl: '/audio/track7.mp3', type: 'music' as const },
-  { id: 'tr8', title: 'Be Still My Soul', artist: 'Mercy & Truth', genre: 'Instrumental', duration: '7:15', plays: 19400, coverImage: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2070', audioUrl: '/audio/track8.mp3', type: 'music' as const },
-];
+type MusicTrack = {
+  id: string;
+  title: string;
+  description: string | null;
+  speaker: string;
+  coverImage: string;
+  audioUrl: string;
+  type: string;
+  category: string;
+  duration: string | null;
+  playCount: number;
+  publishedAt: string | null;
+  createdAt: string;
+};
+
+type MediaResponse = {
+  media?: MusicTrack[];
+  total?: number;
+  error?: string;
+};
 
 export default function MusicPage() {
   const { playTrack, pause, currentTrack, isPlaying } = usePlayer();
+  const [tracks, setTracks] = useState<MusicTrack[]>([]);
+  const [featuredTracks, setFeaturedTracks] = useState<MusicTrack[]>([]);
+  const [artists, setArtists] = useState<string[]>([]);
   const [activeGenre, setActiveGenre] = useState('All');
+  const [activeArtist, setActiveArtist] = useState('All Artists');
+  const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [total, setTotal] = useState(0);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState('');
 
   const isCurrentlyPlaying = (id: string) => currentTrack?.id === id && isPlaying;
 
-  const handlePlay = (track: typeof TRACKS[0]) => {
-    if (currentTrack?.id === track.id && isPlaying) {
-      pause();
-    } else {
-      playTrack({ id: track.id, title: track.title, artist: track.artist, coverImage: track.coverImage, audioUrl: track.audioUrl, type: track.type });
+  const buildMediaUrl = useCallback(
+    (nextOffset: number) => {
+      const params = new URLSearchParams({
+        type: 'MUSIC',
+        published: 'true',
+        limit: String(PAGE_SIZE),
+        offset: String(nextOffset),
+      });
+
+      if (activeGenre !== 'All') params.set('category', activeGenre);
+      if (activeArtist !== 'All Artists') params.set('speaker', activeArtist);
+
+      return `/api/media?${params.toString()}`;
+    },
+    [activeGenre, activeArtist]
+  );
+
+  const fetchTracks = useCallback(
+    async (nextOffset = 0, append = false) => {
+      if (append) setLoadingMore(true);
+      else setLoading(true);
+      setError('');
+
+      try {
+        const response = await fetch(buildMediaUrl(nextOffset));
+        const result = (await response.json()) as MediaResponse;
+
+        if (!response.ok || !result.media) {
+          throw new Error(result.error ?? 'Unable to load music.');
+        }
+
+        setTracks((current) => (append ? [...current, ...result.media!] : result.media!));
+        setTotal(result.total ?? result.media.length);
+        setOffset(nextOffset + result.media.length);
+      } catch (fetchError) {
+        setError(fetchError instanceof Error ? fetchError.message : 'Unable to load music.');
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    },
+    [buildMediaUrl]
+  );
+
+  useEffect(() => {
+    void fetchTracks(0, false);
+  }, [fetchTracks]);
+
+  useEffect(() => {
+    async function fetchArtists() {
+      try {
+        const response = await fetch('/api/media/artists?type=MUSIC');
+        const result = (await response.json()) as { artists?: string[] };
+        setArtists(result.artists ?? []);
+      } catch {
+        setArtists([]);
+      }
     }
+
+    async function fetchFeatured() {
+      try {
+        const response = await fetch('/api/media?type=MUSIC&published=true&limit=80');
+        const result = (await response.json()) as MediaResponse;
+        const top = [...(result.media ?? [])]
+          .sort((left, right) => right.playCount - left.playCount)
+          .slice(0, 4);
+        setFeaturedTracks(top);
+      } catch {
+        setFeaturedTracks([]);
+      }
+    }
+
+    void fetchArtists();
+    void fetchFeatured();
+  }, []);
+
+  const handlePlay = (track: MusicTrack) => {
+    if (isCurrentlyPlaying(track.id)) {
+      pause();
+      return;
+    }
+
+    playTrack({
+      id: track.id,
+      title: track.title,
+      artist: track.speaker,
+      coverImage: track.coverImage,
+      audioUrl: track.audioUrl,
+      type: 'music',
+      duration: track.duration ?? undefined,
+    });
+    toast.success(`Now playing: ${track.title}`);
   };
 
-  const filtered = activeGenre === 'All' ? TRACKS : TRACKS.filter(t => t.genre === activeGenre);
+  const toggleFavorite = async (track: MusicTrack) => {
+    const isFavorite = favorites.has(track.id);
+    setFavorites((current) => {
+      const next = new Set(current);
+      if (isFavorite) next.delete(track.id);
+      else next.add(track.id);
+      return next;
+    });
+
+    toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
+
+    await fetch('/api/media/favorites', {
+      method: isFavorite ? 'DELETE' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mediaId: track.id }),
+    }).catch(() => undefined);
+  };
+
+  const shuffleAll = () => {
+    if (tracks.length === 0) return;
+    const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
+    handlePlay(randomTrack);
+  };
+
+  const hasMore = tracks.length < total;
+
+  const resultLabel = useMemo(() => {
+    if (loading) return 'Loading tracks';
+    if (total === 1) return '1 track';
+    return `${total} tracks`;
+  }, [loading, total]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
-      <PageHeader label="LISTEN" title="Music" description="Worship and gospel music to uplift your spirit and draw you closer to God." />
+    <div className="min-h-screen bg-[#0A0A0A] pb-24 pt-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <ScrollReveal>
+          <header className="mb-14">
+            <p className="mb-3 text-sm font-medium uppercase tracking-widest text-gold">
+              Worship Audio
+            </p>
+            <h1 className="text-shine mb-4 font-cinzel text-5xl font-bold tracking-tighter md:text-6xl">
+              Music Library
+            </h1>
+            <p className="max-w-2xl font-inter text-gray-400">
+              Worship, gospel, and instrumental music for prayer and meditation
+            </p>
+            <blockquote className="mt-6 max-w-3xl border-l-2 border-gold/50 pl-5 text-sm leading-7 text-gray-500">
+              &ldquo;Let the Word of Christ dwell in you richly in all wisdom, singing psalms
+              and hymns and spiritual songs.&rdquo; - Colossians 3:16
+            </blockquote>
+          </header>
+        </ScrollReveal>
 
-      {/* ── Featured Albums ─────────────────────────────────────────── */}
-      <section className="pb-20">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <div className="flex items-center gap-3 mb-10">
-              <Disc3 size={20} className="text-gold" />
-              <h2 className="text-2xl font-cinzel font-medium">Featured Albums</h2>
-            </div>
-          </ScrollReveal>
-
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {ALBUMS.map((album) => (
-              <Card key={album.id} className="p-0 overflow-hidden cursor-pointer">
-                <div className="relative aspect-square">
-                  <Image src={album.coverImage} alt={album.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  {/* Play overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="w-16 h-16 bg-gold rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(200,162,74,0.4)] transform scale-75 group-hover:scale-100 transition-transform">
-                      <Play size={28} className="text-black ml-1" fill="currentColor" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="text-xl font-cinzel font-bold mb-1">{album.title}</h3>
-                    <p className="text-sm text-gray-400 font-inter">{album.artist} · {album.trackCount} tracks</p>
-                  </div>
+        {featuredTracks.length > 0 && (
+          <section className="mb-20">
+            <ScrollReveal>
+              <div className="mb-8 flex items-center gap-3">
+                <Disc3 size={22} className="text-gold" />
+                <div>
+                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-gold">
+                    Featured
+                  </p>
+                  <h2 className="font-cinzel text-3xl font-medium">Top Played Songs</h2>
                 </div>
-              </Card>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* ── Featured Artists ────────────────────────────────────────── */}
-      <section className="pb-20">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <h2 className="text-2xl font-cinzel font-medium mb-10">Featured Artists</h2>
-          </ScrollReveal>
-
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {FEATURED_ARTISTS.map((artist) => (
-              <div key={artist.name} className="group text-center cursor-pointer">
-                <div className="w-28 h-28 md:w-32 md:h-32 mx-auto rounded-full overflow-hidden border-2 border-white/5 group-hover:border-gold/40 transition-all duration-500 mb-4 shadow-lg shadow-black/50">
-                  <Image src={artist.avatar} alt={artist.name} width={128} height={128} className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                <h3 className="font-cinzel font-semibold text-sm group-hover:text-gold transition-colors">{artist.name}</h3>
-                <p className="text-xs text-gray-500 mt-1 font-inter">{artist.tracks} tracks</p>
               </div>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
+            </ScrollReveal>
 
-      <div className="section-divider" />
+            <StaggerContainer className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {featuredTracks.map((track) => (
+                <MusicCard
+                  key={track.id}
+                  title={track.title}
+                  artist={track.speaker}
+                  coverImage={track.coverImage}
+                  genre={track.category}
+                  duration={track.duration ?? 'Audio'}
+                  playCount={track.playCount}
+                  isPlaying={isCurrentlyPlaying(track.id)}
+                  isFavorite={favorites.has(track.id)}
+                  onPlay={() => handlePlay(track)}
+                  onFavorite={() => void toggleFavorite(track)}
+                />
+              ))}
+            </StaggerContainer>
+          </section>
+        )}
 
-      {/* ── All Tracks ─────────────────────────────────────────────── */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
+        <section>
           <ScrollReveal>
-            <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-10">
-              <div className="flex items-center gap-3">
-                <ListMusic size={20} className="text-gold" />
-                <h2 className="text-3xl font-cinzel font-medium">All Tracks</h2>
+            <div className="mb-8 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-widest text-gold">
+                  Library
+                </p>
+                <h2 className="font-cinzel text-3xl font-medium">All Tracks</h2>
               </div>
-              <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-gold transition-colors">
-                <Shuffle size={16} /> Shuffle All
-              </button>
-            </div>
-          </ScrollReveal>
-
-          {/* Genre Pills */}
-          <ScrollReveal>
-            <div className="flex gap-3 mb-10 flex-wrap">
-              {GENRES.map((genre) => (
-                <button key={genre} onClick={() => setActiveGenre(genre)} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${activeGenre === genre ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'bg-card text-gray-400 hover:text-white border border-white/5 hover:border-gold/30'}`}>
-                  {genre}
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm text-gray-500">{resultLabel}</span>
+                <button
+                  type="button"
+                  onClick={shuffleAll}
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-card px-4 py-2 text-sm text-gray-400 transition hover:border-gold/30 hover:text-gold"
+                >
+                  <Shuffle size={16} /> Shuffle
                 </button>
+                <ViewToggle view={view} onChange={setView} />
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-wrap gap-3">
+                {GENRES.map((genre) => (
+                  <button
+                    key={genre}
+                    type="button"
+                    onClick={() => setActiveGenre(genre)}
+                    className={`rounded-full px-5 py-2 text-xs font-bold uppercase tracking-widest transition-all ${
+                      activeGenre === genre
+                        ? 'bg-gold text-black shadow-lg shadow-gold/20'
+                        : 'border border-white/5 bg-card text-gray-400 hover:border-gold/30 hover:text-white'
+                    }`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+
+              <select
+                value={activeArtist}
+                onChange={(event) => setActiveArtist(event.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-card px-4 py-3 text-sm text-gray-300 outline-none transition focus:border-gold/60 lg:max-w-xs"
+              >
+                <option>All Artists</option>
+                {artists.map((artist) => (
+                  <option key={artist} value={artist}>
+                    {artist}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </ScrollReveal>
+
+          {loading ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <div key={index} className="space-y-4 rounded-2xl border border-white/10 bg-card p-3">
+                  <div className="aspect-square animate-pulse rounded-2xl bg-white/10" />
+                  <div className="h-5 animate-pulse rounded bg-white/10" />
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-white/10" />
+                </div>
               ))}
             </div>
-          </ScrollReveal>
+          ) : error ? (
+            <p className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-300">
+              {error}
+            </p>
+          ) : tracks.length === 0 ? (
+            <p className="rounded-2xl border border-white/10 bg-card p-8 text-center text-gray-500">
+              No music found. Check back soon!
+            </p>
+          ) : (
+            <>
+              {view === 'grid' ? (
+                <StaggerContainer className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                  {tracks.map((track) => (
+                    <MusicCard
+                      key={track.id}
+                      title={track.title}
+                      artist={track.speaker}
+                      coverImage={track.coverImage}
+                      genre={track.category}
+                      duration={track.duration ?? 'Audio'}
+                      playCount={track.playCount}
+                      isPlaying={isCurrentlyPlaying(track.id)}
+                      isFavorite={favorites.has(track.id)}
+                      onPlay={() => handlePlay(track)}
+                      onFavorite={() => void toggleFavorite(track)}
+                    />
+                  ))}
+                </StaggerContainer>
+              ) : (
+                <StaggerContainer className="space-y-3">
+                  {tracks.map((track) => (
+                    <MusicRow
+                      key={track.id}
+                      title={track.title}
+                      artist={track.speaker}
+                      coverImage={track.coverImage}
+                      genre={track.category}
+                      duration={track.duration ?? 'Audio'}
+                      playCount={track.playCount}
+                      isPlaying={isCurrentlyPlaying(track.id)}
+                      isFavorite={favorites.has(track.id)}
+                      onPlay={() => handlePlay(track)}
+                      onFavorite={() => void toggleFavorite(track)}
+                    />
+                  ))}
+                </StaggerContainer>
+              )}
 
-          {/* Track List */}
-          <div className="space-y-3">
-            {filtered.map((track, i) => {
-              const playing = isCurrentlyPlaying(track.id);
-              return (
-                <ScrollReveal key={track.id} delay={i * 50}>
-                  <div className={`flex items-center gap-4 p-4 rounded-xl transition-all group border ${playing ? 'bg-gold/10 border-gold/30' : 'bg-card/50 border-white/5 hover:border-gold/20 hover:bg-card'}`}>
-                    {/* Number / Play */}
-                    <div className="w-8 text-center flex-shrink-0">
-                      <span className={`text-sm font-mono group-hover:hidden ${playing ? 'text-gold' : 'text-gray-600'}`}>{i + 1}</span>
-                      <button onClick={() => handlePlay(track)} className="hidden group-hover:block text-gold">
-                        {playing ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
-                      </button>
-                    </div>
-
-                    {/* Cover */}
-                    <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image src={track.coverImage} alt={track.title} width={44} height={44} className="object-cover w-full h-full" />
-                    </div>
-
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className={`font-semibold truncate ${playing ? 'text-gold' : 'text-white'}`}>{track.title}</p>
-                      <p className="text-xs text-gray-500 truncate font-inter">{track.artist}</p>
-                    </div>
-
-                    {/* Genre badge */}
-                    <span className="hidden md:inline-flex text-[10px] text-gray-500 bg-white/5 px-3 py-1 rounded-full">{track.genre}</span>
-
-                    {/* Like */}
-                    <button className="p-1.5 text-gray-600 hover:text-gold transition-colors hidden md:block">
-                      <Heart size={16} />
-                    </button>
-
-                    {/* Plays */}
-                    <span className="hidden md:flex items-center gap-1 text-xs text-gray-600 font-mono w-20 justify-end">
-                      <Headphones size={12} /> {(track.plays / 1000).toFixed(1)}k
-                    </span>
-
-                    {/* Duration */}
-                    <span className="flex items-center gap-1 text-xs text-gray-600 font-mono w-12 justify-end">
-                      <Clock size={12} /> {track.duration}
-                    </span>
-                  </div>
-                </ScrollReveal>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+              {hasMore && (
+                <div className="mt-10 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => void fetchTracks(offset, true)}
+                    disabled={loadingMore}
+                    className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-card px-6 py-3 text-sm font-semibold text-white transition hover:border-gold/40 hover:text-gold disabled:opacity-60"
+                  >
+                    {loadingMore && <Loader2 size={16} className="animate-spin" />}
+                    Load more
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

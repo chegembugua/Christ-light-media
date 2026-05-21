@@ -12,7 +12,18 @@ export async function createClient(): Promise<SupabaseClient> {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) {
+
+  let hasValidSupabaseUrl = false;
+  if (supabaseUrl) {
+    try {
+      const parsedUrl = new URL(supabaseUrl);
+      hasValidSupabaseUrl = parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+    } catch {
+      hasValidSupabaseUrl = false;
+    }
+  }
+
+  if (!hasValidSupabaseUrl || !supabaseAnonKey) {
     // Return a safe no-op client during builds or when env vars are absent.
     const noop = {
       auth: {
@@ -28,7 +39,7 @@ export async function createClient(): Promise<SupabaseClient> {
     return noop;
   }
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  return createServerClient(supabaseUrl as string, supabaseAnonKey as string, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;

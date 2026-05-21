@@ -6,34 +6,31 @@
 
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
-import {
-  getAuthenticatedUser,
-  requireAdmin,
-  parsePagination,
-  successResponse,
-  errorResponse,
-} from '@/lib/api/helpers';
+import { NextResponse } from 'next/server';
+import { getAuthenticatedUser, successResponse, errorResponse } from '@/lib/api/helpers';
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const { page, pageSize, skip } = parsePagination(request);
     const type = searchParams.get('type') as string | null;
     const category = searchParams.get('category');
-    const published = searchParams.get('published') === 'true';
+    const speaker = searchParams.get('speaker');
+    const published = searchParams.get('published');
+    const limit = Math.min(Math.max(Number(searchParams.get('limit')) || 20, 1), 100);
+    const offset = Math.max(Number(searchParams.get('offset')) || 0, 0);
 
-    // Build filter
     const where: any = {};
     if (type) where.type = type;
-    if (category) where.category = category;
-    if (published) where.isPublished = true;
+    where.isPublished = published === 'false' ? false : true;
+    if (category) where.category = { contains: category, mode: 'insensitive' };
+    if (speaker) where.speaker = { contains: speaker, mode: 'insensitive' };
 
     const [media, total] = await Promise.all([
       prisma.media.findMany({
         where,
         orderBy: { publishedAt: 'desc' },
-        skip,
-        take: pageSize,
+        skip: offset,
+        take: limit,
         include: {
           podcastShow: { select: { id: true, title: true } },
           comments: { select: { id: true } },
@@ -42,7 +39,7 @@ export async function GET(request: NextRequest) {
       prisma.media.count({ where }),
     ]);
 
-    return successResponse(media, 200, { page, pageSize, total });
+    return NextResponse.json({ media, total });
   } catch (error) {
     console.error('GET /api/media error:', error);
     return errorResponse('Failed to fetch media', 500);

@@ -38,3 +38,21 @@ export function formatRelativeTime(dateInput: Date | string | number): string {
   return `${months[date.getMonth()]} ${date.getDate()}`;
 }
 
+export function formatDevotionDate(dateInput: Date | string): string {
+  const date = new Date(dateInput);
+  const now = new Date();
+  
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const inputDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  
+  const diffDays = Math.floor((today.getTime() - inputDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  if (diffDays === 0) {
+    return `Today, ${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  }
+  
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+

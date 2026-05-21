@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-interface CardProps {
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   className?: string;
   variant?: 'default' | 'featured' | 'compact';
@@ -14,7 +14,13 @@ const variants = {
   compact: 'bg-card p-4 md:p-5 rounded-xl border border-white/5',
 };
 
-export function Card({ children, className, variant = 'default', hover = true }: CardProps) {
+export function Card({
+  children,
+  className,
+  variant = 'default',
+  hover = true,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
@@ -23,6 +29,7 @@ export function Card({ children, className, variant = 'default', hover = true }:
         'group relative overflow-hidden',
         className
       )}
+      {...props}
     >
       {children}
       {hover && (

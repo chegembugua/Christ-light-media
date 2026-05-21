@@ -1,31 +1,32 @@
-import type { MediaType } from '@prisma/client';
+export type MediaType = 'SERMON' | 'PODCAST' | 'MUSIC' | 'WORSHIP' | 'RADIO';
 
 export interface MediaDTO {
   id: string;
   title: string;
   description: string | null;
-  coverImage: string | null;
-  audioUrl: string | null;
+  coverImage: string;
+  audioUrl: string;
   videoUrl: string | null;
-  type: MediaType;
-  category: string | null;
-  speaker: string | null;
+  type: string;
+  category: string;
+  speaker: string;
   duration: string | null;
   playCount: number;
   isPublished: boolean;
   publishedAt: string | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface CreateMediaInput {
   title: string;
   description?: string;
-  coverImage?: string;
-  audioUrl?: string;
+  coverImage: string;
+  audioUrl: string;
   videoUrl?: string;
-  type: MediaType;
-  category?: string;
-  speaker?: string;
+  type: string;
+  category: string;
+  speaker: string;
   duration?: string;
   isPublished?: boolean;
 }

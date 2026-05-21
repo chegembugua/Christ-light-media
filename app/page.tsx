@@ -188,7 +188,7 @@ export default function Home() {
               }
             ].map((testimonial, i) => (
               <div key={i} className="bg-card/50 backdrop-blur-sm border border-white/5 rounded-3xl p-8 relative hover:-translate-y-2 transition-transform duration-500">
-                <span className="text-6xl text-gold/20 font-serif absolute top-4 left-6">"</span>
+                <span className="text-6xl text-gold/20 font-serif absolute top-4 left-6">&ldquo;</span>
                 <p className="text-gray-300 font-inter leading-relaxed mb-8 relative z-10 pt-4">
                   {testimonial.text}
                 </p>

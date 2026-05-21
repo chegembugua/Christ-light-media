@@ -1,24 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth/require-admin';
-import { deleteMedia, updateMedia } from '@/modules/media/server/media.server';
-import type { UpdateMediaInput } from '@/modules/media/types';
+import { deleteFile } from '@/lib/supabase/storage';
 
-interface RouteParams {
-  params: { id: string };
-}
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
 
-export async function PATCH(req: NextRequest, { params }: RouteParams) {
-  const auth = await requireAdmin();
-  if ('error' in auth) return auth.error;
-
-  try {
-    const body = (await req.json()) as UpdateMediaInput;
-    const media = await updateMedia(params.id, body);
-    return NextResponse.json(media);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+function errorResponse(message: string, status = 400) {
+  return NextResponse.json({ error: message }, { status });
 }
 
 export async function DELETE(_req: NextRequest, { params }: RouteParams) {
@@ -26,10 +18,26 @@ export async function DELETE(_req: NextRequest, { params }: RouteParams) {
   if ('error' in auth) return auth.error;
 
   try {
-    await deleteMedia(params.id);
+    const media = await prisma.media.findUnique({ where: { id: params.id } });
+
+    if (!media) {
+      return errorResponse('Media not found', 404);
+    }
+
+    const storageDeletes = await Promise.all([
+      deleteFile('media', media.audioUrl ?? ''),
+      deleteFile('media', media.coverImage ?? ''),
+    ]);
+    const failedDelete = storageDeletes.find((result) => !result.success);
+
+    if (failedDelete) {
+      return errorResponse('Stored files could not be deleted. Please try again.', 500);
+    }
+
+    await prisma.media.delete({ where: { id: params.id } });
+
     return NextResponse.json({ success: true });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return errorResponse('Unable to delete media. Please try again.', 500);
   }
 }

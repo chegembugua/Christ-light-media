@@ -1,88 +1,110 @@
-/**
- * app/api/news/route.ts
- * GET: list published news with pagination
- * POST: create news (admin only)
- */
-
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import {
-  getAuthenticatedUser,
-  parsePagination,
-  successResponse,
-  errorResponse,
-} from '@/lib/api/helpers';
 
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const { page, pageSize, skip } = parsePagination(request);
-    const category = searchParams.get('category');
-    const published = searchParams.get('published') === 'true';
-
-    const where: any = {};
-    if (published) where.isPublished = true;
-    if (category) where.category = category;
-
-    const [news, total] = await Promise.all([
-      prisma.news.findMany({
-        where,
-        orderBy: { publishedAt: 'desc' },
-        skip,
-        take: pageSize,
-      }),
-      prisma.news.count({ where }),
-    ]);
-
-    return successResponse(news, 200, { page, pageSize, total });
-  } catch (error) {
-    console.error('GET /api/news error:', error);
-    return errorResponse('Failed to fetch news', 500);
+// Helper function to get start date for date range
+function getDateRangeStart(range: string): Date | null {
+  const now = new Date();
+  switch (range) {
+    case '7d':
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    case '30d':
+      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    case '365d':
+      return new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+    default:
+      return null;
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const authResult = await getAuthenticatedUser();
-    if (!authResult.user) return errorResponse('Unauthorized', 401);
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get('category') ?? 'all';
+    const search = searchParams.get('search') ?? '';
+    const dateRange = searchParams.get('dateRange') ?? 'all';
+    const sort = searchParams.get('sort') ?? 'newest';
+    const limitParam = searchParams.get('limit');
+    const limit = Math.min(Math.max(Number(limitParam) || 9, 1), 100);
+    const offsetParam = searchParams.get('offset');
+    const offset = Math.max(Number(offsetParam) || 0, 0);
 
-    const user = await prisma.user.findUnique({
-      where: { id: authResult.user.id },
-      select: { role: true },
+    // Build where clause
+    const whereConditions: any = {
+      isPublished: true
+    };
+
+    // Category filter
+    if (category !== 'all' && category !== 'featured') {
+      whereConditions.category = category;
+    }
+    // Featured filter would need isFeature field in DB
+
+    // Search filter
+    if (search.trim()) {
+      whereConditions.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { excerpt: { contains: search, mode: 'insensitive' } }
+      ];
+    }
+
+    // Date range filter
+    const dateStart = getDateRangeStart(dateRange);
+    if (dateStart) {
+      whereConditions.publishedAt = {
+        gte: dateStart
+      };
+    }
+
+    // Get total count for pagination
+    const total = await prisma.news.count({ where: whereConditions });
+
+    // Build orderBy clause
+    let orderBy: any = { publishedAt: 'desc' };
+    if (sort === 'popular' || sort === 'trending') {
+      orderBy = { viewCount: 'desc' };
+    }
+
+    // Fetch news
+    const news = await prisma.news.findMany({
+      where: whereConditions,
+      orderBy,
+      skip: offset,
+      take: limit,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        coverImage: true,
+        category: true,
+        author: true,
+        publishedAt: true,
+        viewCount: true,
+        createdAt: true
+      }
     });
 
-    if (!user || user.role !== 'ADMIN') {
-      return errorResponse('Forbidden: Admin access required', 403);
-    }
-
-    const body = await request.json();
-    const { title, slug, content, excerpt, coverImage, category } = body;
-
-    if (!title || !slug || !content) {
-      return errorResponse('Title, slug, and content are required', 400);
-    }
-
-    // Check if slug is unique
-    const existing = await prisma.news.findUnique({ where: { slug } });
-    if (existing) {
-      return errorResponse('Slug must be unique', 400);
-    }
-
-    const news = await prisma.news.create({
-      data: {
-        title,
-        slug,
-        content,
-        excerpt: excerpt || null,
-        coverImage: coverImage || null,
-        category: category || null,
-        isPublished: false,
+    // Get categories with counts for filter display
+    const categories = await prisma.news.groupBy({
+      by: ['category'],
+      where: {
+        isPublished: true
       },
-    });
+      _count: {
+        _all: true
+      }
+    }) as Array<{category: string, _count: {_all: number}}>;
 
-    return successResponse(news, 201);
+    return NextResponse.json({ 
+      news, 
+      total,
+      categories: categories.map((cat: {category: string, _count: {_all: number}}) => ({
+        name: cat.category,
+        count: cat._count._all
+      }))
+    });
   } catch (error) {
-    console.error('POST /api/news error:', error);
-    return errorResponse('Failed to create news', 500);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

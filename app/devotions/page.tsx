@@ -1,136 +1,186 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { BookOpen, Share2, Heart, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import ScrollReveal from '@/components/animations/ScrollReveal';
-import StaggerContainer from '@/components/animations/StaggerContainer';
-import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, Calendar as CalendarIcon } from 'lucide-react';
+import { DevotionFeatured } from '@/components/devotions/DevotionFeatured';
+import { DevotionArchiveCard } from '@/components/devotions/DevotionArchiveCard';
+import { formatDevotionDate } from '@/lib/utils';
+import type { DevotionDTO } from '@/modules/devotions/types';
 
-const DEVOTIONS = [
-  {
-    id: 'd1', title: 'Walking in the Light', verse: 'John 8:12',
-    verseText: '"I am the light of the world. Whoever follows me will never walk in darkness, but will have the light of life."',
-    reflection: 'In a world clouded by confusion and fear, Christ offers the only true light. When we choose to follow Him, we step out of the shadow of uncertainty and into a path illuminated by His presence. Today, ask yourself: where am I walking in darkness? Invite His light into those places.',
-    date: 'May 19, 2026', image: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?q=80&w=2070',
-  },
-  {
-    id: 'd2', title: 'Strength in Stillness', verse: 'Psalm 46:10',
-    verseText: '"Be still, and know that I am God."',
-    reflection: 'Our culture celebrates busyness, but God invites us to stillness. In the quiet, we find His sovereignty. In the pause, we discover His peace. Make time today to simply be — no agenda, no requests — just resting in the awareness that He is God.',
-    date: 'May 18, 2026', image: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?q=80&w=2070',
-  },
-  {
-    id: 'd3', title: 'Rooted in Love', verse: 'Ephesians 3:17',
-    verseText: '"So that Christ may dwell in your hearts through faith — that you, being rooted and grounded in love…"',
-    reflection: 'A tree with deep roots withstands the fiercest storms. When our identity is rooted in the love of Christ, we find an unshakeable foundation. Let His love be the soil in which you grow today.',
-    date: 'May 17, 2026', image: 'https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070',
-  },
-  {
-    id: 'd4', title: 'A New Mercy', verse: 'Lamentations 3:22-23',
-    verseText: '"The steadfast love of the Lord never ceases; his mercies never come to an end; they are new every morning."',
-    reflection: 'No matter what yesterday held — failure, grief, or regret — today is a fresh canvas painted with mercy. God does not hold your past against you. He greets you this morning with new grace and new possibilities.',
-    date: 'May 16, 2026', image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073',
-  },
-];
+type FilterPeriod = '7' | '30' | 'all';
 
 export default function DevotionsPage() {
-  const today = DEVOTIONS[0];
-  const past = DEVOTIONS.slice(1);
+  const router = useRouter();
+  const [devotions, setDevotions] = useState<DevotionDTO[]>([]);
+  const [todayDevotion, setTodayDevotion] = useState<DevotionDTO | null>(null);
+  const [archive, setArchive] = useState<DevotionDTO[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
+  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('30');
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
+
+  const fetchDevotions = async () => {
+    try {
+      const response = await fetch(`/api/devotions?limit=30`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Unable to load devotions');
+      }
+
+      const allDevotions: DevotionDTO[] = data.devotions || [];
+      setDevotions(allDevotions);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const todayDev = allDevotions.find(d => {
+        const devotionDate = new Date(d.date);
+        devotionDate.setHours(0, 0, 0, 0);
+        return devotionDate.getTime() === today.getTime();
+      }) || allDevotions[0];
+      
+      setTodayDevotion(todayDev);
+      setArchive(allDevotions.filter(d => d.id !== todayDev?.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load devotions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDevotions();
+  }, []);
+
+  const handleArchiveClick = (devotion: DevotionDTO) => {
+    const dateStr = new Date(devotion.date).toISOString().split('T')[0];
+    router.push(`/devotions/${dateStr}`);
+  };
+
+  const handleBookmark = (devotionId: string) => {
+    setBookmarkedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(devotionId)) {
+        newSet.delete(devotionId);
+      } else {
+        newSet.add(devotionId);
+      }
+      return newSet;
+    });
+  };
+
+  const filteredArchive = archive.filter(d => {
+    if (!search) return true;
+    const searchLower = search.toLowerCase();
+    return (
+      d.title.toLowerCase().includes(searchLower) ||
+      d.verse.toLowerCase().includes(searchLower) ||
+      d.verseText?.toLowerCase().includes(searchLower) ||
+      d.reflection.toLowerCase().includes(searchLower)
+    );
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A]">
+        <div className="container mx-auto px-6 py-20">
+          <div className="h-[400px] animate-pulse rounded-3xl bg-white/5" />
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-48 animate-pulse rounded-xl bg-white/5" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <p className="text-red-400">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
-      <PageHeader label="DAILY WORD" title="Devotions" description="Start each day anchored in God's Word. Brief, powerful insights for your walk of faith." />
-
-      {/* Today's Devotion */}
-      <section className="pb-20">
+      <section className="py-20">
         <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <Card variant="featured" className="overflow-hidden p-0">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[480px]">
-                  <Image src={today.image} alt={today.title} fill className="object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute top-5 left-5">
-                    <span className="bg-gold text-black px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">Today</span>
-                  </div>
-                </div>
-                <div className="p-8 lg:p-14 flex flex-col justify-center">
-                  <div className="flex items-center gap-2 text-gold text-xs font-bold uppercase tracking-widest mb-6">
-                    <Calendar size={14} /> {today.date}
-                  </div>
-                  <h2 className="text-3xl lg:text-4xl font-cinzel font-bold mb-6 leading-tight">{today.title}</h2>
-                  <div className="bg-gold/5 border border-gold/20 rounded-2xl p-6 mb-8">
-                    <BookOpen size={20} className="text-gold mb-3" />
-                    <p className="italic text-gray-300 font-inter leading-relaxed text-[15px]">{today.verseText}</p>
-                    <p className="text-gold font-bold text-sm mt-3">— {today.verse}</p>
-                  </div>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Reflection</h3>
-                  <p className="text-gray-400 font-inter leading-[1.8] mb-8">{today.reflection}</p>
-                  <div className="flex items-center gap-4">
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 hover:text-gold hover:border-gold/30 transition-all">
-                      <Heart size={16} /> Amen
-                    </button>
-                    <button className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 rounded-full text-sm text-gray-400 hover:text-gold hover:border-gold/30 transition-all">
-                      <Share2 size={16} /> Share
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </ScrollReveal>
+          <div className="text-center mb-12 max-w-2xl mx-auto">
+            <h1 className="font-cinzel text-4xl text-white mb-4 md:text-5xl">Daily Devotions</h1>
+            <p className="text-gray-400 text-lg">
+              Start your day in the Word. A verse and reflection for spiritual growth.
+            </p>
+            <p className="text-[#C8A24A] text-sm mt-4 italic">
+              &ldquo;Your Word is a lamp to my feet and a light to my path.&rdquo; — Psalm 119:105
+            </p>
+          </div>
+
+          {todayDevotion && (
+            <DevotionFeatured
+              devotion={todayDevotion}
+              onBookmark={() => handleBookmark(todayDevotion.id)}
+              isBookmarked={bookmarkedIds.has(todayDevotion.id)}
+            />
+          )}
         </div>
       </section>
 
-      <div className="section-divider" />
-
-      {/* Past Devotions */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <div className="flex items-end justify-between mb-10">
-              <div>
-                <p className="text-gold tracking-widest uppercase text-xs mb-2 font-bold">ARCHIVE</p>
-                <h2 className="text-3xl font-cinzel font-medium">Past Devotions</h2>
+      <section className="py-12">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="mb-8">
+            <h2 className="font-cinzel text-2xl text-white mb-6">Recent Devotions</h2>
+            
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Search by verse or keyword..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full rounded-full border border-white/10 bg-[#1A1A1A] py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-[#C8A24A]/30 focus:outline-none"
+                />
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {(['7', '30', 'all'] as FilterPeriod[]).map(period => (
+                  <button
+                    key={period}
+                    onClick={() => setFilterPeriod(period)}
+                    className={`rounded-full px-4 py-2 text-xs transition ${
+                      filterPeriod === period
+                        ? 'bg-[#C8A24A] text-black'
+                        : 'border border-white/10 bg-white/5 text-gray-400 hover:border-[#C8A24A]/30'
+                    }`}
+                  >
+                    {period === 'all' ? 'All time' : `Last ${period} days`}
+                  </button>
+                ))}
               </div>
             </div>
-          </ScrollReveal>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {past.map((dev, i) => (
-              <Card key={dev.id} className="cursor-pointer h-full">
-                <div className="relative aspect-[3/2] rounded-xl overflow-hidden mb-5">
-                  <Image src={dev.image} alt={dev.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
-                  <Calendar size={12} className="text-gold/60" /> {dev.date}
-                </div>
-                <h3 className="font-cinzel font-semibold text-lg mb-2 group-hover:text-gold transition-colors leading-tight">{dev.title}</h3>
-                <p className="text-gold text-sm font-bold mb-3">{dev.verse}</p>
-                <p className="text-gray-500 text-sm font-inter line-clamp-3 leading-relaxed">{dev.reflection}</p>
-              </Card>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
+          </div>
 
-      {/* Verse of the Day */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <div className="relative bg-gradient-to-br from-gold/10 via-gold/5 to-transparent border border-gold/20 rounded-3xl p-12 md:p-16 text-center overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[300px] bg-gold/10 rounded-full blur-[100px] pointer-events-none" />
-              <div className="relative z-10">
-                <BookOpen size={32} className="text-gold mx-auto mb-6" />
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold mb-8">Verse of the Day</p>
-                <blockquote className="text-2xl md:text-3xl font-cinzel text-white leading-relaxed max-w-3xl mx-auto mb-6 font-medium">
-                  &ldquo;For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.&rdquo;
-                </blockquote>
-                <p className="text-gold font-bold tracking-widest">— John 3:16</p>
-              </div>
+          {filteredArchive.length === 0 ? (
+            <p className="text-center text-gray-500">No devotions found.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {filteredArchive.map((devotion) => (
+                <DevotionArchiveCard
+                  key={devotion.id}
+                  date={new Date(devotion.date)}
+                  verse={devotion.verse}
+                  title={devotion.title}
+                  reflection={devotion.reflection}
+                  onClick={() => handleArchiveClick(devotion)}
+                />
+              ))}
             </div>
-          </ScrollReveal>
+          )}
         </div>
       </section>
     </div>

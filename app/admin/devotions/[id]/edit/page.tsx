@@ -1,21 +1,65 @@
-export const dynamic = 'force-dynamic';
+'use client';
 
-import { notFound } from 'next/navigation';
-import { DevotionForm } from '@/modules/devotions';
-import { getDevotionById } from '@/modules/devotions/server/devotion.server';
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { DevotionForm, type Devotion } from '@/components/admin/DevotionForm';
 
-interface EditDevotionPageProps {
-  params: { id: string };
-}
+export default function EditDevotionPage() {
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
+  const [devotion, setDevotion] = useState<Devotion | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function EditDevotionPage({ params }: EditDevotionPageProps) {
-  const devotion = await getDevotionById(params.id);
-  if (!devotion) notFound();
+  useEffect(() => {
+    async function fetchDevotion() {
+      try {
+        const response = await fetch(`/api/admin/devotions/${params.id}`);
+        const result = (await response.json()) as { devotion?: Devotion; error?: string };
+
+        if (response.status === 404) {
+          router.push('/admin/devotions');
+          toast.error('Devotion not found.');
+          return;
+        }
+
+        if (!response.ok || !result.devotion) {
+          throw new Error(result.error ?? 'Unable to load devotion.');
+        }
+
+        setDevotion(result.devotion);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Unable to load devotion.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void fetchDevotion();
+  }, [params.id, router]);
+
+  if (loading) {
+    return (
+      <section className="max-w-2xl space-y-4 rounded-2xl border border-white/10 bg-black/20 p-5">
+        <div className="h-8 w-56 animate-pulse rounded bg-white/10" />
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="h-12 animate-pulse rounded-xl bg-white/10" />
+        ))}
+      </section>
+    );
+  }
+
+  if (!devotion) {
+    return <p className="text-sm text-gray-500">Unable to load this devotion.</p>;
+  }
 
   return (
-    <section className="space-y-6">
-      <h1 className="font-cinzel text-3xl text-white">Edit devotion</h1>
-      <DevotionForm initial={devotion} />
+    <section className="space-y-6 rounded-2xl border border-white/10 bg-black/20 p-5">
+      <DevotionForm
+        mode="edit"
+        devotion={devotion}
+        onSubmit={() => router.push('/admin/devotions')}
+      />
     </section>
   );
 }

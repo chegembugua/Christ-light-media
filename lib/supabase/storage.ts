@@ -1,20 +1,54 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Uploads a file to a Supabase storage bucket.
- * Uses the server-side client to perform authenticated uploads.
- */
+function createStorageClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Storage is not configured. Add Supabase URL and service role key.');
+  }
+
+  return createClient(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  });
+}
+
+export function getSafeFileName(fileName: string): string {
+  const extension = fileName.includes('.') ? `.${fileName.split('.').pop()}` : '';
+  const baseName = extension ? fileName.slice(0, -extension.length) : fileName;
+
+  return `${baseName
+    .replace(/[^a-zA-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')}${extension.replace(/[^a-zA-Z0-9.]/g, '')}`;
+}
+
+export function getStoragePathFromUrl(urlOrPath: string, bucket: string): string {
+  if (!urlOrPath) return '';
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const markerIndex = urlOrPath.indexOf(marker);
+
+  if (markerIndex === -1) {
+    return urlOrPath;
+  }
+
+  return decodeURIComponent(urlOrPath.slice(markerIndex + marker.length));
+}
+
 export async function uploadFile(
   bucket: string,
   path: string,
   file: File
 ): Promise<{ url: string; error?: string }> {
   try {
-    const supabase = await createClient();
-    
-    const { error } = await supabase.storage.from(bucket).upload(path, file, {
-      upsert: true,
-      contentType: file.type,
+    const supabase = createStorageClient();
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    const { error } = await supabase.storage.from(bucket).upload(path, buffer, {
+      contentType: file.type || 'application/octet-stream',
+      upsert: false,
     });
 
     if (error) {
@@ -23,53 +57,30 @@ export async function uploadFile(
 
     const { data } = supabase.storage.from(bucket).getPublicUrl(path);
     return { url: data.publicUrl };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown upload error';
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Upload failed. Please try again.';
     return { url: '', error: message };
   }
 }
 
-/**
- * Extracts the storage object path from a Supabase public URL.
- */
-export function getStoragePathFromUrl(url: string, bucket: string): string {
-  if (!url) return '';
-  const parts = url.split(`/public/${bucket}/`);
-  return parts.length > 1 ? parts[1] : url;
-}
-
-/**
- * Deletes one or multiple files from a Supabase storage bucket.
- * Accepts full public URLs and automatically extracts the necessary internal paths.
- */
 export async function deleteFile(
   bucket: string,
-  paths: string | string[]
+  path: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createClient();
-    const urls = Array.isArray(paths) ? paths : [paths];
-    const extractedPaths = urls
-      .map(url => getStoragePathFromUrl(url, bucket))
-      .filter(Boolean);
-    
-    if (extractedPaths.length === 0) return { success: true };
-    
-    const { error } = await supabase.storage.from(bucket).remove(extractedPaths);
-    
+    const safePath = getStoragePathFromUrl(path, bucket);
+    if (!safePath) return { success: true };
+
+    const supabase = createStorageClient();
+    const { error } = await supabase.storage.from(bucket).remove([safePath]);
+
     if (error) {
       return { success: false, error: error.message };
     }
+
     return { success: true };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown delete error';
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unable to delete stored file.';
     return { success: false, error: message };
   }
-}
-
-/**
- * Sanitizes a filename, replacing all characters except alphanumeric, dashes, and dots with underscores.
- */
-export function getSafeFileName(fileName: string): string {
-  return fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
 }

@@ -5,12 +5,15 @@ import type { CreateDevotionInput, DevotionDTO, UpdateDevotionInput } from '../t
 function toDTO(row: {
   id: string;
   title: string;
-  verse: string | null;
+  verse: string;
   verseText: string | null;
-  reflection: string | null;
+  reflection: string;
   date: Date;
+  imageUrl: string | null;
   isPublished: boolean;
+  publishedAt: Date | null;
   createdAt: Date;
+  updatedAt: Date;
 }): DevotionDTO {
   return {
     id: row.id,
@@ -19,8 +22,11 @@ function toDTO(row: {
     verseText: row.verseText,
     reflection: row.reflection,
     date: row.date.toISOString(),
+    imageUrl: row.imageUrl,
     isPublished: row.isPublished,
+    publishedAt: row.publishedAt?.toISOString() ?? null,
     createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
   };
 }
 
@@ -46,11 +52,13 @@ export async function createDevotion(input: CreateDevotionInput): Promise<Devoti
   const row = await prisma.devotion.create({
     data: {
       title: input.title,
-      verse: input.verse ?? null,
+      verse: input.verse,
       verseText: input.verseText ?? null,
-      reflection: input.reflection ?? null,
-      date: input.date ? new Date(input.date) : new Date(),
+      reflection: input.reflection,
+      date: new Date(input.date),
+      imageUrl: input.imageUrl ?? null,
       isPublished: input.isPublished ?? false,
+      publishedAt: input.isPublished ? new Date() : null,
     },
   });
   return toDTO(row);
@@ -66,6 +74,7 @@ export async function updateDevotion(
   if (input.verseText !== undefined) data.verseText = input.verseText;
   if (input.reflection !== undefined) data.reflection = input.reflection;
   if (input.date !== undefined) data.date = new Date(input.date);
+  if (input.imageUrl !== undefined) data.imageUrl = input.imageUrl;
   if (input.isPublished !== undefined) data.isPublished = input.isPublished;
 
   const row = await prisma.devotion.update({ where: { id }, data });

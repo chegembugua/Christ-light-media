@@ -34,14 +34,14 @@ enum DonationType {
 // ─── User & Auth ─────────────────────────────────────────────────────────────
 
 model User {
-  id             String           @id @default(uuid())
-  email          String           @unique
+  id             String          @id @default(uuid())
+  email          String          @unique
   fullName       String?
-  role           Role             @default(USER)
+  role           Role            @default(USER)
   avatarUrl      String?
   bio            String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   prayerRequests PrayerRequest[]
   comments       Comment[]
   enrollments    Enrollment[]
@@ -54,20 +54,21 @@ model User {
 // ─── Media ───────────────────────────────────────────────────────────────────
 
 model Media {
-  id            String       @id @default(uuid())
+  id            String       @id @default(cuid())
   title         String
   description   String?
-  coverImage    String?
-  audioUrl      String?
+  speaker       String
+  coverImage    String
+  audioUrl      String
   videoUrl      String?
-  type          MediaType
-  category      String?
-  speaker       String?
+  type          String
+  category      String
   duration      String?
   playCount     Int          @default(0)
   isPublished   Boolean      @default(false)
   publishedAt   DateTime?
   createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   podcastShowId String?
   podcastShow   PodcastShow? @relation(fields: [podcastShowId], references: [id], onDelete: SetNull)
   comments      Comment[]
@@ -85,27 +86,36 @@ model PodcastShow {
 // ─── Devotions & News ────────────────────────────────────────────────────────
 
 model Devotion {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   title       String
-  verse       String?
+  verse       String
   verseText   String?  @db.Text
-  reflection  String?  @db.Text
-  date        DateTime @default(now())
+  reflection  String   @db.Text
+  date        DateTime
+  imageUrl    String?
   isPublished Boolean  @default(false)
+  publishedAt DateTime?
   createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([date])
 }
 
 model News {
-  id          String    @id @default(uuid())
+  id          String    @id @default(cuid())
   title       String
   slug        String    @unique
-  content     String?   @db.Text
-  excerpt     String?
-  coverImage  String?
-  category    String?
+  excerpt     String
+  content     String    @db.Text
+  coverImage  String
+  category    String
+  author      String?
   isPublished Boolean   @default(false)
+  isFeature   Boolean   @default(false)
+  viewCount   Int       @default(0)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 // ─── Community: Prayer ───────────────────────────────────────────────────────

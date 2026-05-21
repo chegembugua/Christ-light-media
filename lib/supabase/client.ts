@@ -13,6 +13,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+function isValidHttpUrl(value: string | undefined) {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
 function createNoopClient(): SupabaseClient {
   const noop = {
     auth: {
@@ -28,6 +38,8 @@ function createNoopClient(): SupabaseClient {
   return noop;
 }
 
-export const supabase: SupabaseClient = (supabaseUrl && supabaseAnonKey)
-  ? createBrowserClient(supabaseUrl, supabaseAnonKey)
+const hasValidConfig = isValidHttpUrl(supabaseUrl) && Boolean(supabaseAnonKey);
+
+export const supabase: SupabaseClient = hasValidConfig
+  ? createBrowserClient(supabaseUrl as string, supabaseAnonKey as string)
   : createNoopClient();

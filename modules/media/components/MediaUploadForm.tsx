@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import { MEDIA_TYPE_OPTIONS } from '../types';
-import type { MediaType } from '@prisma/client';
+import type { MediaType } from '../types';
 
 export function MediaUploadForm() {
   const router = useRouter();
