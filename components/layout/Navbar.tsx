@@ -31,6 +31,7 @@ export default function Navbar() {
     { name: 'Music', path: '/music' },
     { name: 'Radio', path: '/radio' },
     { name: 'News', path: '/news' },
+    { name: 'Prayer Wall', path: '/community/prayer' },
     { name: 'Community', path: '/community' },
   ];
 

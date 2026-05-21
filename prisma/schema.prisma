@@ -49,6 +49,7 @@ model User {
   notifications  Notification[]
   votes          PrayerVote[]
   movement       MovementMember?
+  messages       Message[]
 }
 
 // ─── Media ───────────────────────────────────────────────────────────────────
@@ -121,26 +122,30 @@ model News {
 // ─── Community: Prayer ───────────────────────────────────────────────────────
 
 model PrayerRequest {
-  id          String       @id @default(uuid())
-  title       String
-  content     String       @db.Text
-  category    String?
-  isAnswered  Boolean      @default(false)
-  isPublic    Boolean      @default(true)
-  prayerCount Int          @default(0)
-  userId      String
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt   DateTime     @default(now())
-  votes       PrayerVote[]
+  id            String       @id @default(cuid())
+  title         String
+  content       String       @db.Text
+  category      String?
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAnswered    Boolean      @default(false)
+  isAnonymous   Boolean      @default(false)
+  isPublished   Boolean      @default(true)
+  duration      String?
+  prayerCount   Int          @default(0)
+  viewCount     Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  prayerVotes   PrayerVote[]
 }
 
 model PrayerVote {
-  id              String        @id @default(uuid())
+  id              String        @id @default(cuid())
   userId          String
-  prayerRequestId String
-  createdAt       DateTime      @default(now())
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prayerRequestId String
   prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
 
   @@unique([userId, prayerRequestId])
 }
@@ -249,4 +254,27 @@ model RadioSchedule {
   endTime   String
   dayOfWeek Int
   isActive  Boolean @default(true)
+}
+
+// ─── Community: Chat ───────────────────────────────────────────────────────────
+
+model ChatRoom {
+  id          String       @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  messages    Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
