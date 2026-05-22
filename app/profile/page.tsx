@@ -1,687 +1,305 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen,
-  ExternalLink,
-  Plus,
+  Settings,
+  Heart,
   Trophy,
+  Zap,
+  Award,
   ChevronRight,
+  Plus,
   ArrowRight,
   Loader2,
   CheckCircle,
-  Heart,
+  Clock,
+  User,
+  Mail,
+  Calendar,
 } from 'lucide-react';
-import toast from 'react-hot-toast';
-import ProfileCard from '@/components/profile/ProfileCard';
-import ActivityFeed from '@/components/profile/ActivityFeed';
-import ProfileTabs from '@/components/profile/ProfileTabs';
+import { useAuth } from '@/context/AuthContext';
 
-/* ──────────────────────────────────────────────────
-   Types
-────────────────────────────────────────────────── */
-type PrayerItem = {
-  id: string;
-  title: string;
-  isAnswered: boolean;
-  prayerCount: number;
-  createdAt: string;
-};
-
-type ActiveChallenge = {
-  id: string;
-  daysCompleted: number[];
-  isCompleted: boolean;
-  challenge: {
-    title: string;
-    slug: string;
-    duration: number;
-    imageUrl: string | null;
-  };
-};
-
-type TestimonyItem = {
-  id: string;
-  title: string;
-  category: string;
-  createdAt: string;
-};
-
-type MovementMember = {
-  joinedAt: string;
-  challengeDay: number;
-  totalChallengesCompleted: number;
-};
-
-type Stats = {
-  prayersShared: number;
-  prayersAnswered: number;
-  challengeDays: number;
-};
-
-type ProfileUser = {
-  id: string;
-  email: string;
-  fullName: string | null;
-  role: string;
-  avatarUrl: string | null;
-  bio: string | null;
-  location: string | null;
-  createdAt: string;
-  movement: MovementMember | null;
-  stats: Stats;
-  recentPrayers: PrayerItem[];
-  activeEnrollment: ActiveChallenge | null;
-  challengeEnrollments: ActiveChallenge[];
-  recentTestimonies: TestimonyItem[];
-};
-
-type ActivityItem = {
-  id: string;
-  type: 'prayer_shared' | 'prayer_answered' | 'challenge_enrolled' | 'challenge_completed' | 'testimony_shared';
-  description: string;
-  timestamp: string;
-};
-
-/* ──────────────────────────────────────────────────
-   Constants
-────────────────────────────────────────────────── */
-const SAMPLE_ACTIVITIES: ActivityItem[] = [
-  {
-    id: 'act-1',
-    type: 'prayer_shared',
-    description: 'You shared a prayer request',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'act-2',
-    type: 'prayer_answered',
-    description: 'Your prayer was marked answered — breakthrough!',
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'act-3',
-    type: 'challenge_enrolled',
-    description: 'Started 21 Days of Prayer challenge',
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'act-4',
-    type: 'testimony_shared',
-    description: 'You shared a testimony',
-    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-];
-
-const SCRIPTURES = [
-  { reference: 'Jeremiah 29:11', text: 'For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.' },
-  { reference: 'Philippians 4:13', text: 'I can do all things through Christ who strengthens me.' },
-  { reference: 'Psalm 23:1', text: 'The Lord is my shepherd; I shall not want.' },
-  { reference: 'Proverbs 3:5–6', text: 'Trust in the Lord with all your heart and lean not on your own understanding.' },
-  { reference: 'Matthew 11:28', text: 'Come to me, all you who are weary and burdened, and I will give you rest.' },
-  { reference: 'Isaiah 41:10', text: 'Fear not, for I am with you; be not dismayed, for I am your God.' },
-];
-
-/* ──────────────────────────────────────────────────
-   Page
-────────────────────────────────────────────────── */
 export default function ProfilePage() {
-  const searchParams = useSearchParams();
-  const defaultTab =
-    (searchParams.get('tab') as 'overview' | 'prayers' | 'challenges' | 'saved' | 'activity') || 'overview';
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<ProfileUser | null>(null);
-
-  const loadProfile = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/profile');
-      const json = (await res.json().catch(() => ({}))) as { user?: ProfileUser };
-      setProfile(json.user ?? null);
-    } catch {
-      // silent
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<'overview' | 'prayers' | 'challenges' | 'saved'>('overview');
 
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="animate-spin text-[#C8A24A]" size={32} />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-bg-primary">
+        <Loader2 className="animate-spin text-gold mb-4" size={40} />
+        <p className="text-text-secondary animate-pulse">Entering your sanctuary...</p>
       </div>
     );
   }
 
-  if (!profile) return null;
+  if (!user) return null;
 
-  return (
-    <div className="container mx-auto max-w-7xl px-4 md:px-6 pt-28 pb-16">
-      {/* Breadcrumb */}
-      <p className="text-xs text-gray-600 tracking-widest uppercase mb-6">
-        <Link href="/" className="hover:text-[#C8A24A]">Home</Link>
-        {' / '}
-        <span className="text-gray-400">Profile</span>
-      </p>
-
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* ── LEFT SIDEBAR ────────────────────────────────────────────── */}
-        <aside className="lg:w-80 xl:w-88 shrink-0 lg:sticky lg:top-24 self-start">
-          <ProfileCard
-            user={profile}
-            movementMember={profile.movement}
-            prayersShared={profile.stats.prayersShared}
-            prayersAnswered={profile.stats.prayersAnswered}
-            challengeDays={profile.stats.challengeDays}
-            onEditClick={() => { window.location.href = '/profile/edit'; }}
-          />
-        </aside>
-
-        {/* ── RIGHT CONTENT ───────────────────────────────────────────── */}
-        <div className="flex-1 min-w-0 space-y-6">
-          {/* Tab bar */}
-          <div className="sticky top-[88px] z-20 bg-bg/80 backdrop-blur-lg py-4 -mx-4 md:-mx-6 px-4 md:px-6">
-            <ProfileTabs activeTab={activeTab} />
-          </div>
-
-          {/* Tab content */}
-          {activeTab === 'overview' && <OverviewTab user={profile} />}
-          {activeTab === 'prayers' && <PrayersTab />}
-          {activeTab === 'challenges' && <ChallengesTab profile={profile} />}
-          {activeTab === 'saved' && <SavedTab />}
-          {activeTab === 'activity' && (
-            <section className="space-y-4">
-              <h3 className="text-lg font-cinzel font-semibold text-white">
-                Activity Feed
-              </h3>
-              <ActivityFeed activities={SAMPLE_ACTIVITIES} />
-            </section>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   OVERVIEW TAB
-═══════════════════════════════════════════════════════════════════ */
-function OverviewTab({ user }: { user: ProfileUser }) {
-  const firstName = user.fullName
-    ? user.fullName.split(' ')[0]
-    : 'Believer';
-
-  const today = new Date();
-  const hours = today.getHours();
-  const greeting = hours < 12 ? 'Good morning' : hours < 17 ? 'Good afternoon' : 'Good evening';
-  const scripture = SCRIPTURES[today.getDate() % SCRIPTURES.length];
-
-  const achievements = [
-    { label: 'Prayers Shared', value: user.stats.prayersShared },
-    { label: 'Answered Prayers', value: user.stats.prayersAnswered },
-    { label: 'Challenge Days', value: user.stats.challengeDays },
-  ];
-
-  return (
-    <div className="space-y-8">
-      {/* Welcome */}
-      <div className="space-y-2">
-        <h2 className="text-2xl md:text-3xl font-cinzel font-bold text-white">
-          {greeting}, {firstName}
-        </h2>
-        <p className="text-gray-400 text-sm leading-relaxed">
-          Every step you take for Christ matters. Keep pressing forward in
-          faith — your journey has purpose.
-        </p>
-      </div>
-
-      {/* Daily Scripture */}
-      <div className="bg-gradient-to-r from-[#C8A24A]/[0.07] via-[#C8A24A]/[0.04] to-transparent border border-[#C8A24A]/20 rounded-2xl p-6">
-        <p className="text-[#C8A24A] text-sm font-semibold font-cinzel mb-2">
-          {scripture.reference}
-        </p>
-        <p className="text-gray-300 text-sm leading-relaxed italic">
-          &ldquo;{scripture.text}&rdquo;
-        </p>
-      </div>
-
-      {/* Active Challenge */}
-      {user.activeEnrollment && !user.activeEnrollment.isCompleted && (
-        <ActiveChallengeCard enrollment={user.activeEnrollment} />
-      )}
-
-      {(!user.activeEnrollment || user.activeEnrollment.isCompleted) && (
-        <NoActiveChallenge />
-      )}
-
-      {/* Recent Prayers */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-cinzel font-semibold text-white">
-            Recent Prayers
-          </h3>
-          <Link
-            href="/profile?tab=prayers"
-            className="flex items-center gap-1 text-xs text-[#C8A24A] hover:text-[#C8A24A]/80"
-          >
-            View All <ChevronRight size={12} />
-          </Link>
-        </div>
-
-        {user.recentPrayers.length === 0 ? (
-          <p className="text-gray-500 text-sm">No prayers submitted yet.</p>
-        ) : (
-          <div className="space-y-3">
-            {user.recentPrayers.map((p) => (
-              <div
-                key={p.id}
-                className="bg-card border border-white/10 rounded-xl p-4 flex items-center justify-between gap-4"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-white truncate">
-                    {p.title}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {new Date(p.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </p>
-                </div>
-                <span
-                  className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${
-                    p.isAnswered
-                      ? 'bg-green-500/15 text-green-400'
-                      : 'bg-[#C8A24A]/15 text-[#C8A24A]'
-                  }`}
-                >
-                  {p.isAnswered ? 'Answered' : 'Open'}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* Activity Feed */}
-      <section className="space-y-4">
-        <h3 className="text-lg font-cinzel font-semibold text-white">
-          Recent Activity
-        </h3>
-        <ActivityFeed activities={SAMPLE_ACTIVITIES} />
-      </section>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   PRAYERS TAB
-═══════════════════════════════════════════════════════════════════ */
-function PrayersTab() {
-  const [prayers, setPrayers] = useState<PrayerItem[]>([]);
-  const [filter, setFilter] = useState<'all' | 'open' | 'answered'>('all');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/api/profile')
-      .then((r) => r.ok ? r.json() : { user: null })
-      .then((j) => {
-        if (j.user?.recentPrayers) setPrayers(j.user.recentPrayers);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  const filtered =
-    filter === 'all' ? prayers : filter === 'open' ? prayers.filter((p) => !p.isAnswered) : prayers.filter((p) => p.isAnswered);
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-cinzel font-semibold text-white">
-          My Prayer Requests
-        </h3>
-        <Link
-          href="/community/prayer"
-          className="flex items-center gap-2 text-xs text-[#C8A24A] hover:underline"
-        >
-          <Plus size={14} /> Share a Prayer
-        </Link>
-      </div>
-
-      <div className="flex gap-2">
-        {(['all', 'open', 'answered'] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all ${
-              filter === f
-                ? 'bg-[#C8A24A] text-black'
-                : 'bg-surface text-gray-400 hover:text-white'
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="animate-spin text-[#C8A24A]" size={28} />
-        </div>
-      ) : prayers.length === 0 ? (
-        <EmptyState label="No prayers submitted yet." linkLabel="Share a Prayer Request" linkHref="/community/prayer" />
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((p) => (
-            <div key={p.id} className="bg-card border border-white/10 rounded-xl p-4 flex flex-col gap-3">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white">{p.title}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(p.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </p>
-                </div>
-                <span
-                  className={`shrink-0 text-xs font-semibold px-3 py-1 rounded-full ${
-                    p.isAnswered
-                      ? 'bg-green-500/15 text-green-400'
-                      : 'bg-[#C8A24A]/15 text-[#C8A24A]'
-                  }`}
-                >
-                  {p.isAnswered ? 'Answered ✓' : 'Open'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                <p className="text-xs text-gray-500">
-                  <span className="text-[#C8A24A]">♥</span>{' '}
-                  {p.prayerCount} people prayed
-                </p>
-                <Link href={`/community/prayer`} className="text-xs text-gray-400 hover:text-[#C8A24A]">
-                  View
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <Link
-        href="/community/prayer"
-        className="flex items-center justify-center gap-2 border border-[#C8A24A]/40 text-[#C8A24A] hover:bg-[#C8A24A]/10 rounded-xl py-3 font-semibold text-sm transition-colors"
-      >
-        <Plus size={16} />
-        Share a Prayer Request
-      </Link>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   CHALLENGES TAB
-═══════════════════════════════════════════════════════════════════ */
-function ChallengesTab({ profile }: { profile: ProfileUser }) {
-  const activeBlock = profile.activeEnrollment && !profile.activeEnrollment.isCompleted;
-  return (
-    <div className="space-y-6">
-      <h3 className="text-xl font-cinzel font-semibold text-white">
-        My Challenges
-      </h3>
-
-      {activeBlock ? (
-        <ActiveChallengeCard enrollment={profile.activeEnrollment!} />
-      ) : (
-        <NoActiveChallenge />
-      )}
-
-      {profile.movement && profile.movement.totalChallengesCompleted > 0 && (
-        <div className="bg-surface/50 border border-white/5 rounded-xl p-4 text-sm text-gray-400">
-          You&apos;ve completed{' '}
-          <span className="text-[#C8A24A] font-semibold">
-            {profile.movement.totalChallengesCompleted}
-          </span>{' '}
-          challenge{profile.movement.totalChallengesCompleted !== 1 ? 's' : ''}.
-        </div>
-      )}
-
-      <Link
-        href="/movement"
-        className="flex items-center gap-2 justify-center border border-white/10 text-gray-300 hover:text-white hover:border-[#C8A24A]/40 rounded-xl py-3 font-semibold text-sm transition-colors"
-      >
-        Browse All Challenges <ChevronRight size={16} />
-      </Link>
-    </div>
-  );
-}
-
-function ActiveChallengeCard({
-  enrollment,
-}: {
-  enrollment: ActiveChallenge;
-}) {
-  const progress = enrollment.daysCompleted.length;
-  const total = enrollment.challenge.duration;
-  const pct = Math.round((progress / total) * 100);
-
-  return (
-    <div className="bg-card border border-white/10 rounded-2xl overflow-hidden">
-      {enrollment.challenge.imageUrl && (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={enrollment.challenge.imageUrl}
-          alt={enrollment.challenge.title}
-          className="w-full h-40 object-cover"
-        />
-      )}
-      <div className="p-5 space-y-4">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-cinzel font-semibold text-white">
-              {enrollment.challenge.title}
-            </h3>
-            <p className="text-sm text-gray-400 mt-0.5">
-              Day {progress} / {total}
-            </p>
-          </div>
-          <Trophy className="text-[#C8A24A]" size={24} />
-        </div>
-
-        <div className="h-2 bg-surface rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-[#C8A24A] to-amber-500 rounded-full transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <p className="text-xs text-gray-500">{pct}% complete</p>
-
-        <div className="grid grid-cols-7 gap-1.5">
-          {Array.from({ length: total }).map((_, i) => (
-            <div
-              key={i}
-              className={`h-7 rounded-md text-[10px] flex items-center justify-center font-semibold ${
-                enrollment.daysCompleted.includes(i + 1)
-                  ? 'bg-[#C8A24A]/20 text-[#C8A24A] border border-[#C8A24A]/30'
-                  : 'bg-surface text-gray-600 border border-white/5'
-              }`}
-            >
-              {enrollment.daysCompleted.includes(i + 1) ? <CheckCircle size={10} /> : i + 1}
-            </div>
-          ))}
-        </div>
-
-        <Link
-          href={`/movement/challenges/${enrollment.challenge.slug}`}
-          className="block text-center bg-gradient-to-r from-[#C8A24A] to-amber-600 text-black font-semibold py-2.5 rounded-xl transition-all hover:opacity-90 text-sm"
-        >
-          Mark Today as Complete
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function NoActiveChallenge() {
-  return (
-    <div className="bg-surface border border-white/10 rounded-2xl p-8 text-center">
-      <BookOpen className="mx-auto text-gray-600 mb-3" size={32} />
-      <p className="text-gray-400 text-sm">No active challenges.</p>
-      <Link
-        href="/movement"
-        className="inline-flex items-center gap-1 mt-3 text-[#C8A24A] text-sm hover:underline"
-      >
-        View all challenges <ChevronRight size={14} />
-      </Link>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   SAVED TAB
-═══════════════════════════════════════════════════════════════════ */
-function SavedTab() {
-  const [savedType, setSavedType] = useState<
-    'devotions' | 'sermons' | 'music' | 'articles'
-  >('devotions');
-  const [items, setItems] = useState<unknown[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(`/api/profile/saved-content?type=${savedType}&limit=20`)
-      .then((r) => r.ok ? r.json() : { items: [] })
-      .then((j) => setItems((j.items ?? []).map((it: Record<string, unknown>) => {
-        if (savedType === 'devotions') return { ...it, _typeId: (it.devotion as Record<string, unknown>)?.id };
-        if (savedType === 'sermons') return { ...it, _typeId: (it.media as Record<string, unknown>)?.id };
-        if (savedType === 'music') return { ...it, _typeId: (it.media as Record<string, unknown>)?.id };
-        return { ...it, _typeId: (it.news as Record<string, unknown>)?.id };
-      })))
-      .finally(() => setLoading(false));
-  }, [savedType]);
-
-  const removeSaved = async (contentId: string) => {
-    await fetch('/api/profile/saved-content', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contentType: savedType, contentId }),
-    });
-    setItems((prev) =>
-      prev.filter((it) => {
-        const record = it as Record<string, unknown>;
-        const section = record[savedType] as Record<string, unknown> | undefined;
-        return section?.id !== contentId;
-      })
-    );
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  const typeLabel = savedType === 'devotions' ? 'Devotions' : savedType.charAt(0).toUpperCase() + savedType.slice(1);
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-cinzel font-semibold text-white">
-        Saved Content
-      </h3>
-
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        {(['devotions', 'sermons', 'music', 'articles'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setSavedType(t)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
-              savedType === t
-                ? 'bg-gradient-to-r from-[#C8A24A] to-amber-600 text-black'
-                : 'bg-surface text-gray-400 hover:text-white'
-            }`}
-          >
-            {t === 'devotions'
-              ? 'Devotions'
-              : t.charAt(0).toUpperCase() + t.slice(1)}
-          </button>
-        ))}
+    <main className="min-h-screen bg-bg-primary pt-28 pb-20">
+      {/* Background Ambience */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-gold/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-gold/5 blur-[100px] rounded-full" />
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="animate-spin text-[#C8A24A]" size={28} />
-        </div>
-      ) : items.length === 0 ? (
-        <EmptyState
-          label={`No saved ${typeLabel.toLowerCase()} yet.`}
-          linkLabel={`Discover ${typeLabel}`}
-          linkHref={savedType === 'devotions' ? '/devotions' : savedType === 'music' ? '/music' : savedType === 'sermons' ? '/sermons' : '/news'}
-        />
-      ) : (
-        <div className="space-y-3">
-          {items.map((item) => {
-            const record = item as Record<string, unknown>;
-            const devotion = record.devotion as Record<string, unknown> | undefined;
-            const media = record.media as Record<string, unknown> | undefined;
-            const news = record.news as Record<string, unknown> | undefined;
-            const title = devotion?.title ?? media?.title ?? news?.title ?? 'Untitled';
-            const image = devotion?.imageUrl ?? media?.coverImage ?? news?.coverImage ?? '';
-            const contentId = devotion?.id ?? media?.id ?? news?.id;
-            return (
-              <div key={String(record.id)} className="bg-card border border-white/10 rounded-xl p-4 flex items-center gap-4">
-                {image ? (
-                  <div className="w-14 h-14 rounded-lg bg-surface overflow-hidden shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={String(image)} alt="" className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="w-14 h-14 rounded-lg bg-surface shrink-0 flex items-center justify-center">
-                    <BookOpen size={16} className="text-gray-600" />
-                  </div>
-                )}
-                <p className="flex-1 text-sm font-medium text-white truncate">
-                  {String(title)}
-                </p>
-                <button
-                  onClick={() => removeSaved(String(contentId))}
-                  className="shrink-0 text-xs text-red-400 hover:text-red-300 transition-colors"
-                >
-                  Remove
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
+      <div className="container mx-auto px-6 relative z-10">
+        
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-12"
+        >
+          <p className="text-gold text-xs font-bold tracking-[0.2em] uppercase mb-3">Faith Journey</p>
+          <h1 className="text-4xl md:text-5xl font-bold">
+            Welcome, <span className="text-gradient">{user.fullName?.split(' ')[0]}</span>
+          </h1>
+        </motion.div>
 
-/* ──────────────────────────────────────────────────
-   SHARED COMPONENTS
-────────────────────────────────────────────────── */
-function EmptyState({
-  label,
-  linkLabel,
-  linkHref,
-}: {
-  label: string;
-  linkLabel: string;
-  linkHref: string;
-}) {
-  return (
-    <div className="bg-surface border border-white/10 rounded-2xl p-8 text-center">
-      <BookOpen className="mx-auto text-gray-600 mb-3" size={32} />
-      <p className="text-gray-400 text-sm">{label}</p>
-      <Link
-        href={linkHref}
-        className="inline-flex items-center gap-1 mt-3 text-[#C8A24A] text-sm hover:underline"
-      >
-        {linkLabel} <ArrowRight size={14} />
-      </Link>
-    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* LEFT COLUMN: Profile Info & Navigation */}
+          <div className="lg:col-span-4 space-y-8">
+            
+            {/* Main Profile Card */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card-premium text-center"
+            >
+              <div className="relative w-28 h-28 mx-auto mb-6 group">
+                <div className="absolute inset-0 bg-gold/20 rounded-full blur-md group-hover:bg-gold/40 transition-all" />
+                <div className="relative w-full h-full rounded-full border-2 border-gold/30 overflow-hidden bg-bg-secondary flex items-center justify-center">
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt={user.fullName || ''} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="text-gold" size={40} />
+                  )}
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-semibold mb-2">{user.fullName}</h2>
+              <div className="flex items-center justify-center gap-2 text-text-tertiary text-sm mb-6">
+                <Mail size={14} />
+                <span>{user.email}</span>
+              </div>
+
+              {user.bio && (
+                <p className="text-text-secondary text-sm italic mb-8 leading-relaxed px-4">
+                  &ldquo;{user.bio}&rdquo;
+                </p>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <Link href="/profile/edit" className="w-full">
+                  <button className="btn-base btn-gold w-full text-sm py-2.5">Edit Profile</button>
+                </Link>
+                <Link href="/profile/settings" className="w-full">
+                  <button className="btn-base btn-outline w-full text-sm py-2.5">
+                    <Settings size={16} />
+                  </button>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Navigation Tabs (Desktop) */}
+            <div className="hidden lg:block space-y-2">
+              {[
+                { id: 'overview', label: 'Overview', icon: <Zap size={18} /> },
+                { id: 'prayers', label: 'My Prayers', icon: <Heart size={18} /> },
+                { id: 'challenges', label: 'Challenges', icon: <Award size={18} /> },
+                { id: 'saved', label: 'Saved Content', icon: <BookOpen size={18} /> },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`w-full flex items-center justify-between px-6 py-4 rounded-xl transition-all ${
+                    activeTab === tab.id 
+                    ? 'bg-gold/10 text-gold border border-gold/20' 
+                    : 'text-text-secondary hover:bg-white/5 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {tab.icon}
+                    <span className="font-medium">{tab.label}</span>
+                  </div>
+                  {activeTab === tab.id && <motion.div layoutId="activeDot" className="w-1.5 h-1.5 bg-gold rounded-full" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT COLUMN: Tab Content */}
+          <div className="lg:col-span-8">
+            <AnimatePresence mode="wait">
+              {activeTab === 'overview' && (
+                <motion.div
+                  key="overview"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{ opacity: 0, y: 10 }}
+                  className="space-y-8"
+                >
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {[
+                      { label: 'Prayers Shared', value: '12', icon: <Heart className="text-red-400" /> },
+                      { label: 'Days in Christ', value: '48', icon: <Clock className="text-blue-400" /> },
+                      { label: 'Milestones', value: '05', icon: <Trophy className="text-gold" /> },
+                    ].map((stat, i) => (
+                      <motion.div key={i} variants={itemVariants} className="glass rounded-2xl p-6 gold-glow-sm">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-text-tertiary text-xs font-bold uppercase tracking-wider">{stat.label}</span>
+                          {stat.icon}
+                        </div>
+                        <p className="text-4xl font-bold font-cinzel">{stat.value}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Active Challenge Spotlight */}
+                  <motion.div variants={itemVariants} className="card-premium group">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                      <div className="space-y-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 text-gold text-[10px] font-bold tracking-tighter uppercase border border-gold/20">
+                          <Zap size={10} className="fill-gold" /> Active Pursuit
+                        </div>
+                        <h3 className="text-xl font-semibold">21 Days of Radical Faith</h3>
+                        <p className="text-text-secondary text-sm">Day 14 of 21 — You&apos;re doing incredible.</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-3">
+                        <div className="text-right">
+                          <span className="text-2xl font-bold text-gold">67%</span>
+                          <p className="text-[10px] text-text-tertiary">COMPLETION</p>
+                        </div>
+                        <Link href="/movement/challenges/radical-faith">
+                          <button className="btn-base btn-gold py-2 px-6 text-sm">Continue Journey</button>
+                        </Link>
+                      </div>
+                    </div>
+                    <div className="mt-6 h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }} 
+                        animate={{ width: '67%' }} 
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="h-full bg-gradient-to-r from-gold to-gold-light" 
+                      />
+                    </div>
+                  </motion.div>
+
+                  {/* Recent Activity Timeline */}
+                  <motion.section variants={itemVariants} className="space-y-6">
+                    <h3 className="text-xl font-cinzel font-semibold">Spiritual Footprints</h3>
+                    <div className="space-y-4">
+                      {[
+                        { type: 'prayer', title: 'Shared a Prayer Request', detail: 'Healing for the broken-hearted', time: '2 hours ago' },
+                        { type: 'milestone', title: 'Earned Milestone: Seed Sower', detail: 'Completed your 10th devotion', time: 'Yesterday' },
+                        { type: 'answered', title: 'Marked Prayer as Answered', detail: 'Financial breakthrough testimony', time: '3 days ago' },
+                      ].map((activity, i) => (
+                        <div key={i} className="flex gap-4 group">
+                          <div className="flex flex-col items-center">
+                            <div className="w-3 h-3 rounded-full bg-gold/50 ring-4 ring-gold/10 group-hover:scale-125 transition-transform" />
+                            {i !== 2 && <div className="w-[1px] h-full bg-white/10 mt-2" />}
+                          </div>
+                          <div className="pb-6">
+                            <h4 className="text-sm font-semibold text-white">{activity.title}</h4>
+                            <p className="text-xs text-text-secondary mt-1">{activity.detail}</p>
+                            <span className="text-[10px] text-text-tertiary mt-2 block uppercase tracking-widest">{activity.time}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.section>
+                </motion.div>
+              )}
+
+              {activeTab === 'prayers' && (
+                <motion.div
+                  key="prayers"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-cinzel font-semibold">My Prayer Wall</h3>
+                    <Link href="/community/prayer/new" className="btn-base btn-gold text-xs py-2">
+                      <Plus size={14} /> New Request
+                    </Link>
+                  </div>
+                  {[1, 2, 3].map((_, i) => (
+                    <div key={i} className="card-premium hover:border-gold/30 transition-all cursor-pointer">
+                      <div className="flex justify-between items-start mb-4">
+                        <h4 className="font-semibold text-lg">Strength for the new season</h4>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${i === 1 ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-gold/10 text-gold border border-gold/20'}`}>
+                          {i === 1 ? 'ANSWERED' : 'OPEN'}
+                        </span>
+                      </div>
+                      <p className="text-text-secondary text-sm mb-4 line-clamp-2">
+                        Lord, I pray for clarity and divine wisdom as I step into this new professional role you have provided...
+                      </p>
+                      <div className="flex items-center gap-4 text-[10px] text-text-tertiary font-bold tracking-widest">
+                        <span className="flex items-center gap-1.5"><Heart size={12} className="fill-gold text-gold" /> 42 PRAYING</span>
+                        <span className="flex items-center gap-1.5"><Calendar size={12} /> AUG 24, 2024</span>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Challenges & Saved tabs would follow a similar premium layout */}
+              {activeTab === 'challenges' && (
+                <motion.div key="challenges" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="text-center py-20 glass rounded-3xl">
+                  <Award size={48} className="mx-auto text-gold/30 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No Other Active Challenges</h3>
+                  <p className="text-text-secondary text-sm mb-8">Ready to grow further? Explore new spiritual pursuits.</p>
+                  <Link href="/movement" className="btn-base btn-gold px-8 py-3">Browse All Challenges</Link>
+                </motion.div>
+              )}
+
+              {activeTab === 'saved' && (
+                <motion.div key="saved" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  {[1, 2, 3, 4].map((_, i) => (
+                    <div key={i} className="group relative rounded-2xl overflow-hidden glass border-white/5 hover:border-gold/20 transition-all">
+                      <div className="aspect-video bg-bg-secondary overflow-hidden">
+                        <div className="w-full h-full bg-gradient-to-br from-gold/10 to-transparent group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <div className="p-4">
+                        <span className="text-[10px] text-gold font-bold tracking-widest uppercase mb-1 block">Article</span>
+                        <h4 className="font-semibold text-white group-hover:text-gold transition-colors">The Theology of Light</h4>
+                        <button className="mt-3 text-[10px] text-text-tertiary flex items-center gap-1 hover:text-red-400 transition-colors">
+                          REMOVE FROM SAVED
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }

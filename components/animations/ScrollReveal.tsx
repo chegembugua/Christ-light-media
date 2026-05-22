@@ -5,6 +5,7 @@ import { useEffect, useRef, useCallback, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
+  animation?: 'fade-up' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'scale-in';
   direction?: 'up' | 'down' | 'left' | 'right';
   delay?: number;
   threshold?: number;
@@ -18,14 +19,25 @@ const DIRECTION_MAP: Record<string, { base: string; visible: string }> = {
   right: { base: '-translate-x-7 opacity-0', visible: 'translate-x-0  opacity-100' },
 };
 
+const ANIMATION_MAP: Record<string, { base: string; visible: string }> = {
+  'fade-up':    { base: 'translate-y-7 opacity-0', visible: 'translate-y-0  opacity-100' },
+  'slide-up':   { base: 'translate-y-7 opacity-0', visible: 'translate-y-0  opacity-100' },
+  'slide-down': { base: '-translate-y-7 opacity-0', visible: 'translate-y-0  opacity-100' },
+  'slide-left': { base: 'translate-x-7 opacity-0', visible: 'translate-x-0  opacity-100' },
+  'slide-right':{ base: '-translate-x-7 opacity-0', visible: 'translate-x-0  opacity-100' },
+  'scale-in':   { base: 'scale-95 opacity-0', visible: 'scale-100 opacity-100' },
+};
+
 export default function ScrollReveal({
   children,
+  animation,
   direction = 'up',
   delay = 0,
   threshold = 0.15,
   className,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -33,7 +45,7 @@ export default function ScrollReveal({
         if (entry.isIntersecting) {
           (entry.target as HTMLElement).style.transitionDelay = `${delay}ms`;
           (entry.target as HTMLElement).classList.add('sr-visible');
-          observer.unobserve(entry.target);
+          observerRef.current?.unobserve(entry.target);
         }
       });
     },
@@ -43,23 +55,23 @@ export default function ScrollReveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const observer = new IntersectionObserver(handleIntersect, {
+    observerRef.current = new IntersectionObserver(handleIntersect, {
       threshold,
       rootMargin: '0px 0px -40px 0px',
     });
-    observer.observe(el);
-    return () => observer.disconnect();
+    observerRef.current.observe(el);
+    return () => observerRef.current?.disconnect();
   }, [handleIntersect, threshold]);
 
-  const dir = DIRECTION_MAP[direction];
+  const anim = animation ? ANIMATION_MAP[animation] : DIRECTION_MAP[direction];
 
   return (
     <div
       ref={ref}
       className={`
         transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)
-        ${dir.base}
-        sr-visible:${dir.visible}
+        ${anim.base}
+        sr-visible:${anim.visible}
         ${className ?? ''}
       `}
     >
@@ -67,6 +79,3 @@ export default function ScrollReveal({
     </div>
   );
 }
-
-/* Re-export as named export for compatibility */
-export { default as ScrollRevealComponent } from './ScrollReveal';

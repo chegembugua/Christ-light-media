@@ -15,6 +15,7 @@ export default function StaggerContainer({
   className,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
@@ -26,7 +27,7 @@ export default function StaggerContainer({
             child.style.transitionDelay = `${i * staggerDelay}ms`;
             child.classList.add('stagger-visible');
           });
-          observer.unobserve(entry.target);
+          observerRef.current?.unobserve(entry.target);
         }
       });
     },
@@ -36,12 +37,12 @@ export default function StaggerContainer({
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(handleIntersect, {
+    observerRef.current = new IntersectionObserver(handleIntersect, {
       threshold: 0.05,
       rootMargin: '0px 0px -30px 0px',
     });
-    observer.observe(el);
-    return () => observer.disconnect();
+    observerRef.current.observe(el);
+    return () => observerRef.current?.disconnect();
   }, [handleIntersect]);
 
   return (

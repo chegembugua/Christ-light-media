@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import ScrollReveal from '@/components/animations/ScrollReveal';
+import Link from 'next/link';
 import {
   Bell,
   Shield,
@@ -41,6 +44,7 @@ const INITIAL_SETTINGS: SettingsState = {
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { user, logout, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -48,6 +52,12 @@ export default function SettingsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
 
    useEffect(() => {
     fetch('/api/profile')
@@ -108,6 +118,13 @@ export default function SettingsPage() {
       toast.error('Failed to save settings');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (confirm('Are you sure you want to sign out?')) {
+      await logout();
+      router.push('/');
     }
   };
 
@@ -375,13 +392,13 @@ function SettingToggle({
       <button
         type="button"
         onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
-          checked ? 'bg-[#C8A24A]' : 'bg-white/10'
+        className={`relative w-12 h-6 rounded-full transition-all duration-300 shrink-0 ${
+          checked ? 'bg-gold shadow-[0_0_10px_rgba(200,162,74,0.4)]' : 'bg-white/10'
         }`}
       >
         <span
-          className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transition-transform ${
-            checked ? 'left-6' : 'left-1'
+          className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300 ${
+            checked ? 'left-7 scale-110' : 'left-1 scale-100'
           }`}
         />
       </button>
@@ -400,9 +417,12 @@ function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={onClose} />
       {/* Card */}
       <div className="relative bg-card border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-        {children}
+        <div className="relative bg-bg-tertiary border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-scale-in">
+          {children}
+        </div>
       </div>
     </div>
   );

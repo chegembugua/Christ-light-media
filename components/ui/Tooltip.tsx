@@ -56,12 +56,12 @@ export default function Tooltip({
             aria-hidden="true"
             className="absolute z-50 h-2 w-2 rotate-45 bg-[#1E1E1E] border-[rgba(200,162,74,0.25)]"
             style={{
-              [side === 'top' ? 'bottom' : 'bottom']: '-4px',
-              [side === 'top' ? 'left' : 'left']: '50%',
-              [side === 'top' ? 'left' : 'left']: 'calc(50% - 5px)',
-              borderTopWidth:    side === 'bottom' ? '1px' : '0',
-              borderBottomWidth: side === 'top'    ? '1px' : '0',
-              borderLeftWidth:   side === 'right'  ? '1px' : '0',
+              [side === 'top' ? 'bottom' : 'top']: '-4px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              borderTopWidth: side === 'bottom' ? '1px' : '0',
+              borderBottomWidth: side === 'top' ? '1px' : '0',
+              borderLeftWidth: side === 'right' ? '1px' : '0',
               borderRightWidth:  side === 'left'   ? '1px' : '0',
               borderStyle: 'solid',
               borderColor:
