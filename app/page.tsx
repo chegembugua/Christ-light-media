@@ -1,227 +1,517 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Play, BookOpen, Music, Radio, Mic, ChevronRight, Heart, Users, MessageSquare } from "lucide-react";
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import ScrollReveal from "@/components/animations/ScrollReveal";
-import StaggerContainer from "@/components/animations/StaggerContainer";
+import Link from 'next/link';
+import Image from 'next/image';
+import {
+  Play, BookOpen, Music, Radio, Mic,
+  ChevronRight, Heart, Users, MessageSquare,
+  Flame, ArrowRight, Star, Zap,
+} from 'lucide-react';
+import ScrollReveal from '@/components/animations/ScrollReveal';
+import StaggerContainer from '@/components/animations/StaggerContainer';
+
+/* ─── Static data ─────────────────────────────────────────────────────────── */
+const OFFERINGS = [
+  { title: 'Sermons',        icon: Play,     desc: 'Powerful messages from anointed teachers.',  color: '#3B82F6', href: '/sermons' },
+  { title: 'Podcasts',       icon: Mic,      desc: 'Faith conversations for daily growth.',       color: '#C8A24A', href: '/podcasts' },
+  { title: 'Worship Music',  icon: Music,    desc: 'Worship that transcends the ordinary.',       color: '#A855F7', href: '/music' },
+  { title: 'Devotions',      icon: BookOpen, desc: 'Brief, powerful insights for your walk.',     color: '#22C55E', href: '/devotions' },
+  { title: 'Live Radio',     icon: Radio,    desc: 'Continuous stream of faith and truth.',       color: '#EF4444', href: '/radio' },
+  { title: 'Community',      icon: Users,    desc: 'Prayer wall, chat, and impact stories.',      color: '#F97316', href: '/community' },
+];
+
+const STATS = [
+  { value: '25k+', label: 'Lives Impacted',     icon: Heart },
+  { value: '8.4k', label: 'Community Members',  icon: Users },
+  { value: '1.2k', label: 'Prayer Requests',    icon: MessageSquare },
+  { value: '480+', label: 'Episodes Released',  icon: Mic },
+];
+
+const TESTIMONIALS = [
+  {
+    text: "The 'Rooted in Grace' series completely shifted my perspective on God's love. I've never felt so free from performance anxiety in my faith.",
+    author: 'Sarah Jenkins', role: 'Community Member', initial: 'S',
+  },
+  {
+    text: 'I tune in to Christ Light Radio every morning on my commute. It sets the tone for my entire day and keeps me anchored in truth.',
+    author: 'Michael T.', role: 'Daily Listener', initial: 'M',
+  },
+  {
+    text: 'The prayer wall is my favorite feature. Knowing that believers around the world are standing with me in prayer is incredibly comforting.',
+    author: 'Elena Rodriguez', role: 'Movement Partner', initial: 'E',
+  },
+];
 
 export default function Home() {
   return (
     <div className="relative overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative min-h-[75vh] overflow-hidden pt-20">
+
+      {/* ══════════════════════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Background image */}
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073"
-            alt="Hero Background"
+            alt="Hero — worship gathering"
             fill
-            className="object-cover object-center opacity-30 grayscale"
+            className="object-cover object-center opacity-20"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#0A0A0A]/70 via-[#0A0A0A]/95 to-[#0A0A0A]" />
+          {/* Multi-layer gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/60 via-[#0A0A0A]/80 to-[#0A0A0A]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/70 via-transparent to-[#0A0A0A]/40" />
         </div>
 
-        <div className="container mx-auto max-w-6xl px-6 relative z-10">
-          <ScrollReveal>
-            <div className="rounded-[2rem] border border-white/10 bg-black/40 backdrop-blur-2xl p-10 md:p-14 shadow-2xl shadow-black/40">
-              <div className="flex flex-col lg:flex-row lg:items-center gap-10">
-                <div className="max-w-2xl">
-                  <p className="text-gold tracking-[0.35em] uppercase text-sm mb-4 font-semibold">BEYOND THE LIGHT</p>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-cinzel font-bold mb-6 leading-tight text-white">
-                    Professional Christian media built for modern ministry.
-                  </h1>
-                  <p className="text-gray-300 max-w-xl text-base md:text-lg leading-relaxed mb-8">
-                    Experience sermons, podcasts, worship, and devotional resources with a premium digital feel — designed to help your community connect, grow, and thrive.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/sermons" className="inline-block">
-                      <Button variant="gold" size="lg" className="px-8">Explore Sermons</Button>
-                    </Link>
-                    <Link href="/movement" className="inline-block">
-                      <Button variant="ghost" size="lg" className="px-8">Join the Movement</Button>
-                    </Link>
-                  </div>
-                </div>
+        {/* Gold radial glow */}
+        <div
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none z-0"
+          style={{ background: 'radial-gradient(ellipse at top, rgba(200,162,74,0.1) 0%, transparent 65%)' }}
+        />
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {[
-                    { title: 'Live Worship', subtitle: '24/7 station with curated praise.', icon: Music },
-                    { title: 'Daily Devotions', subtitle: 'Brief, powerful scripture reflections.', icon: BookOpen },
-                    { title: 'Community', subtitle: 'Prayer wall, chat, and impact stories.', icon: Users },
-                  ].map((item, index) => (
-                    <Card key={index} variant="compact" className="border-white/10 bg-white/5">
-                      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gold/10 text-gold mb-4">
-                        <item.icon size={22} />
-                      </div>
-                      <h3 className="font-semibold text-white text-lg mb-2">{item.title}</h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">{item.subtitle}</p>
-                    </Card>
+        {/* Floating orbs */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full pointer-events-none z-0 animate-divineGlow"
+          style={{ background: 'rgba(200,162,74,0.04)', filter: 'blur(80px)' }} />
+        <div className="absolute bottom-1/3 left-1/5 w-48 h-48 rounded-full pointer-events-none z-0 animate-divineGlow"
+          style={{ background: 'rgba(168,85,247,0.04)', filter: 'blur(60px)', animationDelay: '3s' }} />
+
+        <div className="container mx-auto max-w-6xl px-6 relative z-10 pt-32 pb-20">
+          <div className="max-w-4xl">
+            {/* Eyebrow */}
+            <ScrollReveal>
+              <div className="inline-flex items-center gap-2 mb-8">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                  style={{ background: 'rgba(200,162,74,0.1)', border: '1px solid rgba(200,162,74,0.2)', color: '#C8A24A' }}>
+                  <Zap size={11} className="fill-gold" />
+                  Premium Christian Media Platform
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Headline */}
+            <ScrollReveal delay={100}>
+              <h1 className="font-cinzel font-bold text-white mb-6 leading-[1.08]"
+                style={{ fontSize: 'clamp(2.4rem, 6vw, 4.5rem)', letterSpacing: '-0.02em' }}>
+                Where Faith Meets{' '}
+                <span className="text-shine">World-Class</span>{' '}
+                Media
+              </h1>
+            </ScrollReveal>
+
+            {/* Sub */}
+            <ScrollReveal delay={200}>
+              <p className="text-white/55 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl font-inter">
+                Sermons, podcasts, worship, and devotional resources — crafted for believers who refuse to settle for ordinary. Join a global community growing in radical faith.
+              </p>
+            </ScrollReveal>
+
+            {/* CTAs */}
+            <ScrollReveal delay={300}>
+              <div className="flex flex-col sm:flex-row gap-4 mb-16">
+                <Link href="/sermons">
+                  <button
+                    className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-semibold text-black text-base transition-all hover:scale-105 active:scale-95"
+                    style={{
+                      background: 'linear-gradient(135deg, #C8A24A 0%, #E6D5A8 50%, #B38A3D 100%)',
+                      boxShadow: '0 0 30px rgba(200,162,74,0.35), 0 4px 16px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    <Play size={18} className="fill-black" />
+                    Explore Sermons
+                  </button>
+                </Link>
+                <Link href="/movement">
+                  <button
+                    className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/8 active:scale-95"
+                    style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+                  >
+                    <Flame size={18} className="text-gold" />
+                    Join the Movement
+                  </button>
+                </Link>
+              </div>
+            </ScrollReveal>
+
+            {/* Social proof */}
+            <ScrollReveal delay={400}>
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2.5">
+                  {['S','M','E','J','A'].map((l, i) => (
+                    <div key={i}
+                      className="w-9 h-9 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center text-xs font-bold text-black"
+                      style={{ background: `linear-gradient(135deg, #C8A24A, #B38A3D)`, zIndex: 5 - i }}>
+                      {l}
+                    </div>
                   ))}
                 </div>
+                <div>
+                  <div className="flex items-center gap-1 mb-0.5">
+                    {[1,2,3,4,5].map(i => <Star key={i} size={11} className="text-gold fill-gold" />)}
+                  </div>
+                  <p className="text-xs text-white/40 font-inter">Trusted by 25,000+ believers worldwide</p>
+                </div>
               </div>
-            </div>
-          </ScrollReveal>
+            </ScrollReveal>
+          </div>
         </div>
 
-        <div className="divine-rays" />
+        {/* Bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none z-10" />
       </section>
 
-      {/* Offerings Grid */}
-      <section className="py-24 bg-surface/30">
-        <div className="container mx-auto px-6">
+      {/* ══════════════════════════════════════════════════════════
+          OFFERINGS GRID
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-28 relative">
+        <div className="container mx-auto max-w-6xl px-6">
           <ScrollReveal>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
               <div>
-                <p className="text-gold tracking-widest uppercase text-xs mb-3 font-bold">RESOURCES</p>
-                <h2 className="text-4xl md:text-5xl font-cinzel font-medium">Digital Ministry</h2>
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold/70 mb-3">RESOURCES</p>
+                <h2 className="font-cinzel font-bold text-white">Digital Ministry</h2>
               </div>
-              <Link href="/sermons" className="text-gray-400 hover:text-gold transition-colors flex items-center gap-2 font-medium">
-                View All <ChevronRight size={20} />
+              <Link href="/sermons"
+                className="flex items-center gap-2 text-sm font-medium text-white/40 hover:text-gold transition-colors group">
+                View All
+                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { title: "Sermons", icon: Play, desc: "Watch and listen to the latest messages.", color: "bg-blue-500/10", href: "/sermons" },
-              { title: "Podcasts", icon: Mic, desc: "Faith-filled conversations for daily growth.", color: "bg-gold/10", href: "/podcasts" },
-              { title: "Music", icon: Music, desc: "Worship that transcends the mundane.", color: "bg-purple-500/10", href: "/music" },
-              { title: "Daily Devotions", icon: BookOpen, desc: "Brief, powerful insights for your walk.", color: "bg-green-500/10", href: "/devotions" },
-              { title: "Live Radio", icon: Radio, desc: "Continuous stream of faith and truth.", color: "bg-red-500/10", href: "/radio" },
-              { title: "Community", icon: Users, desc: "Prayer wall and engagement hub.", color: "bg-orange-500/10", href: "/community" },
-            ].map((item, i) => (
-              <Link key={i} href={item.href} className="group relative bg-[#1A1A1A] p-10 rounded-2xl border border-white/5 hover:border-gold/30 transition-all overflow-hidden">
-                <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                  <item.icon className="text-white group-hover:text-gold transition-colors" size={28} />
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {OFFERINGS.map((item) => (
+              <Link key={item.title} href={item.href}
+                className="group relative rounded-2xl p-8 overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  background: '#141414',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(200,162,74,0.25)';
+                  e.currentTarget.style.boxShadow = '0 0 30px rgba(200,162,74,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                {/* Icon */}
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110"
+                  style={{ background: `${item.color}15`, border: `1px solid ${item.color}25` }}>
+                  <item.icon size={22} style={{ color: item.color }} />
                 </div>
-                <h3 className="text-2xl font-cinzel font-semibold mb-4 group-hover:text-gold transition-colors">{item.title}</h3>
-                <p className="text-gray-400 font-inter leading-relaxed">{item.desc}</p>
-                
-                <div className="absolute -bottom-1 -right-1 w-24 h-24 bg-gold/5 rounded-tl-full blur-2xl group-hover:bg-gold/10 transition-all" />
+
+                <h3 className="font-cinzel font-semibold text-white text-xl mb-3 group-hover:text-gold transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-sm text-white/40 leading-relaxed font-inter">{item.desc}</p>
+
+                <div className="flex items-center gap-1.5 mt-5 text-xs font-semibold text-white/25 group-hover:text-gold/70 transition-colors">
+                  Explore <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+
+                {/* Corner glow */}
+                <div className="absolute -bottom-4 -right-4 w-28 h-28 rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ background: `radial-gradient(circle, ${item.color}12 0%, transparent 70%)`, filter: 'blur(16px)' }} />
               </Link>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      {/* Latest Sermon / Spotlight */}
-      <section className="py-32 bg-[#0A0A0A]">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <ScrollReveal className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl group">
-              <Image 
-                src="https://images.unsplash.com/photo-1544427928-c49cdfebf193?q=80&w=2070"
-                alt="Latest Sermon"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                <div className="w-20 h-20 bg-gold rounded-full flex items-center justify-center transform hover:scale-110 transition-all shadow-[0_0_30px_rgba(200,162,74,0.5)] cursor-pointer">
-                  <Play size={32} className="text-black ml-1" fill="currentColor" />
+      {/* ══════════════════════════════════════════════════════════
+          FEATURED SERMON SPOTLIGHT
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-28 relative overflow-hidden"
+        style={{ background: 'linear-gradient(180deg, #0A0A0A 0%, #0E0E0E 100%)' }}>
+        {/* Background glow */}
+        <div className="absolute top-1/2 right-0 w-[500px] h-[500px] -translate-y-1/2 pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(200,162,74,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+
+        <div className="container mx-auto max-w-6xl px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Video thumbnail */}
+            <ScrollReveal direction="right">
+              <div className="relative aspect-video rounded-2xl overflow-hidden group cursor-pointer"
+                style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+                <Image
+                  src="https://images.unsplash.com/photo-1544427928-c49cdfebf193?q=80&w=2070"
+                  alt="Latest Sermon"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
+
+                {/* Play button */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div
+                    className="w-18 h-18 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      width: 72, height: 72,
+                      background: 'linear-gradient(135deg, #C8A24A, #B38A3D)',
+                      boxShadow: '0 0 40px rgba(200,162,74,0.5)',
+                    }}
+                  >
+                    <Play size={28} className="text-black ml-1" fill="currentColor" />
+                  </div>
+                </div>
+
+                {/* Duration badge */}
+                <div className="absolute bottom-4 right-4 px-2.5 py-1 rounded-lg text-xs font-semibold text-white"
+                  style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }}>
+                  42:18
                 </div>
               </div>
             </ScrollReveal>
 
-            <ScrollReveal delay={200}>
-              <p className="text-gold tracking-widest uppercase text-xs mb-3 font-bold">LATEST SERMON</p>
-              <h2 className="text-4xl md:text-5xl font-cinzel font-bold mb-6 leading-tight">The Unfailing Light in a Dark World</h2>
-              <p className="text-gray-400 text-lg mb-10 font-inter leading-relaxed">
-                Join Pastor David Chen as he explores the central theme of Christ as the Light of the World in John 8:12. 
-                A powerful exploration of hope, truth, and the transformation that occurs when we follow the Light.
+            {/* Content */}
+            <ScrollReveal delay={150}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold/70 mb-4">LATEST SERMON</p>
+              <h2 className="font-cinzel font-bold text-white mb-5 leading-tight">
+                The Unfailing Light in a Dark World
+              </h2>
+              <p className="text-white/45 text-base leading-relaxed mb-4 font-inter">
+                Pastor David Chen explores Christ as the Light of the World in John 8:12 — a powerful journey through hope, truth, and transformation.
               </p>
-              <Link href="/sermons" className="inline-flex items-center gap-3 text-gold font-bold uppercase tracking-widest text-sm hover:gap-5 transition-all">
-                Watch Now <ChevronRight size={18} />
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-black"
+                  style={{ background: 'linear-gradient(135deg, #C8A24A, #B38A3D)' }}>D</div>
+                <div>
+                  <p className="text-sm font-medium text-white/80">Pastor David Chen</p>
+                  <p className="text-xs text-white/30">John 8:12 · Sunday Service</p>
+                </div>
+              </div>
+              <Link href="/sermons"
+                className="inline-flex items-center gap-2 font-bold text-sm uppercase tracking-widest text-gold hover:gap-4 transition-all group">
+                Watch Now
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Engagement Stats */}
-      <section className="py-24 border-y border-white/5 bg-surface/20">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
-            {[
-              { label: "Lives Impacted", value: "25k+", icon: Heart },
-              { label: "Community Members", value: "8.4k", icon: Users },
-              { label: "Prayer Requests", value: "1.2k", icon: MessageSquare },
-              { label: "Episodes Released", value: "480+", icon: Mic },
-            ].map((stat, i) => (
-              <ScrollReveal key={i} delay={i * 100}>
-                <stat.icon className="mx-auto mb-4 text-gold/60" size={24} />
-                <p className="text-4xl md:text-5xl font-cinzel font-bold mb-2 group-hover:text-gold transition-colors">{stat.value}</p>
-                <p className="text-gray-500 font-inter uppercase tracking-widest text-[10px]">{stat.label}</p>
+      {/* ══════════════════════════════════════════════════════════
+          STATS
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-20 relative"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', background: '#0C0C0C' }}>
+        <div className="container mx-auto max-w-5xl px-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            {STATS.map((stat, i) => (
+              <ScrollReveal key={stat.label} delay={i * 80}>
+                <div className="group">
+                  <div className="w-10 h-10 rounded-xl mx-auto mb-4 flex items-center justify-center transition-all group-hover:scale-110"
+                    style={{ background: 'rgba(200,162,74,0.08)', border: '1px solid rgba(200,162,74,0.15)' }}>
+                    <stat.icon size={18} className="text-gold/60 group-hover:text-gold transition-colors" />
+                  </div>
+                  <p className="font-cinzel font-bold text-white mb-1.5 group-hover:text-gold transition-colors"
+                    style={{ fontSize: 'clamp(1.8rem, 4vw, 2.8rem)' }}>
+                    {stat.value}
+                  </p>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/25 font-inter">
+                    {stat.label}
+                  </p>
+                </div>
               </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-32 bg-[#0A0A0A] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="container mx-auto px-6 relative z-10">
+      {/* ══════════════════════════════════════════════════════════
+          MOVEMENT BANNER
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-28 relative overflow-hidden">
+        <div className="container mx-auto max-w-6xl px-6">
+          <ScrollReveal>
+            <div className="relative rounded-3xl overflow-hidden"
+              style={{ border: '1px solid rgba(200,162,74,0.15)' }}>
+              {/* Background */}
+              <Image
+                src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070"
+                alt="In for Christ Movement"
+                fill
+                className="object-cover opacity-25"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/95 via-[#0A0A0A]/80 to-transparent" />
+              <div className="absolute inset-0"
+                style={{ background: 'radial-gradient(ellipse at left, rgba(200,162,74,0.08) 0%, transparent 60%)' }} />
+
+              <div className="relative z-10 p-10 md:p-16 max-w-2xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-6"
+                  style={{ background: 'rgba(200,162,74,0.12)', border: '1px solid rgba(200,162,74,0.25)', color: '#C8A24A' }}>
+                  <Flame size={11} className="fill-gold" />
+                  IN FOR CHRIST MOVEMENT
+                </div>
+                <h2 className="font-cinzel font-bold text-white mb-5 leading-tight">
+                  A Global Call to Radical Discipleship
+                </h2>
+                <p className="text-white/50 text-base leading-relaxed mb-8 font-inter">
+                  Join thousands of believers committed to prayer, Scripture, and authentic witness. 21-day and 40-day challenges designed to transform your walk with God.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link href="/movement/join">
+                    <button
+                      className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-black text-sm transition-all hover:scale-105 active:scale-95"
+                      style={{
+                        background: 'linear-gradient(135deg, #C8A24A, #B38A3D)',
+                        boxShadow: '0 0 24px rgba(200,162,74,0.3)',
+                      }}
+                    >
+                      <Flame size={16} className="fill-black" />
+                      Join the Movement
+                    </button>
+                  </Link>
+                  <Link href="/movement/challenges">
+                    <button
+                      className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-semibold text-white text-sm transition-all hover:bg-white/8"
+                      style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+                    >
+                      View Challenges <ArrowRight size={15} />
+                    </button>
+                  </Link>
+                </div>
+
+                {/* Member count */}
+                <div className="flex items-center gap-3 mt-8">
+                  <div className="flex -space-x-2">
+                    {['A','B','C','D'].map((l, i) => (
+                      <div key={i} className="w-7 h-7 rounded-full border-2 border-[#0A0A0A] flex items-center justify-center text-[10px] font-bold text-black"
+                        style={{ background: 'linear-gradient(135deg, #C8A24A, #B38A3D)', zIndex: 4 - i }}>
+                        {l}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-white/35 font-inter">4,847 committed believers</p>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════
+          TESTIMONIALS
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-28 relative overflow-hidden" style={{ background: '#0C0C0C' }}>
+        {/* Center glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(200,162,74,0.05) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+
+        <div className="container mx-auto max-w-6xl px-6 relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <p className="text-gold tracking-widest uppercase text-xs mb-3 font-bold">IMPACT</p>
-              <h2 className="text-3xl md:text-5xl font-cinzel font-bold">Transformed Lives</h2>
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold/70 mb-4">IMPACT</p>
+              <h2 className="font-cinzel font-bold text-white">Transformed Lives</h2>
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                text: "The 'Rooted in Grace' series completely shifted my perspective on God's love. I've never felt so free from performance anxiety in my faith.",
-                author: "Sarah Jenkins",
-                role: "Community Member",
-              },
-              {
-                text: "I tune in to Christ Light Radio every morning on my commute. It sets the tone for my entire day and keeps me anchored in truth.",
-                author: "Michael T.",
-                role: "Daily Listener",
-              },
-              {
-                text: "The prayer wall is my favorite feature. Knowing that believers around the world are standing with me in prayer is incredibly comforting.",
-                author: "Elena Rodriguez",
-                role: "Movement Partner",
-              }
-            ].map((testimonial, i) => (
-              <div key={i} className="bg-card/50 backdrop-blur-sm border border-white/5 rounded-3xl p-8 relative hover:-translate-y-2 transition-transform duration-500">
-                <span className="text-6xl text-gold/20 font-serif absolute top-4 left-6">&ldquo;</span>
-                <p className="text-gray-300 font-inter leading-relaxed mb-8 relative z-10 pt-4">
-                  {testimonial.text}
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 border border-gold/20 flex items-center justify-center text-gold font-bold">
-                    {testimonial.author[0]}
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i}
+                className="relative rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 group"
+                style={{
+                  background: '#141414',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(200,162,74,0.2)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
+              >
+                {/* Quote mark */}
+                <div className="text-5xl font-serif text-gold/12 leading-none mb-4 select-none">&ldquo;</div>
+
+                {/* Stars */}
+                <div className="flex items-center gap-0.5 mb-4">
+                  {[1,2,3,4,5].map(s => <Star key={s} size={11} className="text-gold fill-gold" />)}
+                </div>
+
+                <p className="text-white/55 text-sm leading-relaxed mb-7 font-inter">{t.text}</p>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-black flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg, #C8A24A, #B38A3D)' }}>
+                    {t.initial}
                   </div>
                   <div>
-                    <p className="font-semibold text-white text-sm">{testimonial.author}</p>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">{testimonial.role}</p>
+                    <p className="text-sm font-semibold text-white/90">{t.author}</p>
+                    <p className="text-[11px] text-white/30 uppercase tracking-wider font-inter">{t.role}</p>
                   </div>
                 </div>
+
+                {/* Corner glow */}
+                <div className="absolute -bottom-3 -right-3 w-24 h-24 rounded-tl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(200,162,74,0.08) 0%, transparent 70%)', filter: 'blur(12px)' }} />
               </div>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-b from-[#0A0A0A] to-[#111]">
-        <div className="container mx-auto px-6 text-center">
+      {/* ══════════════════════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════════════════════ */}
+      <section className="py-32 relative overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, #0A0A0A 0%, #0D0D0D 100%)' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse, rgba(200,162,74,0.07) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+
+        <div className="container mx-auto max-w-3xl px-6 text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-4xl md:text-6xl font-cinzel font-bold mb-6">Ready to go deeper?</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-lg mb-10 font-inter">
-              Join thousands of believers who are growing in their faith daily. 
-              Create a free account to track your progress, save favorites, and join the community.
+            {/* Decorative line */}
+            <div className="flex items-center justify-center gap-4 mb-10">
+              <div className="h-px flex-1 max-w-16" style={{ background: 'linear-gradient(90deg, transparent, rgba(200,162,74,0.3))' }} />
+              <div className="w-2 h-2 rounded-full bg-gold/50" />
+              <div className="h-px flex-1 max-w-16" style={{ background: 'linear-gradient(90deg, rgba(200,162,74,0.3), transparent)' }} />
+            </div>
+
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold/70 mb-5">BEGIN YOUR JOURNEY</p>
+            <h2 className="font-cinzel font-bold text-white mb-6 leading-tight"
+              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}>
+              Ready to Go Deeper?
+            </h2>
+            <p className="text-white/45 text-lg leading-relaxed mb-10 font-inter max-w-xl mx-auto">
+              Join thousands of believers growing in faith daily. Create a free account to track progress, save favorites, and connect with the community.
             </p>
-            <Link href="/register" className="inline-block bg-gold text-black px-12 py-4 rounded-full font-bold uppercase tracking-widest text-sm hover:bg-gold-dark transition-all transform hover:scale-105 shadow-xl shadow-gold/20">
-              Create Free Account
-            </Link>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/register">
+                <button
+                  className="inline-flex items-center gap-2.5 px-10 py-4 rounded-xl font-semibold text-black text-base transition-all hover:scale-105 active:scale-95"
+                  style={{
+                    background: 'linear-gradient(135deg, #C8A24A 0%, #E6D5A8 50%, #B38A3D 100%)',
+                    boxShadow: '0 0 40px rgba(200,162,74,0.3), 0 4px 20px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  Create Free Account
+                  <ArrowRight size={18} />
+                </button>
+              </Link>
+              <Link href="/sermons">
+                <button
+                  className="inline-flex items-center gap-2.5 px-10 py-4 rounded-xl font-semibold text-white text-base transition-all hover:bg-white/6 active:scale-95"
+                  style={{ border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  <Play size={18} className="text-gold" />
+                  Browse Content
+                </button>
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-12">
+              {['Free to join', 'No credit card', 'Cancel anytime'].map((badge) => (
+                <div key={badge} className="flex items-center gap-2 text-xs text-white/25 font-inter">
+                  <div className="w-1.5 h-1.5 rounded-full bg-gold/40" />
+                  {badge}
+                </div>
+              ))}
+            </div>
           </ScrollReveal>
         </div>
       </section>
+
     </div>
   );
 }

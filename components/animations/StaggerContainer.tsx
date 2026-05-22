@@ -1,48 +1,52 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+/* ── Lightweight StaggerContainer (no external dependency) ───────────── */
+import { useEffect, useRef, useCallback, type ReactNode } from 'react';
 
-interface StaggerContainerProps {
+interface Props {
   children: ReactNode;
   staggerDelay?: number;
   className?: string;
 }
 
-export default function StaggerContainer({ 
-  children, 
-  staggerDelay = 100, 
-  className = '' 
-}: StaggerContainerProps) {
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={{
-        hidden: { opacity: 0 },
-        show: {
-          opacity: 1,
-          transition: {
-            staggerChildren: staggerDelay / 1000,
-          }
+export default function StaggerContainer({
+  children,
+  staggerDelay = 80,
+  className,
+}: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target as HTMLElement;
+          const children = Array.from(el.children) as HTMLElement[];
+          children.forEach((child, i) => {
+            child.style.transitionDelay = `${i * staggerDelay}ms`;
+            child.classList.add('stagger-visible');
+          });
+          observer.unobserve(entry.target);
         }
-      }}
-      className={className}
-    >
-      {Array.isArray(children)
-        ? children.map((child, index) => (
-            <motion.div
-              key={index}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                show: { opacity: 1, y: 0 },
-              }}
-            >
-              {child}
-            </motion.div>
-          ))
-        : children}
-    </motion.div>
+      });
+    },
+    [staggerDelay]
+  );
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold: 0.05,
+      rootMargin: '0px 0px -30px 0px',
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleIntersect]);
+
+  return (
+    <div ref={containerRef} className={className}>
+      {children}
+    </div>
   );
 }

@@ -1,46 +1,72 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+/* ── Lightweight, no-dependency ScrollReveal ─────────────────────────── */
+import { useEffect, useRef, useCallback, type ReactNode } from 'react';
 
-interface ScrollRevealProps {
+interface Props {
   children: ReactNode;
-  delay?: number;
-  className?: string;
   direction?: 'up' | 'down' | 'left' | 'right';
-  duration?: number;
+  delay?: number;
+  threshold?: number;
+  className?: string;
 }
 
-export default function ScrollReveal({ 
-  children, 
-  delay = 0, 
-  className = '', 
+const DIRECTION_MAP: Record<string, { base: string; visible: string }> = {
+  up:    { base: 'translate-y-7 opacity-0', visible: 'translate-y-0  opacity-100' },
+  down:  { base: '-translate-y-7 opacity-0', visible: 'translate-y-0  opacity-100' },
+  left:  { base: 'translate-x-7 opacity-0', visible: 'translate-x-0  opacity-100' },
+  right: { base: '-translate-x-7 opacity-0', visible: 'translate-x-0  opacity-100' },
+};
+
+export default function ScrollReveal({
+  children,
   direction = 'up',
-  duration = 0.8
-}: ScrollRevealProps) {
-  const getInitial = () => {
-    switch (direction) {
-      case 'up': return { opacity: 0, y: 30 };
-      case 'down': return { opacity: 0, y: -30 };
-      case 'left': return { opacity: 0, x: 30 };
-      case 'right': return { opacity: 0, x: -30 };
-      default: return { opacity: 0, y: 30 };
-    }
-  };
+  delay = 0,
+  threshold = 0.15,
+  className,
+}: Props) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleIntersect = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).style.transitionDelay = `${delay}ms`;
+          (entry.target as HTMLElement).classList.add('sr-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    [delay]
+  );
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(handleIntersect, {
+      threshold,
+      rootMargin: '0px 0px -40px 0px',
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleIntersect, threshold]);
+
+  const dir = DIRECTION_MAP[direction];
 
   return (
-    <motion.div
-      initial={getInitial()}
-      whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ 
-        duration: duration, 
-        delay: delay / 1000, 
-        ease: [0.22, 1, 0.36, 1] 
-      }}
-      className={className}
+    <div
+      ref={ref}
+      className={`
+        transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)
+        ${dir.base}
+        sr-visible:${dir.visible}
+        ${className ?? ''}
+      `}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
+
+/* Re-export as named export for compatibility */
+export { default as ScrollRevealComponent } from './ScrollReveal';
