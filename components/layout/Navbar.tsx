@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, LogIn, LogOut, Shield, User, ChevronDown, X } from 'lucide-react';
+import { Search, Menu, LogIn, LogOut, Shield, User, ChevronDown, X, Heart, Bookmark, Settings2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
@@ -94,21 +94,31 @@ export default function Navbar() {
                   <ChevronDown size={14} className={cn("transition-transform", isDropdownOpen && "rotate-180")} />
                 </button>
 
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-card border border-white/10 rounded-xl py-2 shadow-2xl animate-in fade-in slide-in-from-top-2">
-                    <Link href="/profile" className="flex items-center gap-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5">
-                      <User size={16} /> Profile
+                 {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-52 bg-card border border-white/10 rounded-xl py-2 shadow-2xl animate-in fade-in slide-in-from-top-2 z-50">
+                    <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5">
+                      <User size={16} /> My Profile
                     </Link>
+                    <Link href="/profile?tab=prayers" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5">
+                      <Heart size={15} /> My Prayers
+                    </Link>
+                    <Link href="/profile?tab=saved" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5">
+                      <Bookmark size={15} /> Saved Content
+                    </Link>
+                    <Link href="/profile/settings" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-white/5">
+                      <Settings2 size={15} /> Settings
+                    </Link>
+                    <div className="my-1.5 border-t border-white/5" />
                     {isAdmin && (
-                      <Link href="/admin" className="flex items-center gap-3 px-4 py-2 text-sm text-gold hover:text-white hover:bg-white/5">
+                      <Link href="/admin" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gold hover:text-white hover:bg-white/5">
                         <Shield size={16} /> Admin
                       </Link>
                     )}
                     <button 
                       onClick={() => logout()}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-white/5"
                     >
-                      <LogOut size={16} /> Log Out
+                      <LogOut size={16} /> Sign Out
                     </button>
                   </div>
                 )}
