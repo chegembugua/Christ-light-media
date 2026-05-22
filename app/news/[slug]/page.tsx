@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Image from 'next/image';
 import { notFound, useParams } from 'next/navigation';
 import { 
   Calendar, 
@@ -167,7 +168,15 @@ export default function NewsArticlePage() {
       <div className="mx-auto max-w-4xl">
         {/* Article Image */}
         <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
-          <img src={article.coverImage} alt={article.title} className="aspect-video w-full object-cover" />
+          <div className="relative aspect-video w-full">
+            <Image
+              src={article.coverImage}
+              alt={article.title}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
         </div>
 
         {/* Category Badge */}

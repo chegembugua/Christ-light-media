@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -92,7 +93,13 @@ export default function ProfilePage() {
                 <div className="absolute inset-0 bg-gold/20 rounded-full blur-md group-hover:bg-gold/40 transition-all" />
                 <div className="relative w-full h-full rounded-full border-2 border-gold/30 overflow-hidden bg-bg-secondary flex items-center justify-center">
                   {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.fullName || ''} className="w-full h-full object-cover" />
+                    <Image
+                      src={user.avatarUrl}
+                      alt={user.fullName || ''}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
                   ) : (
                     <User className="text-gold" size={40} />
                   )}

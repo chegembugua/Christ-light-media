@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Bell, 
@@ -26,7 +26,7 @@ export default function NotificationBell() {
   const bellButtonRef = useRef<HTMLButtonElement>(null);
 
   // Fetch notifications from the server
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -40,7 +40,7 @@ export default function NotificationBell() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -48,7 +48,7 @@ export default function NotificationBell() {
     } else {
       setNotifications([]);
     }
-  }, [user]);
+  }, [user, fetchNotifications]);
 
   // Click outside and escape key handling
   useEffect(() => {

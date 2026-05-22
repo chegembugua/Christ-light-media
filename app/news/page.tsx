@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { 
   Search, 
@@ -413,10 +414,12 @@ export default function NewsPage() {
                 <Link key={article.id} href={`/news/${article.slug}`}>
                   <Card className="flex h-full flex-col overflow-hidden p-0 hover:border-gold/20 transition">
                     <div className="relative aspect-video overflow-hidden">
-                      <img
-                        src={article.coverImage}
-                        alt={article.title}
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                        <Image
+                          src={article.coverImage}
+                          alt={article.title}
+                          fill
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                          unoptimized
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <span

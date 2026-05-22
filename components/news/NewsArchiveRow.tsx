@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 type NewsArchiveRowProps = {
@@ -48,11 +49,13 @@ export default function NewsArchiveRow({
       <div className="p-4 border-b border-white/10 hover:bg-white/5 transition">
         <div className="flex items-center gap-4">
           {/* Thumbnail */}
-          <div className="w-20 h-20 rounded flex-shrink-0">
-            <img
+          <div className="relative w-20 h-20 rounded flex-shrink-0 overflow-hidden">
+            <Image
               src={coverImage}
               alt={title}
-              className="w-full h-full object-cover rounded"
+              fill
+              className="object-cover rounded"
+              unoptimized
             />
           </div>
 

@@ -63,7 +63,7 @@ export default function CommunityChatPage() {
   useEffect(() => {
     const q = searchParams.get('room');
     if (q && q !== activeRoomId) setActiveRoomId(q);
-  }, [searchParams]);
+  }, [searchParams, activeRoomId]);
 
   // Close Unread badge for room
   const markRoomRead = useCallback((roomId: string) => {

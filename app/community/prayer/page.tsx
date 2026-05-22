@@ -110,12 +110,12 @@ export default function PrayerWallPage() {
     }
     setOffset(0);
     void fetchPrayers(0, false);
-  }, [status, category, sort, search]);
+  }, [fetchPrayers]);
 
   // Initial load
   useEffect(() => {
     void fetchPrayers(0, false);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchPrayers]);
 
   // Debounced search
   const handleSearchChange = (value: string) => {

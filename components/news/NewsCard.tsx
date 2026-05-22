@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 type NewsCardProps = {
@@ -56,10 +57,12 @@ export default function NewsCard({
           <Link href={`/news/${slug}`} passHref>
             <div className="flex h-full flex-col overflow-hidden p-0">
               <div className="relative aspect-video overflow-hidden">
-                <img
+                <Image
                   src={coverImage}
                   alt={title}
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  fill
+                  className="object-cover transition duration-700 group-hover:scale-105"
+                  unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                 <span
@@ -105,10 +108,12 @@ export default function NewsCard({
         <Link href={`/news/${slug}`} passHref>
           <div className="flex h-full flex-col overflow-hidden p-0 hover:border-gold/20 transition">
             <div className="relative aspect-video overflow-hidden">
-              <img
+              <Image
                 src={coverImage}
                 alt={title}
-                className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                fill
+                className="object-cover transition duration-700 group-hover:scale-105"
+                unoptimized
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
               <span
