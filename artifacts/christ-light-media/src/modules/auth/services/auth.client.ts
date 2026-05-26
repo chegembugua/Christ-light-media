@@ -30,12 +30,13 @@ export async function signUp(input: RegisterInput): Promise<AuthResult> {
 
   const needsEmailConfirmation = Boolean(data.user && !data.session);
 
-  if (data.user) {
-    await createPlatformProfile({
-      id: data.user.id,
-      email: input.email,
-      fullName: input.fullName,
-    });
+  // Only create the platform profile when we have an active session token.
+  // If email confirmation is required (no session yet), the profile is created on first login.
+  if (data.user && data.session?.access_token) {
+    await createPlatformProfile(
+      { id: data.user.id, fullName: input.fullName },
+      data.session.access_token
+    );
   }
 
   return { needsEmailConfirmation };
@@ -68,14 +69,21 @@ export async function updatePassword(password: string): Promise<AuthResult> {
   return {};
 }
 
-async function createPlatformProfile(payload: {
-  id: string;
-  email: string;
-  fullName: string;
-}): Promise<void> {
+/**
+ * Bootstrap the platform user record after Supabase signup.
+ * Identity (id + email) is verified server-side from the JWT — only fullName comes from payload.
+ * Requires a valid Supabase access token.
+ */
+async function createPlatformProfile(
+  payload: { id: string; fullName: string },
+  accessToken: string
+): Promise<void> {
   await fetch('/api/auth/create-profile', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${accessToken}`,
+    },
     body: JSON.stringify(payload),
   });
 }

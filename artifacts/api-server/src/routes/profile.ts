@@ -106,24 +106,28 @@ router.get("/auth/profile", async (req, res) => {
 
 /** POST /api/auth/create-profile — upsert platform profile after Supabase signup */
 router.post("/auth/create-profile", async (req, res) => {
-  const { id, email, fullName } = req.body as { id?: string; email?: string; fullName?: string };
-  if (!id || !email) return res.status(400).json({ error: "id and email are required" });
-
+  // Identity MUST come from the verified JWT — never trust client-supplied id or email.
   const caller = await getRequestUser(req);
-  if (!caller || caller.id !== id) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  if (!caller) return res.status(401).json({ error: "Unauthorized" });
+
+  // Accept supplemental fields from body; ignore any email/id in body (use JWT).
+  const { fullName } = req.body as { fullName?: string };
 
   try {
-    const existing = await db.query.users.findFirst({ where: eq(users.id, id) });
+    const existing = await db.query.users.findFirst({ where: eq(users.id, caller.id) });
     if (existing) return res.json({ success: true });
 
-    // Determine role: admin emails get ADMIN role (requires ADMIN_EMAILS env var)
+    // Determine role exclusively from the JWT-verified email.
     const adminEmails = (process.env.ADMIN_EMAILS ?? "")
       .split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
-    const role = adminEmails.includes(email.toLowerCase()) ? "ADMIN" : "USER";
+    const role = adminEmails.includes(caller.email.toLowerCase()) ? "ADMIN" : "USER";
 
-    await db.insert(users).values({ id, email, fullName: fullName ?? null, role });
+    await db.insert(users).values({
+      id: caller.id,
+      email: caller.email,
+      fullName: fullName ?? null,
+      role,
+    });
     return res.json({ success: true });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
