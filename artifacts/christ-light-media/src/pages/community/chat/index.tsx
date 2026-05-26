@@ -49,6 +49,11 @@ export default function CommunityChatPage() {
             return { ...fallback, ...room };
           });
           setRooms(merged);
+          // Ensure activeRoomId is valid against fetched IDs; if not, use first room
+          setActiveRoomId((current) => {
+            const ids = new Set(merged.map((r: ChatRoom) => r.id));
+            return ids.has(current) ? current : (merged[0]?.id ?? current);
+          });
         }
       })
       .catch(() => {});

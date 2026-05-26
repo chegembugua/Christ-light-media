@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
+import { authFetch } from '@/lib/api/authFetch';
 
 type SettingsState = {
   prayerNotifications: boolean;
@@ -59,7 +60,7 @@ export default function SettingsPage() {
   }, [user, authLoading]);
 
    useEffect(() => {
-    fetch('/api/profile')
+    authFetch('/api/profile')
       .then((r) => r.ok ? r.json() : Promise.resolve({} as { user?: UserProfile }))
       .then((j) => {
         const u = j.user;
@@ -101,7 +102,7 @@ export default function SettingsPage() {
         showPrayers: settings.showPrayers,
         includeInTestimonies: settings.includeInTestimonies,
       };
-      const res = await fetch('/api/profile', {
+      const res = await authFetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ preferences: combinedPrefs }),
@@ -130,7 +131,7 @@ export default function SettingsPage() {
   const handleDownloadData = async () => {
     setDownloading(true);
     try {
-      const res = await fetch('/api/profile');
+      const res = await authFetch('/api/profile');
       const json = (await res.json()) as { user: UserProfile };
       const blob = new Blob([JSON.stringify(json.user ?? {}, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);

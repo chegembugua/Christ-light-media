@@ -10,11 +10,13 @@ import { eq } from "drizzle-orm";
 // ADMIN_EMAILS must be set explicitly — no hardcoded fallback.
 const ADMIN_EMAIL = process.env.ADMIN_EMAILS?.split(",")[0]?.trim();
 
+// Explicit string IDs match the frontend defaults (general, prayer-support, etc.)
+// Using $defaultFn UUID generation would mismatch; IDs must be stable across runs.
 const DEFAULT_ROOMS = [
-  { name: "General", description: "Open fellowship — all are welcome here." },
-  { name: "Prayer Support", description: "Lift your requests and pray with those in need." },
-  { name: "Worship & Praise", description: "Celebrate God! Share testimonies, songs, and worship moments." },
-  { name: "Testimony Sharing", description: "Share how God is moving in your life." },
+  { id: "general", name: "General", description: "Open fellowship — all are welcome here." },
+  { id: "prayer-support", name: "Prayer Support", description: "Lift your requests and pray with those in need." },
+  { id: "worship-praise", name: "Worship & Praise", description: "Celebrate God! Share testimonies, songs, and worship moments." },
+  { id: "testimony", name: "Testimony Sharing", description: "Share how God is moving in your life." },
 ];
 
 const DEFAULT_CHALLENGES = [

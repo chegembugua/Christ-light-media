@@ -36,7 +36,7 @@ export default function EditProfilePage() {
   const [newsletter, setNewsletter] = useState(false);
 
   useEffect(() => {
-    fetch('/api/profile')
+    authFetch('/api/profile')
       .then((r) => r.ok ? r.json() : Promise.resolve({} as { user?: UserProfile }))
       .then((j) => {
         const u = j.user as UserProfile | undefined;
