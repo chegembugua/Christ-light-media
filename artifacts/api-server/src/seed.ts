@@ -7,7 +7,8 @@ import { db } from "./lib/db";
 import { chatRooms, challenges, users } from "@workspace/db/schema";
 import { eq } from "drizzle-orm";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAILS?.split(",")[0]?.trim() ?? "chegembugua97@gmail.com";
+// ADMIN_EMAILS must be set explicitly — no hardcoded fallback.
+const ADMIN_EMAIL = process.env.ADMIN_EMAILS?.split(",")[0]?.trim();
 
 const DEFAULT_ROOMS = [
   { name: "General", description: "Open fellowship — all are welcome here." },
@@ -68,17 +69,21 @@ async function seed() {
     }
   }
 
-  // Upgrade admin user role if profile exists in DB
-  const adminRow = await db.query.users.findFirst({ where: eq(users.email, ADMIN_EMAIL) });
-  if (adminRow) {
-    if (adminRow.role !== "ADMIN") {
-      await db.update(users).set({ role: "ADMIN" }).where(eq(users.email, ADMIN_EMAIL));
-      console.log(`  ✓ Upgraded ${ADMIN_EMAIL} to ADMIN role`);
+  // Upgrade admin user role if ADMIN_EMAILS is configured and the user already has a profile
+  if (ADMIN_EMAIL) {
+    const adminRow = await db.query.users.findFirst({ where: eq(users.email, ADMIN_EMAIL) });
+    if (adminRow) {
+      if (adminRow.role !== "ADMIN") {
+        await db.update(users).set({ role: "ADMIN" }).where(eq(users.email, ADMIN_EMAIL));
+        console.log(`  ✓ Upgraded ${ADMIN_EMAIL} to ADMIN role`);
+      } else {
+        console.log(`  — Admin user already set: ${ADMIN_EMAIL}`);
+      }
     } else {
-      console.log(`  — Admin user already set: ${ADMIN_EMAIL}`);
+      console.log(`  ℹ Admin user (${ADMIN_EMAIL}) will get ADMIN role automatically on first login`);
     }
   } else {
-    console.log(`  ℹ Admin user (${ADMIN_EMAIL}) will get ADMIN role automatically on first login`);
+    console.log("  ℹ ADMIN_EMAILS not set — skipping admin role assignment. Set ADMIN_EMAILS to configure admin access.");
   }
 
   console.log("✅ Seed complete.");

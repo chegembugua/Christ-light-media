@@ -203,17 +203,23 @@ router.get("/community/chat/rooms", async (_req, res) => {
 
 router.get("/community/chat/:roomId/messages", async (req, res) => {
   const limit = Math.min(Number(req.query.limit ?? 50), 200);
+  const offset = Number(req.query.offset ?? 0);
   try {
-    const rows = await db.query.chatMessages.findMany({
-      where: and(
-        eq(chatMessages.roomId, req.params.roomId),
-        eq(chatMessages.isDeleted, false)
-      ),
-      orderBy: [desc(chatMessages.createdAt)],
-      limit,
-      with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
-    });
-    return res.json({ messages: rows.reverse(), total: rows.length });
+    const where = and(
+      eq(chatMessages.roomId, req.params.roomId),
+      eq(chatMessages.isDeleted, false)
+    );
+    const [rows, [{ total }]] = await Promise.all([
+      db.query.chatMessages.findMany({
+        where,
+        orderBy: [desc(chatMessages.createdAt)],
+        limit,
+        offset,
+        with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
+      }),
+      db.select({ total: count() }).from(chatMessages).where(where),
+    ]);
+    return res.json({ messages: rows.reverse(), total });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
   }
