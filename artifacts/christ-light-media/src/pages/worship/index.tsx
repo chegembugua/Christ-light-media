@@ -249,11 +249,10 @@ export default function WorshipPage() {
             <ScrollReveal>
               <div className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl border border-gold/20 shadow-[0_0_50px_rgba(200,162,74,0.1)]">
                 <div className="relative aspect-video">
-                  <Image
+                  <img
                     src={event.coverImage || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070'}
                     alt={event.title}
-                    fill
-                    className="object-cover"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 

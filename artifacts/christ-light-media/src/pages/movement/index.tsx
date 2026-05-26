@@ -131,12 +131,10 @@ export default function MovementPage() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
-          <Image
+          <img
             src="https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070"
             alt="In for Christ Movement"
-            fill
-            className="object-cover opacity-20 grayscale"
-            priority
+            className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/60 via-[#0A0A0A]/80 to-[#0A0A0A]" />
           {/* Gold radial glow */}
@@ -316,10 +314,9 @@ export default function MovementPage() {
                   <div className="flex flex-col md:flex-row gap-8 items-start">
                     <div className="flex-shrink-0">
                       {featured.photoUrl || featured.user.avatarUrl ? (
-                        <Image
+                        <img
                           src={(featured.photoUrl ?? featured.user.avatarUrl) as string}
                           alt={getAuthorName(featured)}
-                          width={80} height={80}
                           className="w-20 h-20 rounded-full object-cover border-2 border-gold/30"
                         />
                       ) : (
@@ -354,10 +351,9 @@ export default function MovementPage() {
                   <div className="bg-card border border-white/5 rounded-2xl p-6 hover:border-gold/30 transition-all duration-300 group h-full">
                     <div className="flex items-center gap-3 mb-4">
                       {t.photoUrl || t.user.avatarUrl ? (
-                        <Image
+                        <img
                           src={(t.photoUrl ?? t.user.avatarUrl) as string}
                           alt={getAuthorName(t)}
-                          width={48} height={48}
                           className="w-12 h-12 rounded-full object-cover border border-gold/20"
                         />
                       ) : (

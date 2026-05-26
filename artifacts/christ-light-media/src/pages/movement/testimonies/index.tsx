@@ -84,10 +84,9 @@ export default function TestimoniesPage() {
                 <div className="flex flex-col md:flex-row gap-8 items-start">
                   <div className="flex-shrink-0">
                     {featured.photoUrl || featured.user.avatarUrl ? (
-                      <Image
+                      <img
                         src={(featured.photoUrl ?? featured.user.avatarUrl) as string}
                         alt={getAuthorName(featured)}
-                        width={128} height={128}
                         className="w-32 h-32 rounded-full object-cover border-2 border-gold/30"
                       />
                     ) : (
@@ -147,10 +146,9 @@ export default function TestimoniesPage() {
                 <div className="bg-card border border-white/5 rounded-2xl p-6 hover:border-gold/30 transition-all duration-300 group h-full flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
                     {t.photoUrl || t.user.avatarUrl ? (
-                      <Image
+                      <img
                         src={(t.photoUrl ?? t.user.avatarUrl) as string}
                         alt={getAuthorName(t)}
-                        width={64} height={64}
                         className="w-16 h-16 rounded-full object-cover border border-gold/20 flex-shrink-0"
                       />
                     ) : (

@@ -117,10 +117,9 @@ export default function TestimonyDetailPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8">
             {testimony.photoUrl || testimony.user.avatarUrl ? (
-              <Image
+              <img
                 src={(testimony.photoUrl ?? testimony.user.avatarUrl) as string}
                 alt={getAuthorName(testimony)}
-                width={96} height={96}
                 className="w-24 h-24 rounded-full object-cover border-2 border-gold/30 flex-shrink-0"
               />
             ) : (

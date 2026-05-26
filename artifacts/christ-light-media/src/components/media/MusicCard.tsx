@@ -48,11 +48,10 @@ export function MusicCard({
       </button>
 
       <div className="relative aspect-square overflow-hidden rounded-2xl">
-        <Image
+        <img
           src={coverImage || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070'}
           alt={title}
-          fill
-          className="object-cover transition duration-700 group-hover:scale-105 group-hover:brightness-75"
+          className="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105 group-hover:brightness-75"
         />
         <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/25" />
         <button

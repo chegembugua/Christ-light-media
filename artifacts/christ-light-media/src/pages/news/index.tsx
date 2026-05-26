@@ -412,12 +412,10 @@ export default function NewsPage() {
                 <Link key={article.id} href={`/news/${article.slug}`}>
                   <Card className="flex h-full flex-col overflow-hidden p-0 hover:border-gold/20 transition">
                     <div className="relative aspect-video overflow-hidden">
-                        <Image
+                        <img
                           src={article.coverImage}
                           alt={article.title}
-                          fill
-                          className="object-cover transition duration-700 group-hover:scale-105"
-                          unoptimized
+                          className="absolute inset-0 w-full h-full object-cover transition duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <span

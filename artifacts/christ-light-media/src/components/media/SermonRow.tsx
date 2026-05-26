@@ -42,11 +42,10 @@ export function SermonRow({
       }`}
     >
       <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-        <Image
+        <img
           src={coverImage || 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?q=80&w=2070'}
           alt={title}
-          fill
-          className="object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
       </div>
 

@@ -49,12 +49,10 @@ export default function NewsArchiveRow({
         <div className="flex items-center gap-4">
           {/* Thumbnail */}
           <div className="relative w-20 h-20 rounded flex-shrink-0 overflow-hidden">
-            <Image
+            <img
               src={coverImage}
               alt={title}
-              fill
-              className="object-cover rounded"
-              unoptimized
+              className="absolute inset-0 w-full h-full object-cover rounded"
             />
           </div>
 

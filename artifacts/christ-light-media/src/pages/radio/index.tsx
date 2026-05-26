@@ -112,8 +112,7 @@ export default function RadioPage() {
                   <img 
                     src={LIVE_STREAM.coverImage} 
                     alt="Radio Studio" 
-                    fill 
-                    className="object-cover opacity-40 grayscale"
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-[#1A1A1A] to-transparent" />
                   

@@ -92,12 +92,10 @@ export default function ProfilePage() {
                 <div className="absolute inset-0 bg-gold/20 rounded-full blur-md group-hover:bg-gold/40 transition-all" />
                 <div className="relative w-full h-full rounded-full border-2 border-gold/30 overflow-hidden bg-bg-secondary flex items-center justify-center">
                   {user.avatarUrl ? (
-                    <Image
+                    <img
                       src={user.avatarUrl}
                       alt={user.fullName || ''}
-                      fill
-                      className="object-cover"
-                      unoptimized
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
                   ) : (
                     <User className="text-gold" size={40} />

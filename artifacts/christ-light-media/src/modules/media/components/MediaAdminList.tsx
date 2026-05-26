@@ -58,7 +58,7 @@ export function MediaAdminList({ items }: { items: MediaDTO[] }) {
             >
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface">
                 {item.coverImage ? (
-                  <img src={item.coverImage} alt="" fill className="object-cover" />
+                  <img src={item.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-gray-600">
                     No cover

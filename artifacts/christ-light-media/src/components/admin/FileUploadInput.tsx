@@ -124,7 +124,7 @@ export function FileUploadInput({
             <div className="flex min-w-0 items-center gap-4">
               {previewUrl ? (
                 <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-white/10">
-                  <img src={previewUrl} alt={`${label} preview`} fill className="object-cover" />
+                  <img src={previewUrl} alt={`${label} preview`} className="absolute inset-0 w-full h-full object-cover" />
                 </div>
               ) : (
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold">

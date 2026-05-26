@@ -167,12 +167,10 @@ export default function NewsArticlePage() {
         {/* Article Image */}
         <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
           <div className="relative aspect-video w-full">
-            <Image
+            <img
               src={article.coverImage}
               alt={article.title}
-              fill
-              className="object-cover"
-              unoptimized
+              className="absolute inset-0 w-full h-full object-cover"
             />
           </div>
         </div>
