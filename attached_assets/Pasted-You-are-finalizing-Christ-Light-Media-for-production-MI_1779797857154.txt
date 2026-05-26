@@ -1,0 +1,408 @@
+You are finalizing "Christ Light Media" for production.
+
+MISSION: Set up the complete system so that:
+1. chegembugua97@gmail.com is the super admin with full rights
+2. Admin can upload media (sermons, podcasts, music, worship sessions)
+3. Admin can create devotions, news articles, and manage all content
+4. Users can chat in real-time in community channels
+5. Users can submit prayers and vote on them
+6. Users can join the In for Christ movement with challenges
+7. Everything works end-to-end with zero errors
+8. The system is ready for deployment
+
+YOUR TASK: Complete the entire setup in a single, cohesive implementation:
+
+==================================================
+STEP 1: CREATE ADMIN ACCOUNT SYSTEM
+==================================================
+
+You will create/update these files to establish admin account:
+
+FILE: prisma/schema.prisma
+- Update User model with: role (ADMIN|USER|MODERATOR), isAdmin (Boolean), passwordHash (String)
+- Ensure all relations are properly connected (prayers, messages, challenges, etc.)
+- This is the database structure for admin control
+
+FILE: prisma/seed.ts
+- Create a seeding script that runs once
+- Automatically creates admin user with email: chegembugua97@gmail.com
+- Generate temporary password: AdminChrist2024!@# (user must change on first login)
+- Set isAdmin = true, role = "ADMIN"
+- This script runs with: npm run seed
+
+FILE: package.json
+- Add script: "seed": "node -r ts-node/register prisma/seed.ts"
+- Ensure all dependencies exist (prisma, @prisma/client, bcryptjs)
+
+Run migration:
+npx prisma migrate dev --name add_admin_system
+
+==================================================
+STEP 2: ADMIN AUTHENTICATION & AUTHORIZATION
+==================================================
+
+FILE: lib/auth/requireAdmin.ts
+- Create function that checks if logged-in user is admin
+- Used in all /admin routes to verify authorization
+- Returns 403 Forbidden if user is not admin
+- This protects all admin pages
+
+FILE: lib/auth/checkAdminAccess.ts
+- Client-side function to check if current user is admin
+- Returns boolean for conditional rendering
+- Used in components to show/hide admin features
+
+FILE: app/api/auth/check-admin/route.ts
+- POST endpoint that returns { isAdmin: true|false }
+- Called by frontend to verify admin status
+- Used in navbar to show admin link if applicable
+
+FILE: middleware.ts
+- Ensure middleware redirects non-admin users away from /admin routes
+- Middleware should be in root directory (not app/)
+- Protects all admin dashboard routes
+
+FILE: app/unauthorized/page.tsx
+- Error page shown when non-admin tries to access /admin
+- Shows message: "You don't have permission. Admin privileges required."
+- Provides link back to home
+
+==================================================
+STEP 3: ADMIN DASHBOARD COMPLETE
+==================================================
+
+FILE: app/admin/page.tsx (Dashboard)
+- Shows: Total users, total prayers, active challenges, messages, media uploaded
+- Shows: Recent activity feed
+- Quick links to: Media Manager, Devotions, News, Prayer Moderation
+- Display all stats in card format
+
+FILE: app/admin/layout.tsx (Navigation)
+- Left sidebar with navigation to: Dashboard, Media, Devotions, News, Prayers, Chat Moderation, Analytics
+- Top navbar showing logged-in admin name
+- Log out button in top right
+- Mobile hamburger menu for sidebar
+
+FILE: components/admin/StatCard.tsx
+- Reusable card component showing: Icon, number, label, description
+- Used in dashboard for stats display
+- Hover effect with gold glow
+
+==================================================
+STEP 4: ADMIN CONTENT MANAGEMENT
+==================================================
+
+All admin features must work perfectly:
+
+MEDIA MANAGEMENT (/admin/media):
+- Upload sermons, podcasts, music, worship sessions
+- Upload to Supabase Storage
+- Manage title, description, category, speaker/artist
+- Edit and delete media
+- Publish/unpublish toggle
+- Display all media in searchable table
+
+DEVOTIONS MANAGEMENT (/admin/devotions):
+- Create daily devotions with verse, title, reflection
+- Set publish date
+- Edit existing devotions
+- Delete devotions
+- View list of all devotions by date
+
+NEWS MANAGEMENT (/admin/news):
+- Create articles with title, slug (auto-generated), excerpt, category
+- Upload featured image
+- Rich editor for article content
+- Publish/draft toggle
+- Edit and delete articles
+- View all articles with status
+
+==================================================
+STEP 5: VERIFY ALL USER FEATURES WORK
+==================================================
+
+PRAYER WALL (/community/prayer):
+- Users can submit prayer requests
+- View list of active prayers
+- Vote "I Prayed" on each prayer
+- See prayer count and who prayed
+- Mark prayers as answered
+- Filter by category (Health, Family, Ministry, etc.)
+- All prayers appear in real-time
+
+COMMUNITY CHAT (/community/chat):
+- Users can access chat rooms (General, Prayer Support, Worship & Praise)
+- Send messages in real-time (via Supabase Realtime)
+- See messages from other users immediately
+- Display timestamps and user avatars
+- Delete own messages
+- Multiple users can chat simultaneously
+
+MOVEMENT SYSTEM (/movement):
+- Users can join the In for Christ movement
+- Enroll in 21-day and 40-day challenges
+- Track progress with calendar view
+- Mark days as completed
+- See challenge completion percentage
+- View testimonies from other members
+
+USER PROFILE (/profile):
+- Display user avatar, name, email
+- Show stats: prayers shared, challenge days, prayers answered
+- Allow edit of profile (name, bio, avatar)
+- Access settings (notifications, privacy)
+- View my prayers, my challenges, saved content
+
+==================================================
+STEP 6: ENSURE ZERO ERRORS
+==================================================
+
+FILE: .env.example
+- Document all required environment variables
+- Show format for: SUPABASE_URL, SUPABASE_KEY, DATABASE_URL, STRIPE_KEY, etc.
+- DO NOT include actual secrets
+
+FILE: .gitignore
+- Ensure .env.local is NOT committed to git
+- Include node_modules, .next, build artifacts
+- Include IDE files (.vscode, .idea)
+
+FILE: next.config.js
+- Configure image optimization for Supabase URLs
+- Enable SWC minification
+- Add security headers
+
+FILE: tsconfig.json
+- Strict mode enabled
+- Path aliases configured (@/* for imports)
+- Target: ES2017 or higher
+
+TESTING:
+- npm install (must complete without errors)
+- npm run build (must complete with zero errors)
+- npm run dev (must start on localhost:3000)
+- No TypeScript errors: npx tsc --noEmit (must pass)
+- Check browser console (F12) - NO RED ERRORS
+
+==================================================
+STEP 7: ADMIN CAPABILITIES
+==================================================
+
+Your admin account (chegembugua97@gmail.com) will have these powers:
+
+CONTENT CREATION:
+✅ Upload unlimited sermons
+✅ Upload unlimited podcasts
+✅ Upload unlimited worship music
+✅ Create daily devotions (one per day)
+✅ Create unlimited news articles
+✅ Manage all media (edit/delete)
+✅ Publish/unpublish any content
+
+COMMUNITY MANAGEMENT:
+✅ View all prayers
+✅ View all chat messages
+✅ Moderate inappropriate content
+✅ See user statistics
+✅ Track prayer answers
+
+ADMIN MANAGEMENT:
+✅ View admin dashboard
+✅ Access admin settings
+✅ (Future: Add other admins)
+✅ (Future: Set admin permissions)
+
+==================================================
+STEP 8: FIRST TIME ADMIN LOGIN FLOW
+==================================================
+
+When chegembugua97@gmail.com logs in for first time:
+
+1. Seed script creates account with temp password
+2. Admin logs in with: email + AdminChrist2024!@#
+3. System prompts: "Please change your temporary password"
+4. Admin enters new password (secure)
+5. Password is hashed and saved
+6. Admin is redirected to /admin dashboard
+7. All features are immediately accessible
+
+==================================================
+STEP 9: COMPREHENSIVE TESTING
+==================================================
+
+BEFORE DEPLOYMENT, verify this complete flow:
+
+LOGIN TEST:
+- [ ] Visit localhost:3000
+- [ ] Click "Start Your Journey"
+- [ ] Sign in with: chegembugua97@gmail.com + temp password
+- [ ] Successfully logged in
+- [ ] Change password in settings
+- [ ] Log out and back in with new password
+
+ADMIN UPLOAD TEST:
+- [ ] Go to /admin/media
+- [ ] Upload test sermon (audio file)
+- [ ] Fill in details (title, category, speaker)
+- [ ] Click save
+- [ ] Go to /sermons - see new sermon
+- [ ] Click play - audio plays
+- [ ] Go back to /admin/media - edit sermon
+- [ ] Change title
+- [ ] Save
+- [ ] Verify change on /sermons
+- [ ] Go back to /admin/media - delete sermon
+- [ ] Confirm deletion
+- [ ] Verify removed from /sermons
+
+DEVOTION TEST:
+- [ ] Go to /admin/devotions
+- [ ] Create new devotion: verse + reflection
+- [ ] Publish
+- [ ] Check /devotions - see new devotion
+- [ ] Read devotion detail
+- [ ] Go back to admin
+- [ ] Edit devotion
+- [ ] Delete devotion
+- [ ] Verify removed from /devotions
+
+NEWS TEST:
+- [ ] Go to /admin/news
+- [ ] Create article with title, slug, image, content
+- [ ] Publish
+- [ ] Check /news - see article
+- [ ] Click article - read detail
+- [ ] Go back to admin - edit article
+- [ ] Delete article
+- [ ] Verify removed from /news
+
+PRAYER WALL TEST (as regular user):
+- [ ] Create new account (different email)
+- [ ] Log in
+- [ ] Go to /community/prayer
+- [ ] Click "Share Prayer Request"
+- [ ] Submit prayer
+- [ ] See on prayer wall
+- [ ] Click "I Prayed"
+- [ ] Vote count increments
+- [ ] Go back to /admin (logged in as admin)
+- [ ] See prayer in moderation queue (if applicable)
+
+CHAT TEST:
+- [ ] Open two browser windows
+- [ ] Log into account 1 in first window
+- [ ] Log into different account in second window
+- [ ] Go to /community/chat in both windows
+- [ ] Send message from window 1
+- [ ] See message appear in real-time in window 2
+- [ ] Send message from window 2
+- [ ] See message appear in real-time in window 1
+
+RESPONSIVE TEST:
+- [ ] View on mobile (375px) - all features work
+- [ ] View on tablet (768px) - all features work
+- [ ] View on desktop (1200px) - all features work
+- [ ] Click all navigation links - navigate correctly
+- [ ] No broken images or layout issues
+
+ERROR HANDLING:
+- [ ] Try accessing /admin without being admin - shows 403
+- [ ] Try uploading invalid file - shows error message
+- [ ] Try submitting form without required fields - shows validation error
+- [ ] Check browser console (F12) - NO RED ERRORS
+
+==================================================
+FINAL DEPLOYMENT PREP
+==================================================
+
+FILE: DEPLOYMENT.md
+- Document all steps to deploy to Vercel
+- List required environment variables
+- Explain how to set up Supabase
+- Provide troubleshooting guide
+
+FILE: ADMIN_GUIDE.md
+- Instructions for admin to use all features
+- Screenshots or descriptions of each admin page
+- Quick reference for common tasks
+
+Create package scripts:
+- "build": "next build" (must succeed)
+- "start": "next start" (for production)
+- "dev": "next dev" (for development)
+- "seed": "node -r ts-node/register prisma/seed.ts" (setup admin)
+- "prisma:migrate": "prisma migrate dev" (run migrations)
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+Your project is ready when:
+✅ npm run seed completes successfully
+✅ npm run dev starts without errors
+✅ Login works with chegembugua97@gmail.com
+✅ Admin dashboard is accessible at /admin
+✅ Admin can upload sermons, podcasts, music
+✅ Admin can create devotions and news
+✅ Users can submit prayers
+✅ Users can chat in real-time
+✅ All pages are responsive (mobile, tablet, desktop)
+✅ No TypeScript errors
+✅ No console errors (F12)
+✅ All navigation links work
+✅ Features work as documented above
+
+When ALL criteria are met, your system is production-ready.
+
+==================================================
+WHAT YOU GET
+==================================================
+
+After this prompt runs, you will have:
+
+1. ✅ ADMIN ACCOUNT
+   - Email: chegembugua97@gmail.com
+   - Secure password system
+   - Full admin rights
+
+2. ✅ ADMIN DASHBOARD
+   - Upload sermons, podcasts, music, worship
+   - Create devotions and news articles
+   - Manage all content
+   - View analytics
+
+3. ✅ WORKING FEATURES
+   - Prayer wall (users submit prayers)
+   - Community chat (real-time messaging)
+   - In for Christ movement (challenges)
+   - User profiles (edit info, view activity)
+   - Landing page (hero + features)
+   - Navbar + Footer (navigation)
+
+4. ✅ ZERO ERRORS
+   - Build succeeds
+   - All pages load
+   - All features work
+   - Console is clean
+   - TypeScript passes
+
+5. ✅ DEPLOYMENT READY
+   - Environment variables documented
+   - Production config complete
+   - Ready for Vercel upload
+   - Testing checklist provided
+
+==================================================
+FINAL NOTE
+==================================================
+
+This single prompt will:
+1. Set up your admin account securely
+2. Create all admin features to manage content
+3. Enable users to pray, chat, and grow in community
+4. Ensure zero errors before deployment
+5. Prepare everything for production
+
+Everything works end-to-end with your admin account in control.
+
+Output: Complete, production-ready system with all features working perfectly.

@@ -1,99 +1,251 @@
-import { Router } from "express";
-import { requireAdmin } from "../middlewares/requireAuth";
+import { Router, Request } from "express";
+import { db } from "../lib/db";
+import { media, devotions, newsArticles, users, prayerRequests, chatMessages } from "@workspace/db/schema";
+import { eq, desc, count, ilike, or } from "drizzle-orm";
+import { requireAdmin, AuthUser } from "../middlewares/requireAuth";
 
 const router = Router();
+type AuthReq = Request & { user: AuthUser };
 
-// Guard all /admin/* routes with admin middleware.
-// In dev (no Supabase configured) this passes through.
-// In production it requires a valid Bearer token with admin role.
+// All admin routes require admin role
 router.use("/admin", requireAdmin);
 
-const stubMedia = () => ({
-  id: `media-${Date.now()}`,
-  title: "",
-  type: "SERMON",
-  audioUrl: "",
-  coverImage: "",
-  published: false,
-  createdAt: new Date().toISOString(),
+// ─── Dashboard stats ──────────────────────────────────────────────────────────
+
+router.get("/admin/stats", async (_req, res) => {
+  try {
+    const [[{ userCount }], [{ mediaCount }], [{ devotionCount }], [{ prayerCount }], [{ messageCount }]] =
+      await Promise.all([
+        db.select({ userCount: count() }).from(users),
+        db.select({ mediaCount: count() }).from(media),
+        db.select({ devotionCount: count() }).from(devotions),
+        db.select({ prayerCount: count() }).from(prayerRequests),
+        db.select({ messageCount: count() }).from(chatMessages),
+      ]);
+    return res.json({ userCount, mediaCount, devotionCount, prayerCount, messageCount });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-const stubDevotion = () => ({
-  id: `devotion-${Date.now()}`,
-  title: "",
-  content: "",
-  scriptureReference: "",
-  published: false,
-  createdAt: new Date().toISOString(),
+// ─── Media management ─────────────────────────────────────────────────────────
+
+router.get("/admin/media", async (req, res) => {
+  const q = (req.query.q as string) ?? "";
+  const limit = Math.min(Number(req.query.limit ?? 50), 100);
+  const offset = Number(req.query.offset ?? 0);
+  try {
+    const rows = await db
+      .select()
+      .from(media)
+      .where(q ? or(ilike(media.title, `%${q}%`), ilike(media.category, `%${q}%`)) : undefined)
+      .orderBy(desc(media.createdAt))
+      .limit(limit)
+      .offset(offset);
+    const [{ total }] = await db.select({ total: count() }).from(media);
+    return res.json({ media: rows, total });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-const stubArticle = () => ({
-  id: `article-${Date.now()}`,
-  slug: `article-${Date.now()}`,
-  title: "",
-  content: "",
-  published: false,
-  createdAt: new Date().toISOString(),
+router.post("/admin/media", async (req, res) => {
+  const body = req.body as Partial<typeof media.$inferInsert>;
+  try {
+    const [created] = await db.insert(media).values({
+      title: body.title ?? "Untitled",
+      description: body.description,
+      speaker: body.speaker ?? "",
+      coverImage: body.coverImage ?? "",
+      audioUrl: body.audioUrl ?? "",
+      videoUrl: body.videoUrl,
+      type: body.type ?? "SERMON",
+      category: body.category ?? "",
+      duration: body.duration,
+      isPublished: body.isPublished ?? false,
+      publishedAt: body.isPublished ? new Date() : undefined,
+      podcastShowId: body.podcastShowId,
+    }).returning();
+    return res.status(201).json({ media: created });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/media", (_req, res) => {
-  res.json({ media: [], total: 0 });
+router.get("/admin/media/:id", async (req, res) => {
+  try {
+    const row = await db.query.media.findFirst({ where: eq(media.id, req.params.id) });
+    if (!row) return res.status(404).json({ error: "Media not found" });
+    return res.json({ media: row });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.post("/admin/media", (_req, res) => {
-  res.status(201).json({ media: stubMedia() });
+router.patch("/admin/media/:id", async (req, res) => {
+  const body = req.body as Partial<typeof media.$inferInsert>;
+  try {
+    const [updated] = await db
+      .update(media)
+      .set({ ...body, updatedAt: new Date(), publishedAt: body.isPublished ? new Date() : undefined })
+      .where(eq(media.id, req.params.id))
+      .returning();
+    if (!updated) return res.status(404).json({ error: "Media not found" });
+    return res.json({ media: updated });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/media/:id", (req, res) => {
-  res.status(404).json({ error: "Media not found", id: req.params.id });
+router.delete("/admin/media/:id", async (req, res) => {
+  try {
+    await db.delete(media).where(eq(media.id, req.params.id));
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.patch("/admin/media/:id", (_req, res) => {
-  res.json({ media: stubMedia() });
+// ─── Devotions management ─────────────────────────────────────────────────────
+
+router.get("/admin/devotions", async (_req, res) => {
+  try {
+    const rows = await db.select().from(devotions).orderBy(desc(devotions.date));
+    return res.json({ devotions: rows, total: rows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.delete("/admin/media/:id", (_req, res) => {
-  res.json({ success: true });
+router.post("/admin/devotions", async (req, res) => {
+  const body = req.body as Partial<typeof devotions.$inferInsert>;
+  try {
+    const [created] = await db.insert(devotions).values({
+      title: body.title ?? "Untitled",
+      verse: body.verse ?? "",
+      verseText: body.verseText,
+      reflection: body.reflection ?? "",
+      date: body.date ? new Date(body.date as unknown as string) : new Date(),
+      imageUrl: body.imageUrl,
+      isPublished: body.isPublished ?? false,
+      publishedAt: body.isPublished ? new Date() : undefined,
+    }).returning();
+    return res.status(201).json({ devotion: created });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/devotions", (_req, res) => {
-  res.json({ devotions: [], total: 0 });
+router.get("/admin/devotions/:id", async (req, res) => {
+  try {
+    const row = await db.query.devotions.findFirst({ where: eq(devotions.id, req.params.id) });
+    if (!row) return res.status(404).json({ error: "Devotion not found" });
+    return res.json({ devotion: row });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.post("/admin/devotions", (_req, res) => {
-  res.status(201).json({ devotion: stubDevotion() });
+router.patch("/admin/devotions/:id", async (req, res) => {
+  const body = req.body as Partial<typeof devotions.$inferInsert>;
+  try {
+    const [updated] = await db
+      .update(devotions)
+      .set({ ...body, updatedAt: new Date() })
+      .where(eq(devotions.id, req.params.id))
+      .returning();
+    if (!updated) return res.status(404).json({ error: "Devotion not found" });
+    return res.json({ devotion: updated });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/devotions/:id", (req, res) => {
-  res.status(404).json({ error: "Devotion not found", id: req.params.id });
+router.delete("/admin/devotions/:id", async (req, res) => {
+  try {
+    await db.delete(devotions).where(eq(devotions.id, req.params.id));
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.patch("/admin/devotions/:id", (_req, res) => {
-  res.json({ devotion: stubDevotion() });
+// ─── News management ──────────────────────────────────────────────────────────
+
+router.get("/admin/news", async (_req, res) => {
+  try {
+    const rows = await db.select().from(newsArticles).orderBy(desc(newsArticles.createdAt));
+    return res.json({ news: rows, total: rows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.delete("/admin/devotions/:id", (_req, res) => {
-  res.json({ success: true });
+router.post("/admin/news", async (req, res) => {
+  const body = req.body as Partial<typeof newsArticles.$inferInsert>;
+  const slug = body.slug ?? (body.title ?? "untitled").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  try {
+    const [created] = await db.insert(newsArticles).values({
+      title: body.title ?? "Untitled",
+      slug,
+      excerpt: body.excerpt ?? "",
+      content: body.content ?? "",
+      coverImage: body.coverImage ?? "",
+      category: body.category ?? "General",
+      author: body.author,
+      isPublished: body.isPublished ?? false,
+      isFeature: body.isFeature ?? false,
+      publishedAt: body.isPublished ? new Date() : undefined,
+    }).returning();
+    return res.status(201).json({ article: created });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/news", (_req, res) => {
-  res.json({ news: [], total: 0 });
+router.get("/admin/news/:slug", async (req, res) => {
+  try {
+    const row = await db.query.newsArticles.findFirst({ where: eq(newsArticles.slug, req.params.slug) });
+    if (!row) return res.status(404).json({ error: "Article not found" });
+    return res.json({ article: row });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.post("/admin/news", (_req, res) => {
-  res.status(201).json({ article: stubArticle() });
+router.patch("/admin/news/:slug", async (req, res) => {
+  const body = req.body as Partial<typeof newsArticles.$inferInsert>;
+  try {
+    const [updated] = await db
+      .update(newsArticles)
+      .set({ ...body, updatedAt: new Date() })
+      .where(eq(newsArticles.slug, req.params.slug))
+      .returning();
+    if (!updated) return res.status(404).json({ error: "Article not found" });
+    return res.json({ article: updated });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/admin/news/:slug", (req, res) => {
-  res.status(404).json({ error: "Article not found", slug: req.params.slug });
+router.delete("/admin/news/:slug", async (req, res) => {
+  try {
+    await db.delete(newsArticles).where(eq(newsArticles.slug, req.params.slug));
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.patch("/admin/news/:slug", (_req, res) => {
-  res.json({ article: stubArticle() });
-});
+// ─── Users listing ────────────────────────────────────────────────────────────
 
-router.delete("/admin/news/:slug", (_req, res) => {
-  res.json({ success: true });
+router.get("/admin/users", async (_req, res) => {
+  try {
+    const rows = await db.select().from(users).orderBy(desc(users.createdAt));
+    return res.json({ users: rows, total: rows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
 export default router;

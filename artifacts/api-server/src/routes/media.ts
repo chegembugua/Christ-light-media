@@ -1,33 +1,107 @@
 import { Router } from "express";
+import { db } from "../lib/db";
+import { media, podcastShows } from "@workspace/db/schema";
+import { eq, ilike, or, and, desc, count } from "drizzle-orm";
 
 const router = Router();
 
-router.get("/media", (_req, res) => {
-  res.json({ media: [], total: 0 });
+router.get("/media", async (req, res) => {
+  const { type, category, q, limit: lim, offset: off } = req.query as Record<string, string>;
+  const limit = Math.min(Number(lim ?? 20), 100);
+  const offset = Number(off ?? 0);
+  try {
+    const conditions = [
+      eq(media.isPublished, true),
+      ...(type ? [eq(media.type, type)] : []),
+      ...(category ? [ilike(media.category, `%${category}%`)] : []),
+      ...(q ? [or(ilike(media.title, `%${q}%`), ilike(media.speaker, `%${q}%`))] : []),
+    ];
+    const where = and(...conditions);
+    const [rows, [{ total }]] = await Promise.all([
+      db.select().from(media).where(where).orderBy(desc(media.createdAt)).limit(limit).offset(offset),
+      db.select({ total: count() }).from(media).where(where),
+    ]);
+    return res.json({ media: rows, total });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/media/artists", (_req, res) => {
-  res.json({ artists: [] });
+router.get("/media/featured", async (_req, res) => {
+  try {
+    const rows = await db.select().from(media).where(eq(media.isPublished, true)).orderBy(desc(media.playCount)).limit(6);
+    return res.json({ media: rows });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/media/speakers", (_req, res) => {
-  res.json({ speakers: [] });
+router.get("/media/:id", async (req, res) => {
+  try {
+    const row = await db.query.media.findFirst({ where: eq(media.id, req.params.id) });
+    if (!row || !row.isPublished) return res.status(404).json({ error: "Media not found" });
+    return res.json({ media: row });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/media/leaders", (_req, res) => {
-  res.json({ leaders: [] });
+router.post("/media/:id/play", async (req, res) => {
+  try {
+    const row = await db.query.media.findFirst({ where: eq(media.id, req.params.id) });
+    if (!row) return res.status(404).json({ error: "Media not found" });
+    await db.update(media).set({ playCount: row.playCount + 1 }).where(eq(media.id, req.params.id));
+    return res.json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.get("/media/favorites", (_req, res) => {
-  res.json({ favorites: [] });
+router.get("/sermons", async (req, res) => {
+  const limit = Math.min(Number(req.query.limit ?? 20), 100);
+  const offset = Number(req.query.offset ?? 0);
+  try {
+    const [rows, [{ total }]] = await Promise.all([
+      db.select().from(media).where(and(eq(media.isPublished, true), eq(media.type, "SERMON"))).orderBy(desc(media.createdAt)).limit(limit).offset(offset),
+      db.select({ total: count() }).from(media).where(and(eq(media.isPublished, true), eq(media.type, "SERMON"))),
+    ]);
+    return res.json({ media: rows, total });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.post("/media/favorites", (_req, res) => {
-  res.json({ ok: true });
+router.get("/music", async (req, res) => {
+  const limit = Math.min(Number(req.query.limit ?? 20), 100);
+  const offset = Number(req.query.offset ?? 0);
+  try {
+    const [rows, [{ total }]] = await Promise.all([
+      db.select().from(media).where(and(eq(media.isPublished, true), eq(media.type, "MUSIC"))).orderBy(desc(media.createdAt)).limit(limit).offset(offset),
+      db.select({ total: count() }).from(media).where(and(eq(media.isPublished, true), eq(media.type, "MUSIC"))),
+    ]);
+    return res.json({ media: rows, total });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
-router.delete("/media/favorites/:id", (_req, res) => {
-  res.json({ ok: true });
+router.get("/podcasts", async (_req, res) => {
+  try {
+    const shows = await db.select().from(podcastShows).limit(20);
+    return res.json({ shows, total: shows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+router.get("/worship", async (req, res) => {
+  const limit = Math.min(Number(req.query.limit ?? 20), 100);
+  try {
+    const rows = await db.select().from(media).where(and(eq(media.isPublished, true), eq(media.type, "WORSHIP"))).orderBy(desc(media.createdAt)).limit(limit);
+    return res.json({ media: rows, total: rows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
 });
 
 export default router;

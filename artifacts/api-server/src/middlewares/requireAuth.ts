@@ -1,47 +1,71 @@
 import { Request, Response, NextFunction } from "express";
 
-/**
- * requireAuth — validates a Bearer token is present.
- * When Supabase is configured (SUPABASE_SERVICE_ROLE_KEY set), the token would
- * be verified against Supabase. In development without Supabase configured,
- * the middleware passes through to avoid blocking local development.
- */
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  const supabaseConfigured = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseConfigured) {
-    next();
-    return;
-  }
-
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-
-  // Token present — in production this should verify with Supabase JWT
-  next();
+export interface AuthUser {
+  id: string;
+  email: string;
+  role?: string;
 }
 
 /**
- * requireAdmin — validates a Bearer token and admin role.
- * Falls through in dev when Supabase is not configured.
+ * Parse a Supabase/JWT token without signature verification.
+ * Extracts sub (user id) and email from the payload.
+ * In production, replace with full JWT verification against Supabase.
  */
-export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  const supabaseConfigured = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseConfigured) {
-    next();
-    return;
+function parseJwt(token: string): AuthUser | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf8")) as {
+      sub?: string;
+      email?: string;
+      user_metadata?: { email?: string };
+    };
+    const id = payload.sub;
+    const email = payload.email ?? payload.user_metadata?.email;
+    if (!id || !email) return null;
+    return { id, email };
+  } catch {
+    return null;
   }
+}
 
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "chegembugua97@gmail.com")
+  .split(",")
+  .map((e) => e.trim().toLowerCase());
+
+export function getRequestUser(req: Request): AuthUser | null {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!authHeader?.startsWith("Bearer ")) return null;
+  const token = authHeader.slice(7);
+  const user = parseJwt(token);
+  if (!user) return null;
+  // Attach admin role based on email list
+  if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+    user.role = "ADMIN";
+  }
+  return user;
+}
+
+export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  const user = getRequestUser(req);
+  if (!user) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
+  (req as Request & { user: AuthUser }).user = user;
+  next();
+}
 
-  // Token present — in production this should verify admin role from Supabase claims
+export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  const user = getRequestUser(req);
+  if (!user) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  if (user.role !== "ADMIN") {
+    res.status(403).json({ error: "Forbidden: admin access required" });
+    return;
+  }
+  (req as Request & { user: AuthUser }).user = user;
   next();
 }
