@@ -1,10 +1,4 @@
-import type { Metadata } from 'next';
 import { Link } from 'wouter';
-
-export const metadata: Metadata = {
-  title: 'Privacy Policy',
-  description: 'Christ Light Media privacy policy.',
-};
 
 export default function PrivacyPage() {
   return (

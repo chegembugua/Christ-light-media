@@ -37,18 +37,22 @@ export default function ScrollReveal({
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+  const anim = animation ? ANIMATION_MAP[animation] : DIRECTION_MAP[direction];
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          (entry.target as HTMLElement).style.transitionDelay = `${delay}ms`;
-          (entry.target as HTMLElement).classList.add('sr-visible');
+          const el = entry.target as HTMLElement;
+          el.style.transitionDelay = `${delay}ms`;
+          // Remove the hidden classes and add the visible ones directly
+          anim.base.split(/\s+/).filter(Boolean).forEach(c => el.classList.remove(c));
+          anim.visible.split(/\s+/).filter(Boolean).forEach(c => el.classList.add(c));
           observerRef.current?.unobserve(entry.target);
         }
       });
     },
-    [delay]
+    [delay, anim]
   );
 
   useEffect(() => {
@@ -62,17 +66,10 @@ export default function ScrollReveal({
     return () => observerRef.current?.disconnect();
   }, [handleIntersect, threshold]);
 
-  const anim = animation ? ANIMATION_MAP[animation] : DIRECTION_MAP[direction];
-
   return (
     <div
       ref={ref}
-      className={`
-        transition-all duration-700 cubic-bezier(0.16, 1, 0.3, 1)
-        ${anim.base}
-        sr-visible:${anim.visible}
-        ${className ?? ''}
-      `}
+      className={`transition-all duration-700 ${anim.base} ${className ?? ''}`}
     >
       {children}
     </div>

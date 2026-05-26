@@ -1,10 +1,4 @@
-import type { Metadata } from 'next';
 import { Link } from 'wouter';
-
-export const metadata: Metadata = {
-  title: 'Terms of Service',
-  description: 'Christ Light Media terms of service.',
-};
 
 export default function TermsPage() {
   return (
