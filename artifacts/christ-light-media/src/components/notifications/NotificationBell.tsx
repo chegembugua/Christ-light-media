@@ -1,6 +1,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation } from 'wouter';
+import { authFetch } from '@/lib/api/authFetch';
 import { 
   Bell, 
   BookOpen, 
@@ -29,7 +30,7 @@ export default function NotificationBell() {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/notifications');
+      const res = await authFetch('/api/notifications');
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
@@ -93,7 +94,7 @@ export default function NotificationBell() {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
     
     try {
-      const res = await fetch('/api/notifications', {
+      const res = await authFetch('/api/notifications', {
         method: 'PATCH',
       });
       if (!res.ok) {
@@ -116,7 +117,7 @@ export default function NotificationBell() {
       );
       
       try {
-        const res = await fetch(`/api/notifications/${notification.id}/read`, {
+        const res = await authFetch(`/api/notifications/${notification.id}/read`, {
           method: 'PATCH',
         });
         if (!res.ok) {

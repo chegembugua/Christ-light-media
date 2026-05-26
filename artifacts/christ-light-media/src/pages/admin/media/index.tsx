@@ -9,6 +9,7 @@ import { MediaTable } from '@/components/admin/MediaTable';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/utils';
+import { authFetch } from '@/lib/api/authFetch';
 
 type MediaType = 'SERMON' | 'PODCAST' | 'MUSIC' | 'WORSHIP';
 
@@ -93,7 +94,7 @@ export default function AdminMediaPage() {
   const fetchMedia = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/admin/media');
+      const response = await authFetch('/api/admin/media');
       const data = (await response.json()) as { media?: MediaItem[]; error?: string };
 
       if (!response.ok) {
@@ -168,7 +169,7 @@ export default function AdminMediaPage() {
       if (form.file) formData.append('file', form.file);
       if (form.image) formData.append('image', form.image);
 
-      const response = await fetch('/api/admin/media', {
+      const response = await authFetch('/api/admin/media', {
         method: 'POST',
         body: formData,
       });
@@ -194,7 +195,7 @@ export default function AdminMediaPage() {
     setMedia((current) => current.filter((item) => item.id !== id));
 
     try {
-      const response = await fetch(`/api/admin/media/${id}`, { method: 'DELETE' });
+      const response = await authFetch(`/api/admin/media/${id}`, { method: 'DELETE' });
       const data = (await response.json()) as { success?: boolean; error?: string };
 
       if (!response.ok || !data.success) {

@@ -58,7 +58,7 @@ router.get("/auth/profile", async (req, res) => {
   const requestedId = req.query.id as string | undefined;
   if (!requestedId) return res.status(400).json({ error: "User ID required" });
 
-  const caller = getRequestUser(req);
+  const caller = await getRequestUser(req);
   if (!caller || caller.id !== requestedId) {
     return res.status(401).json({ error: "Unauthorized" });
   }
@@ -77,7 +77,7 @@ router.post("/auth/create-profile", async (req, res) => {
   const { id, email, fullName } = req.body as { id?: string; email?: string; fullName?: string };
   if (!id || !email) return res.status(400).json({ error: "id and email are required" });
 
-  const caller = getRequestUser(req);
+  const caller = await getRequestUser(req);
   if (!caller || caller.id !== id) {
     return res.status(401).json({ error: "Unauthorized" });
   }

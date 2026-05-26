@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select } from '@/components/ui/Select';
+import { authFetch } from '@/lib/api/authFetch';
 
 const DURATION_OPTIONS = [
   { value: 'Ongoing', label: 'Ongoing' },
@@ -70,7 +71,7 @@ export default function NewPrayerPage() {
     if (!validate()) return;
 
     // Check auth before submitting
-    const { error } = await fetch('/api/auth/profile').then((r) => r.json());
+    const { error } = await authFetch('/api/auth/profile').then((r) => r.json());
     if (error) {
       toast.error('Please sign in to submit a prayer request.');
       navigate('/login');
@@ -79,7 +80,7 @@ export default function NewPrayerPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/community/prayers', {
+      const res = await authFetch('/api/community/prayers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'wouter';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
+import { authFetch } from '@/lib/api/authFetch';
 import {
   Heart,
   Clock,
@@ -70,7 +71,7 @@ export default function PrayerDetailPage() {
 
     try {
       const method = hasVoted ? 'DELETE' : 'POST';
-      const res = await fetch(`/api/community/prayers/${id}/pray`, { method });
+      const res = await authFetch(`/api/community/prayers/${id}/pray`, { method });
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error ?? 'Something went wrong.');

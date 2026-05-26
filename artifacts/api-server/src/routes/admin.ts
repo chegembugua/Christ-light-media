@@ -182,15 +182,17 @@ router.get("/admin/news", async (_req, res) => {
 });
 
 router.post("/admin/news", async (req, res) => {
-  const body = req.body as Partial<typeof newsArticles.$inferInsert>;
+  const body = req.body as Partial<typeof newsArticles.$inferInsert> & { featuredImage?: string };
   const slug = body.slug ?? (body.title ?? "untitled").toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  // Accept either coverImage (schema name) or featuredImage (form field name)
+  const coverImage = body.coverImage ?? body.featuredImage ?? "";
   try {
     const [created] = await db.insert(newsArticles).values({
       title: body.title ?? "Untitled",
       slug,
       excerpt: body.excerpt ?? "",
       content: body.content ?? "",
-      coverImage: body.coverImage ?? "",
+      coverImage,
       category: body.category ?? "General",
       author: body.author,
       isPublished: body.isPublished ?? false,
@@ -214,11 +216,14 @@ router.get("/admin/news/:slug", async (req, res) => {
 });
 
 router.patch("/admin/news/:slug", async (req, res) => {
-  const body = req.body as Partial<typeof newsArticles.$inferInsert>;
+  const body = req.body as Partial<typeof newsArticles.$inferInsert> & { featuredImage?: string };
+  // Normalize featuredImage → coverImage
+  const { featuredImage, ...rest } = body;
+  const patch = featuredImage !== undefined ? { ...rest, coverImage: featuredImage } : rest;
   try {
     const [updated] = await db
       .update(newsArticles)
-      .set({ ...body, updatedAt: new Date() })
+      .set({ ...patch, updatedAt: new Date() })
       .where(eq(newsArticles.slug, req.params.slug))
       .returning();
     if (!updated) return res.status(404).json({ error: "Article not found" });

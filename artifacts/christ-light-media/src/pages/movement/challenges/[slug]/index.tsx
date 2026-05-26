@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'wouter';
 import { useParams, useLocation } from 'wouter';
+import { authFetch } from '@/lib/api/authFetch';
 import {
   ArrowLeft, Star, Users, Clock, CheckCircle, ChevronDown, ChevronUp,
   Share2, BookOpen, Flame, Zap, Eye,
@@ -150,7 +151,7 @@ export default function ChallengePage() {
 
     if (user) {
       try {
-        const res = await fetch(`/api/movement/challenges/${slug}/progress`);
+        const res = await authFetch(`/api/movement/challenges/${slug}/progress`);
         if (res.ok) {
           const data = await res.json();
           setEnrollment(data.enrollment);
@@ -175,7 +176,7 @@ export default function ChallengePage() {
     if (!committed) { toast.error('Please confirm your commitment first.'); return; }
     setEnrolling(true);
     try {
-      const res = await fetch(`/api/movement/challenges/${slug}/enroll`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const res = await authFetch(`/api/movement/challenges/${slug}/enroll`, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
       if (res.ok) {
         const data = await res.json();
         setEnrollment(data.enrollment);
@@ -194,7 +195,7 @@ export default function ChallengePage() {
     if (enrollment.daysCompleted.includes(today)) { toast('Already marked today!'); return; }
     setMarkingDay(true);
     try {
-      const res = await fetch(`/api/movement/challenges/${slug}/progress`, {
+      const res = await authFetch(`/api/movement/challenges/${slug}/progress`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ day: today }),

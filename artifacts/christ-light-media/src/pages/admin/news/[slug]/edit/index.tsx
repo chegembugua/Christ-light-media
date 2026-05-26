@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { NewsForm, type News } from '@/components/admin/NewsForm';
+import { authFetch } from '@/lib/api/authFetch';
 
 export default function EditArticlePage() {
   const params = useParams<{ slug: string }>();
@@ -13,7 +14,7 @@ export default function EditArticlePage() {
   useEffect(() => {
     async function fetchArticle() {
       try {
-        const response = await fetch(`/api/admin/news/${params.slug}`);
+        const response = await authFetch(`/api/admin/news/${params.slug}`);
         const result = (await response.json()) as { article?: News; error?: string };
 
         if (response.status === 404) {

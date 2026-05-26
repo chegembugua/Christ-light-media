@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { authFetch } from '@/lib/api/authFetch';
 
 export type ChatMessage = {
   id: string;
@@ -50,7 +51,7 @@ export function useChat({ roomId, initialLimit = 50 }: UseChatOptions): UseChatR
       setError(null);
 
       try {
-        const res = await fetch(
+        const res = await authFetch(
           `/api/community/chat/${roomId}/messages?limit=${limit}&offset=${skip}`
         );
         const data = await res.json();
@@ -126,7 +127,7 @@ export function useChat({ roomId, initialLimit = 50 }: UseChatOptions): UseChatR
       if (trimmed.length > 500) return false;
 
       try {
-        const res = await fetch(`/api/community/chat/${roomId}/messages`, {
+        const res = await authFetch(`/api/community/chat/${roomId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: trimmed, roomId }),
@@ -147,7 +148,7 @@ export function useChat({ roomId, initialLimit = 50 }: UseChatOptions): UseChatR
     async (messageId: string): Promise<boolean> => {
       if (!roomId) return false;
       try {
-        const res = await fetch(
+        const res = await authFetch(
           `/api/community/chat/${roomId}/messages/${messageId}`,
           { method: 'DELETE' }
         );

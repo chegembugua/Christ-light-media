@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Disc3, Loader2, Shuffle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { usePlayer } from '@/context/PlayerContext';
+import { authFetch } from '@/lib/api/authFetch';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
 import { MusicCard } from '@/components/media/MusicCard';
@@ -164,7 +165,7 @@ export default function MusicPage() {
 
     toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
 
-    await fetch('/api/media/favorites', {
+    await authFetch('/api/media/favorites', {
       method: isFavorite ? 'DELETE' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mediaId: track.id }),

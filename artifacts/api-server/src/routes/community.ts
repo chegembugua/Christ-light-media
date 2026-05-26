@@ -118,7 +118,7 @@ router.delete("/community/chat/:roomId/messages/:messageId", requireAuth, async 
     const msg = await db.query.chatMessages.findFirst({ where: eq(chatMessages.id, messageId) });
     if (!msg) return res.status(404).json({ error: "Message not found" });
     // Only allow deleting own messages (admin can delete any)
-    const user = getRequestUser(req);
+    const user = await getRequestUser(req);
     if (msg.userId !== userId && user?.role !== "ADMIN") {
       return res.status(403).json({ error: "Forbidden" });
     }

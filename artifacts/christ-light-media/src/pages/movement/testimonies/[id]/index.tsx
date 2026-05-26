@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'wouter';
-;
+import { authFetch } from '@/lib/api/authFetch';
 import { useParams, useLocation } from 'wouter';
 import { ArrowLeft, Heart, Share2, Eye, MapPin, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -49,7 +49,7 @@ export default function TestimonyDetailPage() {
   const fetchTestimony = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/movement/testimonies/${id}`);
+      const res = await authFetch(`/api/movement/testimonies/${id}`);
       if (!res.ok) { navigate('/movement/testimonies'); return; }
       const data = await res.json();
       setTestimony(data.testimony);
@@ -68,7 +68,7 @@ export default function TestimonyDetailPage() {
     setReacted(true);
     setReactionCount((c) => c + 1);
     try {
-      await fetch(`/api/movement/testimonies/${id}/react`, { method: 'POST' });
+      await authFetch(`/api/movement/testimonies/${id}/react`, { method: 'POST' });
     } catch { /* silent */ }
     toast.success('Blessed by this story! 🙏');
   };

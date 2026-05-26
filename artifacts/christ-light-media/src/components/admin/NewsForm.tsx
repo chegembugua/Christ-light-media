@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { FileUploadInput } from '@/components/admin/FileUploadInput';
 import { generateSlug } from '@/lib/utils/slug';
+import { authFetch } from '@/lib/api/authFetch';
 
 export type News = {
   id: string;
@@ -138,7 +139,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
       const featuredImage = imageFile
         ? await readFileAsDataUrl(imageFile)
         : existingImage || undefined;
-      const response = await fetch(
+      const response = await authFetch(
         isEdit && article ? `/api/admin/news/${article.slug}` : '/api/admin/news',
         {
           method: isEdit ? 'PATCH' : 'POST',

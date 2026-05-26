@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
 import { DevotionForm, type Devotion } from '@/components/admin/DevotionForm';
+import { authFetch } from '@/lib/api/authFetch';
 
 type StatusFilter = 'all' | 'published' | 'draft';
 
@@ -52,7 +53,7 @@ export default function AdminDevotionsPage() {
   const fetchDevotions = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/devotions?status=${status}`);
+      const response = await authFetch(`/api/admin/devotions?status=${status}`);
       const result = (await response.json()) as { devotions?: Devotion[]; error?: string };
 
       if (!response.ok || !result.devotions) {
@@ -75,7 +76,7 @@ export default function AdminDevotionsPage() {
     if (!confirm(`Delete "${devotion.title}"?`)) return;
 
     try {
-      const response = await fetch(`/api/admin/devotions/${devotion.id}`, { method: 'DELETE' });
+      const response = await authFetch(`/api/admin/devotions/${devotion.id}`, { method: 'DELETE' });
       const result = (await response.json()) as { success?: boolean; error?: string };
 
       if (!response.ok || !result.success) {

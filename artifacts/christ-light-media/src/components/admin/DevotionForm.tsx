@@ -6,6 +6,7 @@ import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { authFetch } from '@/lib/api/authFetch';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { FileUploadInput } from '@/components/admin/FileUploadInput';
@@ -138,7 +139,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
         isPublished,
         imageUrl,
       };
-      const response = await fetch(
+      const response = await authFetch(
         isEdit && devotion ? `/api/admin/devotions/${devotion.id}` : '/api/admin/devotions',
         {
           method: isEdit ? 'PATCH' : 'POST',

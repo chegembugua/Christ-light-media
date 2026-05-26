@@ -5,6 +5,7 @@ import { useLocation } from 'wouter';
 import { Loader2, Camera, Trash2, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
+import { authFetch } from '@/lib/api/authFetch';
 import ScrollReveal from '@/components/animations/ScrollReveal'; // Added import
 
 interface UserProfile {
@@ -60,7 +61,7 @@ export default function EditProfilePage() {
     const fd = new FormData();
     fd.append('avatar', file);
     try {
-      const res = await fetch('/api/profile/avatar', { method: 'POST', body: fd });
+      const res = await authFetch('/api/profile/avatar', { method: 'POST', body: fd });
       const json = (await res.json()) as { user: UserProfile; error?: string };
       if (res.ok && json.user) {
         setProfile(json.user);
@@ -78,7 +79,7 @@ export default function EditProfilePage() {
 
   const handleDeleteAvatar = async () => {
     try {
-      const res = await fetch('/api/profile/avatar', { method: 'DELETE' });
+      const res = await authFetch('/api/profile/avatar', { method: 'DELETE' });
       const json = (await res.json()) as { user: UserProfile; error?: string };
       if (res.ok && json.user) {
         setProfile(json.user);
@@ -98,7 +99,7 @@ export default function EditProfilePage() {
     }
     setSaving(true);
     try {
-      const res = await fetch('/api/profile', {
+      const res = await authFetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

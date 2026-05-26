@@ -5,6 +5,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/Button';
 import { NewsForm, type News } from '@/components/admin/NewsForm';
+import { authFetch } from '@/lib/api/authFetch';
 
 type StatusFilter = 'all' | 'published' | 'draft';
 
@@ -52,7 +53,7 @@ export default function AdminNewsPage() {
   const fetchArticles = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/news?status=${status}`);
+      const response = await authFetch(`/api/admin/news?status=${status}`);
       const result = (await response.json()) as { news?: News[]; error?: string };
 
       if (!response.ok || !result.news) {
@@ -80,7 +81,7 @@ export default function AdminNewsPage() {
     if (!confirm(`Delete "${article.title}"?`)) return;
 
     try {
-      const response = await fetch(`/api/admin/news/${article.slug}`, { method: 'DELETE' });
+      const response = await authFetch(`/api/admin/news/${article.slug}`, { method: 'DELETE' });
       const result = (await response.json()) as { success?: boolean; error?: string };
 
       if (!response.ok || !result.success) {

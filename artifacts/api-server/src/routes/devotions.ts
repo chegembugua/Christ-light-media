@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "../lib/db";
 import { devotions } from "@workspace/db/schema";
-import { eq, desc, and, lte } from "drizzle-orm";
+import { eq, desc, and, lte, sql } from "drizzle-orm";
 
 const router = Router();
 
@@ -32,9 +32,26 @@ router.get("/devotions/today", async (_req, res) => {
   }
 });
 
-router.get("/devotions/:id", async (req, res) => {
+/**
+ * GET /devotions/:idOrDate
+ * Accepts either a UUID (e.g. "123e4567-e89b-...") or a date string (e.g. "2024-01-15").
+ */
+router.get("/devotions/:idOrDate", async (req, res) => {
+  const { idOrDate } = req.params;
+  const isDate = /^\d{4}-\d{2}-\d{2}$/.test(idOrDate);
   try {
-    const row = await db.query.devotions.findFirst({ where: eq(devotions.id, req.params.id) });
+    let row;
+    if (isDate) {
+      // Lookup by date column (cast to date for comparison)
+      row = await db.query.devotions.findFirst({
+        where: and(
+          eq(devotions.isPublished, true),
+          sql`DATE(${devotions.date}) = ${idOrDate}::date`
+        ),
+      });
+    } else {
+      row = await db.query.devotions.findFirst({ where: eq(devotions.id, idOrDate) });
+    }
     if (!row || !row.isPublished) return res.status(404).json({ error: "Devotion not found" });
     return res.json({ devotion: row });
   } catch (err) {

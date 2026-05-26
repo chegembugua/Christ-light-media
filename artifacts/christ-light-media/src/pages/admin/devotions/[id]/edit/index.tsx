@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { DevotionForm, type Devotion } from '@/components/admin/DevotionForm';
+import { authFetch } from '@/lib/api/authFetch';
 
 export default function EditDevotionPage() {
   const params = useParams<{ id: string }>();
@@ -13,7 +14,7 @@ export default function EditDevotionPage() {
   useEffect(() => {
     async function fetchDevotion() {
       try {
-        const response = await fetch(`/api/admin/devotions/${params.id}`);
+        const response = await authFetch(`/api/admin/devotions/${params.id}`);
         const result = (await response.json()) as { devotion?: Devotion; error?: string };
 
         if (response.status === 404) {

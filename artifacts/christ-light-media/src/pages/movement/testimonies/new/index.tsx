@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'wouter';
 import { Link } from 'wouter';
+import { authFetch } from '@/lib/api/authFetch';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -89,7 +90,7 @@ export default function NewTestimonyPage() {
         photoUrl = undefined;
       }
 
-      const res = await fetch('/api/movement/testimonies', {
+      const res = await authFetch('/api/movement/testimonies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
