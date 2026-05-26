@@ -3,11 +3,11 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/news", (_req, res) => {
-  res.json({ articles: [], total: 0, featured: null });
+  res.json({ news: [], total: 0, featured: null, categories: [] });
 });
 
 router.get("/news/archive", (_req, res) => {
-  res.json({ articles: [], total: 0 });
+  res.json({ news: [], total: 0 });
 });
 
 router.get("/news/:slug/related", (_req, res) => {

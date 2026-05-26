@@ -11,7 +11,7 @@ router.get("/community/prayers/:id", (req, res) => {
 });
 
 router.post("/community/prayers", (_req, res) => {
-  res.status(201).json({ ok: true, id: "new" });
+  res.status(201).json({ ok: true, id: `prayer-${Date.now()}` });
 });
 
 router.post("/community/prayers/:id/pray", (_req, res) => {
@@ -27,7 +27,13 @@ router.get("/community/chat/:roomId/messages", (_req, res) => {
 });
 
 router.post("/community/chat/:roomId/messages", (_req, res) => {
-  res.status(201).json({ ok: true });
+  res.status(201).json({
+    message: {
+      id: `msg-${Date.now()}`,
+      content: "",
+      createdAt: new Date().toISOString(),
+    },
+  });
 });
 
 export default router;
