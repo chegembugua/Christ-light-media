@@ -143,7 +143,17 @@ export default function NewsArticlePage() {
     );
   }
 
-  
+  if (missing || !article) {
+    return (
+      <div className="container mx-auto min-h-screen px-6 pt-32">
+        <div className="mx-auto max-w-4xl text-center py-24">
+          <h1 className="font-cinzel text-4xl text-white mb-4">Article Not Found</h1>
+          <p className="text-gray-400 mb-8">{error || "This article doesn't exist or has been removed."}</p>
+          <a href="/news" className="text-gold hover:underline">← Back to News</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <article className="min-h-screen bg-[#0A0A0A] px-6 pb-20 pt-32">

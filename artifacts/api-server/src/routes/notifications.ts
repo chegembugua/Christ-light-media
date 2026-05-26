@@ -10,6 +10,10 @@ router.post("/notifications", (_req, res) => {
   res.status(201).json({ ok: true });
 });
 
+router.patch("/notifications", (_req, res) => {
+  res.json({ ok: true });
+});
+
 router.post("/notifications/read-all", (_req, res) => {
   res.json({ ok: true });
 });
