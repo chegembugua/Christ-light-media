@@ -30,7 +30,14 @@ export async function authFetch(
   }
 
   // Preserve Content-Type if caller set it; default to JSON for body requests
-  if (!headers.has('Content-Type') && (init.method === 'POST' || init.method === 'PATCH' || init.method === 'PUT')) {
+  // Only default to JSON content-type for non-FormData bodies.
+  // FormData (multipart file uploads) requires the browser to set the boundary itself.
+  const isFormData = init.body instanceof FormData;
+  if (
+    !headers.has('Content-Type') &&
+    !isFormData &&
+    (init.method === 'POST' || init.method === 'PATCH' || init.method === 'PUT')
+  ) {
     headers.set('Content-Type', 'application/json');
   }
 
