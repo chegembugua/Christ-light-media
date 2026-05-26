@@ -38,11 +38,37 @@ router.get("/movement/challenges", async (_req, res) => {
   }
 });
 
+/**
+ * Generate template daily prompts based on challenge category + duration.
+ * These serve as placeholder content when no DB prompts table exists.
+ */
+function generateDailyPrompts(challenge: { duration: number; category: string | null; title: string }) {
+  const themesByCategory: Record<string, string[]> = {
+    Prayer: ["Adoration", "Confession", "Thanksgiving", "Supplication", "Listening", "Intercession"],
+    Fasting: ["Preparation", "Surrender", "Discipline", "Renewal", "Breakthrough", "Perseverance"],
+    Worship: ["Praise", "Gratitude", "Awe", "Surrender", "Joy", "Rest"],
+    Scripture: ["Meditation", "Application", "Memorization", "Study", "Reflection", "Declaration"],
+  };
+  const themes = themesByCategory[challenge.category ?? ""] ?? ["Focus", "Reflection", "Growth", "Prayer", "Action", "Rest"];
+  return Array.from({ length: challenge.duration }, (_, i) => {
+    const theme = themes[i % themes.length];
+    return {
+      id: String(i + 1),
+      day: i + 1,
+      title: `Day ${i + 1}: ${theme}`,
+      scripture: `Psalm ${(i % 150) + 1}:${(i % 20) + 1}`,
+      prompt: `On day ${i + 1} of the ${challenge.title}, focus on ${theme.toLowerCase()} in your prayer time. Ask God to reveal His purpose for this day.`,
+      completed: false,
+    };
+  });
+}
+
 router.get("/movement/challenges/:slug", async (req, res) => {
   try {
     const row = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug) });
     if (!row) return res.status(404).json({ error: "Challenge not found" });
-    return res.json({ challenge: row });
+    const dailyPrompts = generateDailyPrompts(row);
+    return res.json({ challenge: row, dailyPrompts });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
   }
@@ -56,7 +82,8 @@ router.get("/movement/challenges/:slug/progress", requireAuth, async (req, res) 
     const enrollment = await db.query.challengeEnrollments.findFirst({
       where: and(eq(challengeEnrollments.userId, userId), eq(challengeEnrollments.challengeId, challenge.id)),
     });
-    return res.json({ progress: enrollment ?? null });
+    // Return as `enrollment` — matching frontend expectation (setEnrollment(data.enrollment))
+    return res.json({ enrollment: enrollment ?? null });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
   }
@@ -90,10 +117,12 @@ router.post("/movement/challenges/:slug/progress", requireAuth, async (req, res)
     if (!enrollment) return res.status(404).json({ error: "Not enrolled" });
     const daysCompleted = Array.from(new Set([...(enrollment.daysCompleted as number[]), day]));
     const isCompleted = daysCompleted.length >= challenge.duration;
-    await db.update(challengeEnrollments)
+    const [updated] = await db.update(challengeEnrollments)
       .set({ daysCompleted, isCompleted, completedAt: isCompleted ? new Date() : null })
-      .where(eq(challengeEnrollments.id, enrollment.id));
-    return res.json({ ok: true, daysCompleted, isCompleted });
+      .where(eq(challengeEnrollments.id, enrollment.id))
+      .returning();
+    // Return as `enrollment` — matching frontend expectation (setEnrollment(data.enrollment))
+    return res.json({ ok: true, enrollment: updated ?? { ...enrollment, daysCompleted, isCompleted } });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
   }

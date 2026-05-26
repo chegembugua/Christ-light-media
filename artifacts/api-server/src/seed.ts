@@ -19,30 +19,39 @@ const DEFAULT_ROOMS = [
   { id: "testimony", name: "Testimony Sharing", description: "Share how God is moving in your life." },
 ];
 
+// Slugs aligned with frontend FALLBACK keys (prayer-21, scripture-40, fasting, witness)
 const DEFAULT_CHALLENGES = [
   {
-    slug: "21-day-prayer",
-    title: "21-Day Prayer Challenge",
+    slug: "prayer-21",
+    title: "21 Days of Prayer",
     description: "A 21-day journey of intentional prayer and fasting to deepen your walk with God.",
     duration: 21,
     category: "Prayer",
     difficulty: 2,
   },
   {
-    slug: "40-day-fast",
-    title: "40-Day Spiritual Fast",
-    description: "A transformative 40-day journey of fasting, scripture reading, and community accountability.",
+    slug: "scripture-40",
+    title: "40 Days of Scripture",
+    description: "A transformative 40-day journey of Scripture meditation and community accountability.",
     duration: 40,
+    category: "Scripture",
+    difficulty: 3,
+  },
+  {
+    slug: "fasting",
+    title: "Fasting Challenge",
+    description: "Dedicate time to fasting, seeking God through prayer and Scripture.",
+    duration: 7,
     category: "Fasting",
     difficulty: 4,
   },
   {
-    slug: "7-day-worship",
-    title: "7-Day Worship Immersion",
-    description: "Dedicate 7 days to worship, praise, and meditation on the Word.",
-    duration: 7,
-    category: "Worship",
-    difficulty: 1,
+    slug: "witness",
+    title: "Witness Challenge",
+    description: "30 days of intentional sharing of your faith with those around you.",
+    duration: 30,
+    category: "Prayer",
+    difficulty: 2,
   },
 ];
 
