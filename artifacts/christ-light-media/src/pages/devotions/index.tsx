@@ -23,11 +23,8 @@ export default function DevotionsPage() {
   const fetchDevotions = async () => {
     try {
       const response = await fetch(`/api/devotions?limit=30`);
+      if (!response.ok) throw new Error('Unable to load devotions');
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Unable to load devotions');
-      }
 
       const allDevotions: DevotionDTO[] = data.devotions || [];
       setDevotions(allDevotions);

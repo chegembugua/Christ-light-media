@@ -15,7 +15,7 @@ import { GoogleAuthButton } from './GoogleAuthButton';
 export function LoginForm() {
   const { login, loginWithGoogle } = useAuth();
   const [, navigate] = useLocation();
-  
+  const searchParams = new URLSearchParams(window.location.search);
   const redirectTo = searchParams.get('redirect') ?? '/';
 
   const [email, setEmail] = useState('');

@@ -52,7 +52,7 @@ type PrayerItem = {
 
 export default function PrayerWallPage() {
   const [, navigate] = useLocation();
-  
+  const searchParams = new URLSearchParams(window.location.search);
 
   // Hydrate filters from URL on mount
   const [status, setStatus] = useState(searchParams.get('status') ?? 'all');

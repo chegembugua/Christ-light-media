@@ -24,11 +24,18 @@ function isValidHttpUrl(value: string | undefined) {
 }
 
 function createNoopClient(): SupabaseClient {
+  const noopResult = { data: { user: null, session: null }, error: null };
   const noop = {
     auth: {
-      getUser: async () => ({ data: { user: null }, error: null }),
+      getUser: async () => noopResult,
       getSession: async () => ({ data: { session: null }, error: null }),
-      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } }, error: null }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      signInWithPassword: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      signInWithOAuth: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      signUp: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
+      signOut: async () => ({ error: null }),
+      resetPasswordForEmail: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      updateUser: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
     },
     from: () => ({ select: async () => ({ data: null, error: null }) }),
     storage: { from: () => ({ getPublicUrl: () => ({ data: null, error: null }) }) },

@@ -1,6 +1,5 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-;
 import { Link } from 'wouter';
 import { 
   Search, 

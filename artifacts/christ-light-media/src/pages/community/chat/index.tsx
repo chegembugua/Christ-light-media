@@ -27,7 +27,7 @@ const DEFAULT_ROOMS: ChatRoom[] = [
 
 export default function CommunityChatPage() {
   const [, navigate] = useLocation();
-  
+  const searchParams = new URLSearchParams(window.location.search);
   const { user, loading: authLoading } = useAuth();
 
   const [rooms, setRooms] = useState<ChatRoom[]>(DEFAULT_ROOMS);
@@ -60,9 +60,9 @@ export default function CommunityChatPage() {
 
   // Keep roomId in sync with ?room= query param
   useEffect(() => {
-    const q = searchParams.get('room');
+    const q = new URLSearchParams(window.location.search).get('room');
     if (q && q !== activeRoomId) setActiveRoomId(q);
-  }, [searchParams, activeRoomId]);
+  }, [activeRoomId]);
 
   // Close Unread badge for room
   const markRoomRead = useCallback((roomId: string) => {

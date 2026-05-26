@@ -15,13 +15,12 @@ const TABS = [
 ];
 
 export default function ProfileTabs({ activeTab }: ProfileTabsProps) {
-  
   const [, navigate] = useLocation();
 
   const switchTab = (tab: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(window.location.search);
     params.set('tab', tab.toLowerCase());
-    navigate(`/profile?${params.toString()}`, { scroll: false });
+    navigate(`/profile?${params.toString()}`);
   };
 
   return (

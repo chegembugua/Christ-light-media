@@ -21,15 +21,11 @@ export default function DevotionDetailPage({ params }: DevotionDetailPageProps) 
   const fetchDevotion = useCallback(async () => {
     try {
       const response = await fetch(`/api/devotions/${params.date}`);
-      const data = await response.json();
-
       if (!response.ok) {
-        if (response.status === 404) {
-          navigate('/devotions/not-found');
-          return;
-        }
-        throw new Error(data.error || 'Unable to load devotion');
+        if (response.status === 404) { navigate('/devotions/not-found'); return; }
+        throw new Error('Unable to load devotion');
       }
+      const data = await response.json();
 
       setDevotion(data.devotion);
     } catch (err) {
