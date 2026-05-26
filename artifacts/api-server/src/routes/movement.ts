@@ -2,6 +2,14 @@ import { Router } from "express";
 
 const router = Router();
 
+router.get("/movement/membership", (_req, res) => {
+  res.json({ membership: null, isMember: false });
+});
+
+router.post("/movement/join", (_req, res) => {
+  res.status(201).json({ ok: true });
+});
+
 router.get("/movement/testimonies", (_req, res) => {
   res.json({ testimonies: [], featured: null, total: 0 });
 });

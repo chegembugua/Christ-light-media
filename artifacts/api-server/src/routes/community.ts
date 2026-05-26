@@ -23,7 +23,7 @@ router.get("/community/chat/rooms", (_req, res) => {
 });
 
 router.get("/community/chat/:roomId/messages", (_req, res) => {
-  res.json({ messages: [] });
+  res.json({ messages: [], total: 0 });
 });
 
 router.post("/community/chat/:roomId/messages", (_req, res) => {
@@ -34,6 +34,10 @@ router.post("/community/chat/:roomId/messages", (_req, res) => {
       createdAt: new Date().toISOString(),
     },
   });
+});
+
+router.delete("/community/chat/:roomId/messages/:messageId", (_req, res) => {
+  res.json({ ok: true });
 });
 
 export default router;

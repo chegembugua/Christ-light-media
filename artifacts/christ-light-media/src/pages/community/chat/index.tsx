@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import ChatRoomList from '@/components/chat/ChatRoomList';
 import MessageList from '@/components/chat/MessageList';
 import MessageInput from '@/components/chat/MessageInput';
+import { useChat } from '@/lib/hooks/useChat';
 import { cn } from '@/lib/utils';
 
 type ChatRoom = {
@@ -74,6 +75,8 @@ export default function CommunityChatPage() {
     });
   }, []);
 
+  const { messages, sendMessage, deleteMessage } = useChat({ roomId: activeRoomId });
+
   if (!authLoading && !user) {
     navigate('/login');
   }
@@ -116,18 +119,12 @@ export default function CommunityChatPage() {
               {/* Messages */}
               <div className="flex-1 overflow-hidden">
                 <MessageList
-                  messages={[]}
+                  messages={messages}
                   currentUserId={user?.id ?? ''}
-                  onDeleteMessage={(messageId) => {
-                    fetch(
-                      `/api/community/chat/${activeRoomId}/messages/${messageId}`,
-                      { method: 'DELETE' }
-                    )
-                      .then((r) => {
-                        if (!r.ok) toast.error('Could not delete message.');
-                        else toast.success('Message deleted.');
-                      })
-                      .catch(() => toast.error('Could not delete message.'));
+                  onDeleteMessage={async (messageId) => {
+                    const ok = await deleteMessage(messageId);
+                    if (ok) toast.success('Message deleted.');
+                    else toast.error('Could not delete message.');
                   }}
                 />
               </div>
@@ -136,19 +133,11 @@ export default function CommunityChatPage() {
               {activeRoom && (
                 <MessageInput
                   onSendMessage={async (content) => {
-                    const ok = await fetch(
-                      `/api/community/chat/${activeRoomId}/messages`,
-                      {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ content, roomId: activeRoomId }),
-                      }
-                    ).then((r) => r.json());
-                    if (!ok.message) {
-                      toast.error(ok.error ?? 'Failed to send message.');
+                    const ok = await sendMessage(content);
+                    if (!ok) {
+                      toast.error('Failed to send message.');
                       return;
                     }
-                    toast.success('Message sent.'); // subtle confirmation
                     markRoomRead(activeRoomId);
                   }}
                 />

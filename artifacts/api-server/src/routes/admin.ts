@@ -1,6 +1,9 @@
 import { Router } from "express";
+import { requireAdmin } from "../middlewares/requireAuth";
 
 const router = Router();
+
+router.use("/admin", requireAdmin);
 
 const stubMedia = () => ({
   id: `media-${Date.now()}`,
