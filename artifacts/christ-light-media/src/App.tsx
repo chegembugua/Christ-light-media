@@ -44,6 +44,7 @@ import AdminPage from '@/pages/admin/index';
 import AdminMediaPage from '@/pages/admin/media/index';
 import AdminNewsPage from '@/pages/admin/news/index';
 import AdminDevotionsPage from '@/pages/admin/devotions/index';
+import AuthCallbackPage from '@/pages/auth/callback';
 
 function NotFound() {
   return (
@@ -91,6 +92,7 @@ function Router() {
       <Route path="/profile/settings" component={ProfileSettingsPage} />
       <Route path="/privacy" component={PrivacyPage} />
       <Route path="/terms" component={TermsPage} />
+      <Route path="/auth/callback" component={AuthCallbackPage} />
       <Route path="/login" component={LoginPage} />
       <Route path="/register" component={RegisterPage} />
       <Route path="/forgot-password" component={ForgotPasswordPage} />

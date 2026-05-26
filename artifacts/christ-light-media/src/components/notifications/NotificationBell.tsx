@@ -134,7 +134,7 @@ export default function NotificationBell() {
         navigate('/community');
         break;
       case 'course':
-        navigate('/courses');
+        navigate('/school');
         break;
       case 'comment':
         navigate('/sermons');
@@ -152,14 +152,14 @@ export default function NotificationBell() {
         navigate('/sermons');
         break;
       default:
-        navigate('/profile/notifications');
+        navigate('/profile');
         break;
     }
   };
 
   const handleSeeAll = () => {
     setIsOpen(false);
-    navigate('/profile/notifications');
+    navigate('/profile');
   };
 
   const getNotificationIcon = (type?: string | null) => {
