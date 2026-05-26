@@ -53,6 +53,38 @@ router.get("/users/profile", requireAuth, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/profile/avatar — store avatar URL in user record
+ * The frontend reads the file as a data URL and sends it; we store it as avatarUrl.
+ */
+router.post("/profile/avatar", requireAuth, async (req, res) => {
+  const { id } = (req as AuthReq).user;
+  // Accept either base64 data URL or a URL string in body
+  const avatarUrl: string | undefined =
+    (req.body as Record<string, unknown>)?.avatarUrl as string | undefined;
+  // FormData (multipart) sends `avatar` file — for MVP, store placeholder
+  const url = avatarUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(id)}&background=random`;
+  try {
+    const [updated] = await db.update(users).set({ avatarUrl: url, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+    return res.json({ user: updated ?? null });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+/**
+ * DELETE /api/profile/avatar — remove avatar (set to null)
+ */
+router.delete("/profile/avatar", requireAuth, async (req, res) => {
+  const { id } = (req as AuthReq).user;
+  try {
+    const [updated] = await db.update(users).set({ avatarUrl: null, updatedAt: new Date() }).where(eq(users.id, id)).returning();
+    return res.json({ user: updated ?? null });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
 /** GET /api/auth/profile?id= — fetch by Supabase user id (must match caller) */
 router.get("/auth/profile", async (req, res) => {
   const requestedId = req.query.id as string | undefined;

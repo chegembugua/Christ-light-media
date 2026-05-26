@@ -17,11 +17,23 @@ const JWKS = supabaseUrl
   ? createRemoteJWKSet(new URL(`${supabaseUrl}/auth/v1/.well-known/jwks.json`))
   : null;
 
+// JWT_UNSECURE_FALLBACK=true must be explicitly set to allow unsigned token parsing.
+// Without SUPABASE_URL, tokens are rejected in production unless this env is set.
+const ALLOW_UNSECURE_FALLBACK = process.env.JWT_UNSECURE_FALLBACK === "true";
+
 if (!JWKS) {
-  console.warn(
-    "[auth] SUPABASE_URL not set — JWT signature verification is DISABLED. " +
-      "Set SUPABASE_URL to enable secure token verification in production."
-  );
+  if (ALLOW_UNSECURE_FALLBACK) {
+    console.warn(
+      "[auth] SUPABASE_URL not set and JWT_UNSECURE_FALLBACK=true — " +
+        "JWT signature verification is DISABLED (development mode). " +
+        "Set SUPABASE_URL to enable secure token verification."
+    );
+  } else {
+    console.warn(
+      "[auth] SUPABASE_URL not set — all authenticated requests will be rejected. " +
+        "Set SUPABASE_URL for production or JWT_UNSECURE_FALLBACK=true for local dev."
+    );
+  }
 }
 
 /**
@@ -43,7 +55,8 @@ async function verifyJwt(token: string): Promise<AuthUser | null> {
     }
   }
 
-  // Dev fallback: parse without signature verification
+  // Dev fallback: parse without signature verification — only when explicitly allowed
+  if (!ALLOW_UNSECURE_FALLBACK) return null;
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;

@@ -27,6 +27,63 @@ router.get("/media", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/media/speakers?type= — distinct speakers for a media type
+ * GET /api/media/artists?type= — alias for speakers (music)
+ * GET /api/media/leaders?type= — alias for speakers (worship)
+ */
+router.get("/media/speakers", async (req, res) => {
+  const { type } = req.query as Record<string, string>;
+  try {
+    const rows = await db.selectDistinct({ speaker: media.speaker }).from(media)
+      .where(and(eq(media.isPublished, true), ...(type ? [eq(media.type, type)] : [])))
+      .orderBy(media.speaker);
+    const speakers = rows.map((r) => r.speaker).filter(Boolean) as string[];
+    return res.json({ speakers });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+router.get("/media/artists", async (req, res) => {
+  const { type } = req.query as Record<string, string>;
+  try {
+    const rows = await db.selectDistinct({ speaker: media.speaker }).from(media)
+      .where(and(eq(media.isPublished, true), ...(type ? [eq(media.type, type)] : [])))
+      .orderBy(media.speaker);
+    const artists = rows.map((r) => r.speaker).filter(Boolean) as string[];
+    return res.json({ artists });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+router.get("/media/leaders", async (req, res) => {
+  const { type } = req.query as Record<string, string>;
+  try {
+    const rows = await db.selectDistinct({ speaker: media.speaker }).from(media)
+      .where(and(eq(media.isPublished, true), ...(type ? [eq(media.type, type)] : [])))
+      .orderBy(media.speaker);
+    const leaders = rows.map((r) => r.speaker).filter(Boolean) as string[];
+    return res.json({ leaders });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+/**
+ * POST /api/media/favorites — add a media item to user favorites (stored in user preferences)
+ * DELETE /api/media/favorites — remove a media item from user favorites
+ * These store favorites client-side via localStorage; server acknowledges only.
+ */
+router.post("/media/favorites", async (_req, res) => {
+  return res.json({ ok: true });
+});
+
+router.delete("/media/favorites", async (_req, res) => {
+  return res.json({ ok: true });
+});
+
 router.get("/media/featured", async (_req, res) => {
   try {
     const rows = await db.select().from(media).where(eq(media.isPublished, true)).orderBy(desc(media.playCount)).limit(6);
