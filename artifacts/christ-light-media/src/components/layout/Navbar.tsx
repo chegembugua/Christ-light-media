@@ -144,24 +144,12 @@ export default function Navbar() {
         <div className="container mx-auto max-w-7xl px-6 flex items-center justify-between gap-6">
 
           {/* ── Logo ─────────────────────────────────────────────── */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0 z-10">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105"
-              style={{
-                background: 'linear-gradient(135deg, #C8A24A 0%, #E6D5A8 50%, #B38A3D 100%)',
-                boxShadow: '0 0 20px rgba(200,162,74,0.3)',
-              }}
-            >
-              <span className="text-black font-cinzel text-lg font-bold leading-none select-none">✦</span>
-            </div>
-            <div className="leading-none">
-              <p className="text-[15px] font-bold tracking-tight text-white group-hover:text-gold transition-colors font-cinzel">
-                Christ Light
-              </p>
-              <p className="text-[8px] text-white/25 tracking-[0.3em] uppercase font-inter mt-0.5">
-                MEDIA HOUSE
-              </p>
-            </div>
+          <Link href="/" className="flex items-center shrink-0 z-10 group">
+            <img
+              src="/logo.png"
+              alt="Christ Light Media"
+              className="h-14 w-auto transition-all duration-300 group-hover:scale-105 drop-shadow-[0_0_16px_rgba(200,162,74,0.5)]"
+            />
           </Link>
 
           {/* ── Desktop Nav ───────────────────────────────────────── */}
