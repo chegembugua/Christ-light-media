@@ -1,7 +1,7 @@
 import { Router, Request } from "express";
 import { db } from "../lib/db";
 import { movementMembers, challenges, challengeEnrollments, testimonies } from "@workspace/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { requireAuth, AuthUser } from "../middlewares/requireAuth";
 
 const router = Router();
@@ -128,16 +128,55 @@ router.post("/movement/challenges/:slug/progress", requireAuth, async (req, res)
   }
 });
 
-router.get("/movement/testimonies", async (_req, res) => {
+router.get("/movement/testimonies", async (req, res) => {
+  const { category, limit: lim } = req.query as Record<string, string>;
+  const limit = Math.min(Number(lim ?? 20), 100);
   try {
     const rows = await db.query.testimonies.findMany({
-      where: eq(testimonies.isPublished, true),
+      where: and(
+        eq(testimonies.isPublished, true),
+        ...(category ? [eq(testimonies.category, category)] : [])
+      ),
       orderBy: [desc(testimonies.createdAt)],
-      limit: 20,
+      limit,
       with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
     });
-    const featured = rows.find((t) => t.isFeatured) ?? null;
+    const featured = rows.find((t) => t.isFeatured) ?? rows[0] ?? null;
     return res.json({ testimonies: rows, featured, total: rows.length });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+// Testimony detail — GET /movement/testimonies/:id
+router.get("/movement/testimonies/:id", async (req, res) => {
+  try {
+    const row = await db.query.testimonies.findFirst({
+      where: and(eq(testimonies.id, req.params.id), eq(testimonies.isPublished, true)),
+      with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
+    });
+    if (!row) return res.status(404).json({ error: "Testimony not found" });
+    // Increment view count
+    await db.update(testimonies).set({ viewCount: row.viewCount + 1 }).where(eq(testimonies.id, row.id));
+    return res.json({ testimony: row });
+  } catch (err) {
+    return res.status(500).json({ error: String(err) });
+  }
+});
+
+// React to a testimony — POST /movement/testimonies/:id/react
+router.post("/movement/testimonies/:id/react", requireAuth, async (req, res) => {
+  try {
+    const row = await db.query.testimonies.findFirst({
+      where: and(eq(testimonies.id, req.params.id), eq(testimonies.isPublished, true)),
+    });
+    if (!row) return res.status(404).json({ error: "Testimony not found" });
+    const [updated] = await db
+      .update(testimonies)
+      .set({ reactionCount: sql`${testimonies.reactionCount} + 1` })
+      .where(eq(testimonies.id, row.id))
+      .returning({ reactionCount: testimonies.reactionCount });
+    return res.json({ ok: true, reactionCount: updated?.reactionCount ?? row.reactionCount + 1 });
   } catch (err) {
     return res.status(500).json({ error: String(err) });
   }
