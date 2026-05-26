@@ -1,4 +1,7 @@
 import { Router, Request } from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 import { db } from "../lib/db";
 import { media, devotions, newsArticles, users, prayerRequests, chatMessages } from "@workspace/db/schema";
 import { eq, desc, count, ilike, or } from "drizzle-orm";
@@ -6,6 +9,19 @@ import { requireAdmin, AuthUser } from "../middlewares/requireAuth";
 
 const router = Router();
 type AuthReq = Request & { user: AuthUser };
+
+// ─── File upload setup ────────────────────────────────────────────────────────
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+  },
+});
+const upload = multer({ storage, limits: { fileSize: 200 * 1024 * 1024 } });
 
 // All admin routes require admin role
 router.use("/admin", requireAdmin);
@@ -49,28 +65,41 @@ router.get("/admin/media", async (req, res) => {
   }
 });
 
-router.post("/admin/media", async (req, res) => {
-  const body = req.body as Partial<typeof media.$inferInsert>;
-  try {
-    const [created] = await db.insert(media).values({
-      title: body.title ?? "Untitled",
-      description: body.description,
-      speaker: body.speaker ?? "",
-      coverImage: body.coverImage ?? "",
-      audioUrl: body.audioUrl ?? "",
-      videoUrl: body.videoUrl,
-      type: body.type ?? "SERMON",
-      category: body.category ?? "",
-      duration: body.duration,
-      isPublished: body.isPublished ?? false,
-      publishedAt: body.isPublished ? new Date() : undefined,
-      podcastShowId: body.podcastShowId,
-    }).returning();
-    return res.status(201).json({ media: created });
-  } catch (err) {
-    return res.status(500).json({ error: String(err) });
+router.post(
+  "/admin/media",
+  upload.fields([{ name: "file", maxCount: 1 }, { name: "image", maxCount: 1 }]),
+  async (req, res) => {
+    const body = req.body as Record<string, string>;
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+
+    // Derive public URLs for uploaded files (served at /uploads/<filename>)
+    const host = `${req.protocol}://${req.get("host")}`;
+    const audioFile = files?.["file"]?.[0];
+    const imageFile = files?.["image"]?.[0];
+    const audioUrl = audioFile ? `${host}/uploads/${audioFile.filename}` : (body.audioUrl ?? "");
+    const coverImage = imageFile ? `${host}/uploads/${imageFile.filename}` : (body.coverImage ?? "");
+
+    try {
+      const [created] = await db.insert(media).values({
+        title: body.title ?? "Untitled",
+        description: body.description,
+        speaker: body.speaker ?? "",
+        coverImage,
+        audioUrl,
+        videoUrl: body.videoUrl ?? null,
+        type: (body.type as typeof media.$inferInsert["type"]) ?? "SERMON",
+        category: body.category ?? "",
+        duration: body.duration ?? null,
+        isPublished: body.isPublished === "true",
+        publishedAt: body.isPublished === "true" ? new Date() : undefined,
+        podcastShowId: body.podcastShowId ?? null,
+      }).returning();
+      return res.status(201).json({ media: created });
+    } catch (err) {
+      return res.status(500).json({ error: String(err) });
+    }
   }
-});
+);
 
 router.get("/admin/media/:id", async (req, res) => {
   try {

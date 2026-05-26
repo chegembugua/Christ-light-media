@@ -42,8 +42,11 @@ import ForgotPasswordPage from '@/pages/auth/forgot-password';
 import ResetPasswordPage from '@/pages/auth/reset-password';
 import AdminPage from '@/pages/admin/index';
 import AdminMediaPage from '@/pages/admin/media/index';
+import AdminMediaEditPage from '@/pages/admin/media/[id]/index';
 import AdminNewsPage from '@/pages/admin/news/index';
+import EditArticlePage from '@/pages/admin/news/[slug]/edit/index';
 import AdminDevotionsPage from '@/pages/admin/devotions/index';
+import EditDevotionPage from '@/pages/admin/devotions/[id]/edit/index';
 import AuthCallbackPage from '@/pages/auth/callback';
 
 function NotFound() {
@@ -100,12 +103,13 @@ function Router() {
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/media" component={AdminMediaPage} />
       <Route path="/admin/media/new" component={AdminMediaPage} />
+      <Route path="/admin/media/:id" component={AdminMediaEditPage} />
       <Route path="/admin/news" component={AdminNewsPage} />
       <Route path="/admin/news/new" component={AdminNewsPage} />
-      <Route path="/admin/news/:slug/edit" component={AdminNewsPage} />
+      <Route path="/admin/news/:slug/edit" component={EditArticlePage} />
       <Route path="/admin/devotions" component={AdminDevotionsPage} />
       <Route path="/admin/devotions/new" component={AdminDevotionsPage} />
-      <Route path="/admin/devotions/:id/edit" component={AdminDevotionsPage} />
+      <Route path="/admin/devotions/:id/edit" component={EditDevotionPage} />
       <Route component={NotFound} />
     </Switch>
   );

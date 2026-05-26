@@ -7,9 +7,17 @@ export interface AuthUser {
   role?: string;
 }
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "chegembugua97@gmail.com")
+const adminEmailsEnv = process.env.ADMIN_EMAILS ?? "";
+if (!adminEmailsEnv) {
+  console.warn(
+    "[auth] ADMIN_EMAILS is not set — no user will have admin access. " +
+      "Set ADMIN_EMAILS to a comma-separated list of admin email addresses."
+  );
+}
+const ADMIN_EMAILS = adminEmailsEnv
   .split(",")
-  .map((e) => e.trim().toLowerCase());
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
 
 // Build JWKS URL from SUPABASE_URL if configured
 const supabaseUrl = process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL;

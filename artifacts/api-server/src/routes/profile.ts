@@ -118,9 +118,9 @@ router.post("/auth/create-profile", async (req, res) => {
     const existing = await db.query.users.findFirst({ where: eq(users.id, id) });
     if (existing) return res.json({ success: true });
 
-    // Determine role: admin emails get ADMIN role
-    const adminEmails = (process.env.ADMIN_EMAILS ?? "chegembugua97@gmail.com")
-      .split(",").map((e) => e.trim().toLowerCase());
+    // Determine role: admin emails get ADMIN role (requires ADMIN_EMAILS env var)
+    const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+      .split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
     const role = adminEmails.includes(email.toLowerCase()) ? "ADMIN" : "USER";
 
     await db.insert(users).values({ id, email, fullName: fullName ?? null, role });
