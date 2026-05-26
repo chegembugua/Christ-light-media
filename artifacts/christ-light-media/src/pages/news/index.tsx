@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { Link } from 'wouter';
 import { 
   Search, 
@@ -120,13 +120,21 @@ export default function NewsPage() {
     fetchArticles(true);
   }, [filters.category, filters.search, filters.dateRange, filters.sort, fetchArticles]);
 
-  // Load more articles
+  // When offset increases (via loadMore), fetch the next page.
+  // We use a ref to skip the initial render so we don't double-fetch on mount.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    if (offset > 0) fetchArticles(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offset]);
+
+  // Load more articles — only increments offset; the effect above triggers the fetch
   const loadMore = useCallback(() => {
     if (!loading && hasMore) {
       setOffset(prev => prev + DEFAULT_LIMIT);
-      fetchArticles(false);
     }
-  }, [loading, hasMore, fetchArticles]);
+  }, [loading, hasMore]);
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

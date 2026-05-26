@@ -73,11 +73,12 @@ router.post(
     const files = req.files as Record<string, Express.Multer.File[]> | undefined;
 
     // Derive public URLs for uploaded files (served at /uploads/<filename>)
+    // Serve uploads under /api/uploads — path must match artifact routing prefix
     const host = `${req.protocol}://${req.get("host")}`;
     const audioFile = files?.["file"]?.[0];
     const imageFile = files?.["image"]?.[0];
-    const audioUrl = audioFile ? `${host}/uploads/${audioFile.filename}` : (body.audioUrl ?? "");
-    const coverImage = imageFile ? `${host}/uploads/${imageFile.filename}` : (body.coverImage ?? "");
+    const audioUrl = audioFile ? `${host}/api/uploads/${audioFile.filename}` : (body.audioUrl ?? "");
+    const coverImage = imageFile ? `${host}/api/uploads/${imageFile.filename}` : (body.coverImage ?? "");
 
     try {
       const [created] = await db.insert(media).values({

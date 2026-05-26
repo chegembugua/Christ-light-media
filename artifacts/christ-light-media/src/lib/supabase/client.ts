@@ -36,6 +36,7 @@ function createNoopClient(): SupabaseClient {
       signOut: async () => ({ error: null }),
       resetPasswordForEmail: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
       updateUser: async () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      exchangeCodeForSession: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
     },
     from: () => ({ select: async () => ({ data: null, error: null }) }),
     storage: { from: () => ({ getPublicUrl: () => ({ data: null, error: null }) }) },

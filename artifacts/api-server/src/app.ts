@@ -36,6 +36,7 @@ app.use("/api", router);
 // Serve uploaded media files
 const uploadsDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-app.use("/uploads", express.static(uploadsDir));
+// Serve uploads under /api/uploads so the path falls within the artifact's routed prefix
+app.use("/api/uploads", express.static(uploadsDir));
 
 export default app;
