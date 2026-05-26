@@ -1,6 +1,12 @@
 import { Router } from "express";
+import { requireAdmin } from "../middlewares/requireAuth";
 
 const router = Router();
+
+// Guard all /admin/* routes with admin middleware.
+// In dev (no Supabase configured) this passes through.
+// In production it requires a valid Bearer token with admin role.
+router.use("/admin", requireAdmin);
 
 const stubMedia = () => ({
   id: `media-${Date.now()}`,
