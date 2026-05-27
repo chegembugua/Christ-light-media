@@ -2,13 +2,18 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
+  "homepage": "https://chegembugua.github.io/Christ-light-media",
   "scripts": {
+    "dev": "npm run dev --workspace @workspace/christ-light-media",
+    "predeploy": "npm run build --workspace @workspace/christ-light-media",
+    "deploy": "gh-pages -d artifacts/christ-light-media/dist/public",
     "build": "npm run typecheck && npm run build --workspaces --if-present",
     "typecheck:libs": "tsc --build",
     "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
   },
   "private": true,
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "prettier": "^3.8.3",
     "typescript": "~5.9.3"
   },
