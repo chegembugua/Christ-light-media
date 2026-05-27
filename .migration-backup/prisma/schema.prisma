@@ -1,0 +1,402 @@
+// Christ Light Media — complete platform schema (PostgreSQL via Supabase)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MediaType {
+  SERMON
+  PODCAST
+  MUSIC
+  WORSHIP
+  RADIO
+}
+
+enum DonationType {
+  ONE_TIME
+  MONTHLY
+  PROJECT
+}
+
+// ─── User & Auth ─────────────────────────────────────────────────────────────
+
+model User {
+  id                   String                @id @default(uuid())
+  email                String                @unique
+  fullName             String?
+  role                 Role                  @default(USER)
+  avatarUrl            String?
+  bio                  String?
+  location             String?
+  preferences          Json?
+  isBioComplete        Boolean               @default(false)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  prayerRequests       PrayerRequest[]
+  comments             Comment[]
+  enrollments          Enrollment[]
+  donations            Donation[]
+  notifications        Notification[]
+  votes                PrayerVote[]
+  movement             MovementMember?
+  messages             Message[]
+  challengeEnrollments ChallengeEnrollment[]
+  testimonies          Testimony[]
+  SavedDevotion        SavedDevotion[]
+  SavedSermon          SavedSermon[]
+  SavedMusic           SavedMusic[]
+  SavedArticle         SavedArticle[]
+}
+
+// ─── Media ───────────────────────────────────────────────────────────────────
+
+model Media {
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+  speaker       String
+  coverImage    String
+  audioUrl      String
+  videoUrl      String?
+  type          String
+  category      String
+  duration      String?
+  playCount     Int           @default(0)
+  isPublished   Boolean       @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  podcastShowId String?
+  podcastShow   PodcastShow?  @relation(fields: [podcastShowId], references: [id], onDelete: SetNull)
+  comments      Comment[]
+  savedSermons  SavedSermon[]
+  savedMusic    SavedMusic[]
+}
+
+model PodcastShow {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  coverImage  String?
+  category    String?
+  episodes    Media[]
+}
+
+// ─── Devotions & News ────────────────────────────────────────────────────────
+
+model Devotion {
+  id          String          @id @default(cuid())
+  title       String
+  verse       String
+  verseText   String?         @db.Text
+  reflection  String          @db.Text
+  date        DateTime
+  imageUrl    String?
+  isPublished Boolean         @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  savedBy     SavedDevotion[]
+
+  @@unique([date])
+}
+
+model News {
+  id          String         @id @default(cuid())
+  title       String
+  slug        String         @unique
+  excerpt     String
+  content     String         @db.Text
+  coverImage  String
+  category    String
+  author      String?
+  isPublished Boolean        @default(false)
+  isFeature   Boolean        @default(false)
+  viewCount   Int            @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  savedBy     SavedArticle[]
+}
+
+// ─── Community: Prayer ───────────────────────────────────────────────────────
+
+model PrayerRequest {
+  id          String       @id @default(cuid())
+  title       String
+  content     String       @db.Text
+  category    String?
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAnswered  Boolean      @default(false)
+  isAnonymous Boolean      @default(false)
+  isPublished Boolean      @default(true)
+  duration    String?
+  prayerCount Int          @default(0)
+  viewCount   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  prayerVotes PrayerVote[]
+}
+
+model PrayerVote {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prayerRequestId String
+  prayerRequest   PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+
+  @@unique([userId, prayerRequestId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  userId    String
+  mediaId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media     Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+}
+
+// ─── School (Courses) ────────────────────────────────────────────────────────
+
+model Course {
+  id          String         @id @default(uuid())
+  title       String
+  description String?        @db.Text
+  coverImage  String?
+  price       Float          @default(0)
+  isFree      Boolean        @default(true)
+  category    String?
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  modules     CourseModule[]
+  enrollments Enrollment[]
+}
+
+model CourseModule {
+  id       String   @id @default(uuid())
+  title    String
+  order    Int
+  courseId String
+  course   Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id       String       @id @default(uuid())
+  title    String
+  videoUrl String?
+  notes    String?      @db.Text
+  duration String?
+  order    Int
+  moduleId String
+  module   CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+}
+
+model Enrollment {
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
+  progress   Int      @default(0)
+  enrolledAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+// ─── Giving & Movement ─────────────────────────────────────────────────────────
+
+model Donation {
+  id            String       @id @default(uuid())
+  userId        String?
+  amount        Float
+  currency      String       @default("USD")
+  type          DonationType
+  project       String?
+  status        String       @default("PENDING")
+  paymentMethod String?
+  transactionId String?
+  createdAt     DateTime     @default(now())
+  user          User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model MovementMember {
+  id                       String                @id @default(uuid())
+  userId                   String                @unique
+  joinedAt                 DateTime              @default(now())
+  challengeDay             Int                   @default(0)
+  totalChallengesCompleted Int                   @default(0)
+  user                     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeEnrollments     ChallengeEnrollment[]
+}
+
+model Challenge {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  title        String
+  description  String                @db.Text
+  duration     Int
+  category     String
+  difficulty   Int                   @default(3)
+  imageUrl     String?
+  isActive     Boolean               @default(true)
+  createdAt    DateTime              @default(now())
+  enrollments  ChallengeEnrollment[]
+  dailyPrompts DailyPrompt[]
+}
+
+model DailyPrompt {
+  id          String    @id @default(cuid())
+  challengeId String
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  day         Int
+  title       String
+  reflection  String    @db.Text
+  scripture   String?
+  actionStep  String?   @db.Text
+}
+
+model ChallengeEnrollment {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challengeId      String
+  challenge        Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  movementMemberId String?
+  movementMember   MovementMember? @relation(fields: [movementMemberId], references: [id], onDelete: SetNull)
+  enrolledAt       DateTime        @default(now())
+  daysCompleted    Int[]
+  isCompleted      Boolean         @default(false)
+  completedAt      DateTime?
+
+  @@unique([userId, challengeId])
+}
+
+model Testimony {
+  id            String    @id @default(cuid())
+  title         String
+  content       String    @db.Text
+  category      String
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAnonymous   Boolean   @default(false)
+  photoUrl      String?
+  authorTitle   String?
+  location      String?
+  isPublished   Boolean   @default(false)
+  isFeatured    Boolean   @default(false)
+  viewCount     Int       @default(0)
+  reactionCount Int       @default(0)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+// ─── Saved / Bookmarked Content ──────────────────────────────────────────────
+
+model SavedDevotion {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  devotionId String
+  devotion   Devotion @relation(fields: [devotionId], references: [id], onDelete: Cascade)
+  savedAt    DateTime @default(now())
+
+  @@unique([userId, devotionId])
+}
+
+model SavedSermon {
+  id      String   @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaId String
+  media   Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  savedAt DateTime @default(now())
+
+  @@unique([userId, mediaId])
+}
+
+model SavedMusic {
+  id      String   @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mediaId String
+  media   Media    @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  savedAt DateTime @default(now())
+
+  @@unique([userId, mediaId])
+}
+
+model SavedArticle {
+  id      String   @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  newsId  String
+  news    News     @relation(fields: [newsId], references: [id], onDelete: Cascade)
+  savedAt DateTime @default(now())
+
+  @@unique([userId, newsId])
+}
+
+// ─── Notifications & Radio ─────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RadioSchedule {
+  id        String  @id @default(uuid())
+  title     String
+  host      String?
+  type      String?
+  startTime String
+  endTime   String
+  dayOfWeek Int
+  isActive  Boolean @default(true)
+}
+
+// ─── Community: Chat ───────────────────────────────────────────────────────────
+
+model ChatRoom {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  messages    Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
