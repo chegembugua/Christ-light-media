@@ -269,7 +269,7 @@ export default function SermonsPage() {
 
               <select
                 value={activeSpeaker}
-                onChange={(event) => setActiveSpeaker(event.target.value)}
+                onChange={(event: any) => setActiveSpeaker(event.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-card px-4 py-3 text-sm text-gray-300 outline-none transition focus:border-gold/60 lg:max-w-xs"
               >
                 <option>All Speakers</option>

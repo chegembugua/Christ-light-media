@@ -1,4 +1,4 @@
-# Christ Light Media
+# In For Christ Media
 
 A full-stack Christian media platform built with Next.js 14, TypeScript, Tailwind CSS, Supabase, and Prisma.
 

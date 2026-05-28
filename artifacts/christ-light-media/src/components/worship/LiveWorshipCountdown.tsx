@@ -29,7 +29,9 @@ export function LiveWorshipCountdown({ event, onEventStarted }: LiveWorshipCount
     if (onStartedRef.current) return;
 
     const tick = () => {
-      const { totalSeconds, isStarted } = timeUntilEvent(target.current);
+      const remainingMs = timeUntilEvent(target.current);
+      const totalSeconds = remainingMs / 1000;
+      const isStarted = remainingMs <= 0;
 
       if (isStarted) {
         setIsLive(true);
@@ -42,8 +44,8 @@ export function LiveWorshipCountdown({ event, onEventStarted }: LiveWorshipCount
       }
 
       setIsLive(false);
-      setDisplay(formatCountdown(target.current));
-      setIsUrgent(totalSeconds < 300);
+      setDisplay(formatCountdown(remainingMs));
+      setIsUrgent(totalSeconds < 300 && totalSeconds > 0);
     };
 
     tick();

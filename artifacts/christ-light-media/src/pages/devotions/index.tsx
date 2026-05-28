@@ -138,7 +138,7 @@ export default function DevotionsPage() {
                   type="text"
                   placeholder="Search by verse or keyword..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e: any) => setSearch(e.target.value)}
                   className="w-full rounded-full border border-white/10 bg-[#1A1A1A] py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-[#C8A24A]/30 focus:outline-none"
                 />
               </div>

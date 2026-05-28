@@ -1,7 +1,7 @@
 # ✅ Core API Routes — Complete
 
 ## Overview
-All production-ready API routes for Christ Light Media are now implemented with:
+All production-ready API routes for In For Christ Media are now implemented with:
 - ✓ Full authentication & authorization
 - ✓ Type-safe request/response handling
 - ✓ Pagination support

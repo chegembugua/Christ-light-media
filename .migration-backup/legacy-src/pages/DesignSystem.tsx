@@ -25,7 +25,7 @@ export default function DesignSystem() {
     <div className="min-h-screen bg-primary-base pb-24">
       <HeroSection 
         title="Design System" 
-        subtitle="A luxurious, spiritual, and welcoming UI library for Christ Light Media House."
+        subtitle="A luxurious, spiritual, and welcoming UI library for In For Christ Media House."
       >
         <Button variant="gold" size="lg">Explore Components</Button>
       </HeroSection>

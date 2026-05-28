@@ -27,8 +27,8 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Christ Light Media',
-    template: '%s | Christ Light Media',
+    default: 'In For Christ Media',
+    template: '%s | In For Christ Media',
   },
   description:
     'Stream sermons, podcasts, worship music, daily devotions, and join a global Christian community.',
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
     'prayer',
     'Bible school',
   ],
-  authors: [{ name: 'Christ Light Media' }],
+  authors: [{ name: 'In For Christ Media' }],
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: appUrl,
-    siteName: 'Christ Light Media',
-    title: 'Christ Light Media',
+    siteName: 'In For Christ Media',
+    title: 'In For Christ Media',
     description:
       'A full-stack Christian media platform — sermons, podcasts, worship, devotions, and community.',
     images: [
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
         url: `${appUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: 'Christ Light Media',
+        alt: 'In For Christ Media',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Christ Light Media',
+    title: 'In For Christ Media',
     description:
       'Stream sermons, podcasts, worship music, and daily devotions.',
     images: [`${appUrl}/og-image.png`],

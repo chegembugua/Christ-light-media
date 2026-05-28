@@ -6,7 +6,40 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const Select = SelectPrimitive.Root
+const SelectRoot = SelectPrimitive.Root
+
+export interface CustomSelectProps {
+  options: { value: string; label: string }[];
+  value?: string;
+  onChange?: (e: { target: { value: string } }) => void;
+  label?: string;
+  error?: string;
+  className?: string;
+}
+
+const Select = React.forwardRef<HTMLDivElement, CustomSelectProps>(
+  ({ options, value, onChange, label, error, className }, ref) => {
+    return (
+      <div ref={ref} className={cn("w-full flex flex-col gap-1.5", className)}>
+        {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+        <SelectRoot value={value} onValueChange={(val) => onChange?.({ target: { value: val } })}>
+          <SelectTrigger className={cn(error && "border-red-500 focus:ring-red-500")}>
+            <SelectValue placeholder={options?.[0]?.label ?? "Select an option"} />
+          </SelectTrigger>
+          <SelectContent>
+            {options?.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
+        {error && <span className="text-xs text-red-500">{error}</span>}
+      </div>
+    )
+  }
+)
+Select.displayName = "SelectWrapper"
 
 const SelectGroup = SelectPrimitive.Group
 
@@ -146,6 +179,7 @@ const SelectSeparator = React.forwardRef<
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
 export {
+  SelectRoot,
   Select,
   SelectGroup,
   SelectValue,

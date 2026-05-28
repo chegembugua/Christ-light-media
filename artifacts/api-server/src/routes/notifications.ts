@@ -27,7 +27,7 @@ router.patch("/notifications/:id/read", requireAuth, async (req, res) => {
   try {
     await db.update(notifications)
       .set({ isRead: true })
-      .where(and(eq(notifications.id, req.params.id), eq(notifications.userId, userId)));
+      .where(and(eq(notifications.id, req.params.id as string), eq(notifications.userId, userId)));
     return res.json({ ok: true });
   } catch (err) {
     return res.status(500).json({ error: String(err) });

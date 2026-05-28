@@ -65,7 +65,7 @@ function generateDailyPrompts(challenge: { duration: number; category: string | 
 
 router.get("/movement/challenges/:slug", async (req, res) => {
   try {
-    const row = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug) });
+    const row = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug as string) });
     if (!row) return res.status(404).json({ error: "Challenge not found" });
     const dailyPrompts = generateDailyPrompts(row);
     return res.json({ challenge: row, dailyPrompts });
@@ -77,7 +77,7 @@ router.get("/movement/challenges/:slug", async (req, res) => {
 router.get("/movement/challenges/:slug/progress", requireAuth, async (req, res) => {
   const { id: userId } = (req as AuthReq).user;
   try {
-    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug) });
+    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug as string) });
     if (!challenge) return res.status(404).json({ error: "Challenge not found" });
     const enrollment = await db.query.challengeEnrollments.findFirst({
       where: and(eq(challengeEnrollments.userId, userId), eq(challengeEnrollments.challengeId, challenge.id)),
@@ -92,7 +92,7 @@ router.get("/movement/challenges/:slug/progress", requireAuth, async (req, res) 
 router.post("/movement/challenges/:slug/enroll", requireAuth, async (req, res) => {
   const { id: userId } = (req as AuthReq).user;
   try {
-    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug) });
+    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug as string) });
     if (!challenge) return res.status(404).json({ error: "Challenge not found" });
     const existing = await db.query.challengeEnrollments.findFirst({
       where: and(eq(challengeEnrollments.userId, userId), eq(challengeEnrollments.challengeId, challenge.id)),
@@ -109,7 +109,7 @@ router.post("/movement/challenges/:slug/progress", requireAuth, async (req, res)
   const { id: userId } = (req as AuthReq).user;
   const { day } = req.body as { day: number };
   try {
-    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug) });
+    const challenge = await db.query.challenges.findFirst({ where: eq(challenges.slug, req.params.slug as string) });
     if (!challenge) return res.status(404).json({ error: "Challenge not found" });
     const enrollment = await db.query.challengeEnrollments.findFirst({
       where: and(eq(challengeEnrollments.userId, userId), eq(challengeEnrollments.challengeId, challenge.id)),
@@ -152,7 +152,7 @@ router.get("/movement/testimonies", async (req, res) => {
 router.get("/movement/testimonies/:id", async (req, res) => {
   try {
     const row = await db.query.testimonies.findFirst({
-      where: and(eq(testimonies.id, req.params.id), eq(testimonies.isPublished, true)),
+      where: and(eq(testimonies.id, req.params.id as string), eq(testimonies.isPublished, true)),
       with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
     });
     if (!row) return res.status(404).json({ error: "Testimony not found" });
@@ -168,7 +168,7 @@ router.get("/movement/testimonies/:id", async (req, res) => {
 router.post("/movement/testimonies/:id/react", requireAuth, async (req, res) => {
   try {
     const row = await db.query.testimonies.findFirst({
-      where: and(eq(testimonies.id, req.params.id), eq(testimonies.isPublished, true)),
+      where: and(eq(testimonies.id, req.params.id as string), eq(testimonies.isPublished, true)),
     });
     if (!row) return res.status(404).json({ error: "Testimony not found" });
     const [updated] = await db

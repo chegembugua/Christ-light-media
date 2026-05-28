@@ -5,8 +5,8 @@ import { BookOpen, Clock, Users, Award, PlayCircle, Lock } from 'lucide-react';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
 import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 const CATEGORIES = ['All', 'Theology', 'Leadership', 'Apologetics', 'Marriage', 'Finances'];
 

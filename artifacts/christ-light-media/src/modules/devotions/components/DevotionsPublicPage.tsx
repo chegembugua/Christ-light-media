@@ -7,10 +7,14 @@ type Devotion = {
   id: string;
   title: string;
   date: string;
-  verse?: string | null;
-  verseText?: string | null;
-  reflection?: string | null;
+  verse: string;
+  verseText: string;
+  reflection: string;
   isPublished: boolean;
+  imageUrl: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export function DevotionsPublicPage() {

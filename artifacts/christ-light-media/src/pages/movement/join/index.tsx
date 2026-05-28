@@ -5,8 +5,8 @@ import { Link } from 'wouter';
 import { CheckCircle, BookOpen, Users, Flame, Share2, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 import { useMutation } from '@/hooks/useApi';
 
@@ -150,7 +150,7 @@ export default function JoinMovementPage() {
                   type="checkbox"
                   className="sr-only"
                   checked={committed}
-                  onChange={(e) => { setCommitted(e.target.checked); setErrors({}); }}
+                  onChange={(e: any) => { setCommitted(e.target.checked); setErrors({}); }}
                 />
                 <span className="text-sm text-gray-300 leading-relaxed">
                   I commit to living out the values of the In for Christ movement — daily prayer, Scripture, community, and authentic witness.
@@ -195,7 +195,7 @@ export default function JoinMovementPage() {
               label="How did you hear about us?"
               options={HEARD_OPTIONS}
               value={heardFrom}
-              onChange={(e) => setHeardFrom(e.target.value)}
+              onChange={(e: any) => setHeardFrom(e.target.value)}
             />
 
             {/* Submit */}

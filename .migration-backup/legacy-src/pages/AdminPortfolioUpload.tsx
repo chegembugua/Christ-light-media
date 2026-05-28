@@ -151,7 +151,7 @@ export default function AdminPortfolioUpload() {
         
         <div className="mb-10">
           <h1 className="text-4xl font-serif font-bold mb-3">Upload Portfolio</h1>
-          <p className="text-gray-400">Add a new photo or video project to the Christ Light Media portfolio.</p>
+          <p className="text-gray-400">Add a new photo or video project to the In For Christ Media portfolio.</p>
         </div>
 
         {error && (

@@ -1,1 +1,1 @@
-- [Christ Light Media migration patterns](clm-migration-patterns.md) — Next.js→Vite/wouter migration gotchas for this codebase
+- [In For Christ Media migration patterns](clm-migration-patterns.md) — Next.js→Vite/wouter migration gotchas for this codebase

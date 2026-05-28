@@ -41,7 +41,7 @@ const MOVEMENT_UPDATES: MovementUpdate[] = [
     id: '1',
     title: 'A Word for the Season: Press In',
     author: 'Pastor David Chen',
-    authorTitle: 'Founder, Christ Light Media',
+    authorTitle: 'Founder, In For Christ Media',
     date: 'May 18, 2026',
     preview: 'The Lord is calling His people to a deeper place of consecration. This is not a time to pull back — it is a time to press in with everything we have...',
   },

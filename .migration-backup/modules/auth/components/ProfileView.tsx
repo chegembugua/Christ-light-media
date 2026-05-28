@@ -35,7 +35,7 @@ export function ProfileView() {
     <section className="container mx-auto max-w-2xl px-6 pt-28 pb-16">
       <header className="mb-10 animate-fadeUp">
         <h1 className="font-cinzel text-4xl text-white">My Profile</h1>
-        <p className="mt-2 text-gray-400">Your Christ Light Media account</p>
+        <p className="mt-2 text-gray-400">Your In For Christ Media account</p>
       </header>
 
       <article className="glass animate-fadeUp rounded-2xl p-8">

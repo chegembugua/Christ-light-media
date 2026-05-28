@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 import { useLocation } from 'wouter';
 import { Loader2, Camera, Trash2, MapPin } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { authFetch } from '@/lib/api/authFetch';
 import ScrollReveal from '@/components/animations/ScrollReveal'; // Added import
 
@@ -207,7 +207,7 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                onChange={(e: any) => setFullName(e.target.value)}
                 placeholder="Your full name"
                 className="w-full bg-bg-secondary border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder:text-text-tertiary focus:border-gold outline-none transition-colors"
                 required
@@ -219,7 +219,7 @@ export default function EditProfilePage() {
               <label className="block text-sm font-medium mb-2 text-text-secondary">Bio (max 300 chars)</label>
               <textarea
                 value={bio}
-                onChange={(e) => setBio(e.target.value.slice(0, 300))}
+                onChange={(e: any) => setBio(e.target.value.slice(0, 300))}
                 placeholder="Tell us about your faith journey..."
                 className="w-full bg-bg-secondary border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder:text-text-tertiary focus:border-gold outline-none transition-colors resize-none h-24"
               />
@@ -253,7 +253,7 @@ export default function EditProfilePage() {
                 <input
                   type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e: any) => setLocation(e.target.value)}
                   placeholder="City, Country"
                   className="w-full bg-bg-secondary border border-white/10 rounded-lg pl-11 pr-4 py-2.5 text-white placeholder:text-text-tertiary focus:border-gold outline-none transition-colors"
                 />

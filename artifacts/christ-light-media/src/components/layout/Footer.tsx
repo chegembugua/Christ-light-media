@@ -117,23 +117,11 @@ export default function Footer() {
           {/* ── Brand column ── */}
           <div className="lg:pr-8">
             <Link href="/" className="inline-flex items-center gap-3 group mb-6">
-              <span
-                className="inline-block w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-gold"
-                style={{
-                  background: 'linear-gradient(135deg, #C8A24A 0%, #E6D5A8 50%, #B38A3D 100%)',
-                  boxShadow: '0 0 18px rgba(200,162,74,0.28)',
-                }}
-              >
-                <span className="text-black text-lg font-cinzel leading-none">✦</span>
-              </span>
-              <div>
-                <p className="text-[15px] font-bold tracking-tight text-white group-hover:text-gold transition-colors font-cinzel leading-none">
-                  Christ Light
-                </p>
-                <p className="text-[8px] text-white/20 tracking-[0.3em] uppercase font-inter mt-1">
-                  Media House
-                </p>
-              </div>
+              <img
+                src="/logo.jpg"
+                alt="In For Christ Media"
+                className="h-16 w-auto transition-all duration-300 group-hover:scale-105 drop-shadow-[0_0_16px_rgba(200,162,74,0.3)]"
+              />
             </Link>
 
             <p className="text-sm text-white/30 font-inter leading-relaxed max-w-xs mb-8">
@@ -192,7 +180,7 @@ export default function Footer() {
           style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
         >
           <p className="text-xs text-white/18 font-inter tracking-wide">
-            © {year} Christ Light Media. All rights reserved.
+            © {year} In For Christ Media. All rights reserved.
           </p>
 
           <div className="flex items-center gap-5 text-xs text-white/18 font-inter">

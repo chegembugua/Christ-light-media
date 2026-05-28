@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 ;
 import { Star, ChevronRight, Quote, PlusCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
 import { useApi } from '@/hooks/useApi';

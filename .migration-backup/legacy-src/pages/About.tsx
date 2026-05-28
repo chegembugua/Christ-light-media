@@ -12,10 +12,10 @@ export default function About() {
         <div>
           <h2 className="text-3xl font-serif mb-6 text-gold">Shining the Light of Christ</h2>
           <p className="text-gray-300 leading-relaxed mb-6 font-light text-lg italic border-l-2 border-gold/50 pl-4 py-1">
-            "Christ Light Media exists to shine the light of Christ into every digital space — proclaiming the Gospel, equipping the saints, and fostering a global community of worship, prayer, and discipleship."
+            "In For Christ Media exists to shine the light of Christ into every digital space — proclaiming the Gospel, equipping the saints, and fostering a global community of worship, prayer, and discipleship."
           </p>
           <p className="text-gray-300 leading-relaxed font-light mt-6">
-            Christ Light Media is not a church. It is a digital lampstand (<span className="text-white">Revelation 1:20</span>) — a broadcasting and discipleship platform that supports the local church and helps believers grow in faith, worship, and community.
+            In For Christ Media is not a church. It is a digital lampstand (<span className="text-white">Revelation 1:20</span>) — a broadcasting and discipleship platform that supports the local church and helps believers grow in faith, worship, and community.
           </p>
         </div>
         <div className="rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">

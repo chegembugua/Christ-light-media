@@ -5,10 +5,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { authFetch } from '@/lib/api/authFetch';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { FileUploadInput } from '@/components/admin/FileUploadInput';
 
 export type Devotion = {
@@ -182,7 +182,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
         label="Title"
         placeholder="e.g., Faith in the Storm"
         value={title}
-        onChange={(event) => setTitle(event.target.value)}
+        onChange={(event: any) => setTitle(event.target.value)}
         error={errors.title}
         required
       />
@@ -191,7 +191,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
         label="Bible Verse"
         placeholder="John 3:16 or Psalm 23:1-4"
         value={verse}
-        onChange={(event) => setVerse(event.target.value)}
+        onChange={(event: any) => setVerse(event.target.value)}
         error={errors.verse}
         required
       />
@@ -200,7 +200,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
         label="Verse Text"
         placeholder="For God so loved the world..."
         value={verseText}
-        onChange={(event) => setVerseText(event.target.value)}
+        onChange={(event: any) => setVerseText(event.target.value)}
       />
 
       <div className="space-y-1.5">
@@ -208,7 +208,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
           label="Reflection"
           placeholder="Write the reflection on today's verse..."
           value={reflection}
-          onChange={(event) => setReflection(event.target.value)}
+          onChange={(event: any) => setReflection(event.target.value)}
           error={errors.reflection}
           className="min-h-[240px]"
           required
@@ -220,7 +220,7 @@ export function DevotionForm({ mode, devotion, onSubmit }: DevotionFormProps) {
         label="Date"
         type="date"
         value={date}
-        onChange={(event) => setDate(event.target.value)}
+        onChange={(event: any) => setDate(event.target.value)}
         error={errors.date}
         required
       />

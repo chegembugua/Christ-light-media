@@ -53,7 +53,7 @@ export default function NewsCard({
           onClick={onClick}
           className="cursor-pointer hover:border-gold/20 transition"
         >
-          <Link href={`/news/${slug}`} passHref>
+          <Link href={`/news/${slug}`}>
             <div className="flex h-full flex-col overflow-hidden p-0">
               <div className="relative aspect-video overflow-hidden">
                 <img
@@ -102,7 +102,7 @@ export default function NewsCard({
           </Link>
         </div>
       ) : (
-        <Link href={`/news/${slug}`} passHref>
+        <Link href={`/news/${slug}`}>
           <div className="flex h-full flex-col overflow-hidden p-0 hover:border-gold/20 transition">
             <div className="relative aspect-video overflow-hidden">
               <img

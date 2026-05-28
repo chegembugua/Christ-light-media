@@ -44,7 +44,7 @@ export default function NewsArchiveRow({
   };
 
   return (
-    <Link href={`/news/${slug}`} passHref className="block">
+    <Link href={`/news/${slug}`} className="block">
       <div className="p-4 border-b border-white/10 hover:bg-white/5 transition">
         <div className="flex items-center gap-4">
           {/* Thumbnail */}

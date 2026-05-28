@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { validateForgotPassword } from '../lib/validators';
 import { AuthCard } from './AuthCard';
@@ -69,7 +69,7 @@ export function ForgotPasswordForm() {
             placeholder="grace@example.com"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: any) => setEmail(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
           />
           <Button className="w-full py-4 text-xs" onClick={handleSubmit} disabled={loading}>

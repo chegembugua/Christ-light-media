@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Christ Light Media privacy policy.',
+  description: 'In For Christ Media privacy policy.',
 };
 
 export default function PrivacyPage() {

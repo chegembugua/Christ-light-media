@@ -4,9 +4,9 @@
   "license": "MIT",
   "homepage": "https://chegembugua.github.io/Christ-light-media",
   "scripts": {
-    "dev": "npm run dev --workspace @workspace/christ-light-media",
-    "predeploy": "npm run build --workspace @workspace/christ-light-media",
-    "deploy": "gh-pages -d artifacts/christ-light-media/dist/public",
+    "dev": "npm run dev --workspace @workspace/inforchristmedia",
+    "predeploy": "npm run build --workspace @workspace/inforchristmedia",
+    "deploy": "gh-pages -d artifacts/inforchristmedia/dist/public",
     "build": "npm run typecheck && npm run build --workspaces --if-present",
     "typecheck:libs": "tsc --build",
     "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
@@ -18,7 +18,9 @@
     "typescript": "~5.9.3"
   },
   "workspaces": [
-    "artifacts/*",
+    "artifacts/api-server",
+    "artifacts/christ-light-media",
+    "artifacts/shared-db",
     "lib/*",
     "lib/integrations/*",
     "scripts"

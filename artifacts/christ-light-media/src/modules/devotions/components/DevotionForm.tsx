@@ -2,9 +2,9 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import type { DevotionDTO } from '../types';
 
 interface DevotionFormProps {
@@ -58,36 +58,36 @@ export function DevotionForm({ initial }: DevotionFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-      <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+      <Input label="Title" value={title} onChange={(e: any) => setTitle(e.target.value)} required />
       <Input
         label="Scripture reference"
         placeholder="John 3:16"
         value={verse}
-        onChange={(e) => setVerse(e.target.value)}
+        onChange={(e: any) => setVerse(e.target.value)}
       />
       <Textarea
         label="Scripture text"
         value={verseText}
-        onChange={(e) => setVerseText(e.target.value)}
+        onChange={(e: any) => setVerseText(e.target.value)}
         placeholder="For God so loved the world..."
       />
       <Textarea
         label="Reflection"
         value={reflection}
-        onChange={(e) => setReflection(e.target.value)}
+        onChange={(e: any) => setReflection(e.target.value)}
         className="min-h-[200px]"
       />
       <Input
         label="Date"
         type="date"
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e: any) => setDate(e.target.value)}
       />
       <label className="flex items-center gap-3">
         <input
           type="checkbox"
           checked={isPublished}
-          onChange={(e) => setIsPublished(e.target.checked)}
+          onChange={(e: any) => setIsPublished(e.target.checked)}
           className="h-4 w-4 rounded border-white/10 bg-card text-gold"
         />
         <span className="text-sm text-gray-400">Publish immediately</span>

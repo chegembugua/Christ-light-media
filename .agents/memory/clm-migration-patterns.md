@@ -1,5 +1,5 @@
 ---
-name: Christ Light Media Migration Patterns
+name: In For Christ Media Migration Patterns
 description: Next.js→Vite+wouter migration patterns and recurring issues in the christ-light-media artifact
 ---
 

@@ -1,5 +1,5 @@
 /**
- * API Routes Documentation — Christ Light Media
+ * API Routes Documentation — In For Christ Media
  * 
  * All routes return:
  * { data: T, pagination?: { page, pageSize, total } }

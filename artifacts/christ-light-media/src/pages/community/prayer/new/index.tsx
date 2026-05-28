@@ -2,10 +2,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { authFetch } from '@/lib/api/authFetch';
 
 const DURATION_OPTIONS = [
@@ -123,7 +123,7 @@ export default function NewPrayerPage() {
               label="Title"
               placeholder="Please pray for healing..."
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: any) => setTitle(e.target.value)}
               maxLength={100}
             />
             <div className="mt-1 flex justify-between text-[10px]">
@@ -138,7 +138,7 @@ export default function NewPrayerPage() {
               label="Description"
               placeholder="Details here..."
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e: any) => setContent(e.target.value)}
               minLength={10}
               maxLength={2000}
             />
@@ -154,7 +154,7 @@ export default function NewPrayerPage() {
                 label="Category"
                 options={CATEGORY_OPTIONS}
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e: any) => setCategory(e.target.value)}
               />
             {errors.category && <p className="mt-1 ml-1 text-[10px] font-bold uppercase tracking-tight text-red-500">{errors.category}</p>}
           </div>
@@ -191,7 +191,7 @@ export default function NewPrayerPage() {
                 label="Your name (optional)"
                 placeholder={userName || 'Your name'}
                 value={yourName}
-                onChange={(e) => setYourName(e.target.value)}
+                onChange={(e: any) => setYourName(e.target.value)}
               />
             </div>
           )}
@@ -202,7 +202,7 @@ export default function NewPrayerPage() {
               label="Request Duration"
               options={DURATION_OPTIONS}
               value={duration}
-              onChange={(e) => setDuration(e.target.value)}
+              onChange={(e: any) => setDuration(e.target.value)}
             />
             {errors.duration && <p className="mt-1 ml-1 text-[10px] font-bold uppercase tracking-tight text-red-500">{errors.duration}</p>}
           </div>

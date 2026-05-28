@@ -26,11 +26,14 @@ const buttonVariants = cva(
         // @replit no hover, transparent border
         ghost: "border border-transparent",
         link: "text-primary underline-offset-4 hover:underline",
+        gold: "bg-gold text-black hover:bg-gold/90 shadow-lg",
+        surface: "bg-card text-card-foreground border border-white/10 hover:bg-white/5",
       },
       size: {
         // @replit changed sizes
         default: "min-h-9 px-4 py-2",
         sm: "min-h-8 rounded-md px-3 text-xs",
+        md: "min-h-10 rounded-md px-6 text-sm",
         lg: "min-h-10 rounded-md px-8",
         icon: "h-9 w-9",
       },

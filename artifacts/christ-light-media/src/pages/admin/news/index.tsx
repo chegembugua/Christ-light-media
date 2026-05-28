@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { NewsForm, type News } from '@/components/admin/NewsForm';
 import { authFetch } from '@/lib/api/authFetch';
 
@@ -144,7 +144,7 @@ export default function AdminNewsPage() {
               </div>
               <select
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
+                onChange={(event: any) => setCategory(event.target.value)}
                 className="rounded-lg border border-white/10 bg-card px-3 py-2 text-xs font-semibold text-gray-300 outline-none focus:border-gold/50"
               >
                 <option value="all">All Categories</option>

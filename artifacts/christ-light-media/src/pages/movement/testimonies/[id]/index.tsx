@@ -6,7 +6,7 @@ import { useParams, useLocation } from 'wouter';
 import { ArrowLeft, Heart, Share2, Eye, MapPin, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 
 interface Testimony {

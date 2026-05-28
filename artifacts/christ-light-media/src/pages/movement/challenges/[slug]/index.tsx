@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import { useAuth } from '@/context/AuthContext';
 
@@ -281,7 +281,7 @@ export default function ChallengePage() {
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${committed ? 'bg-gold border-gold' : 'border-white/30 group-hover:border-gold/50'}`}>
                   {committed && <CheckCircle size={12} className="text-black" />}
                 </div>
-                <input type="checkbox" className="sr-only" checked={committed} onChange={(e) => setCommitted(e.target.checked)} />
+                <input type="checkbox" className="sr-only" checked={committed} onChange={(e: any) => setCommitted(e.target.checked)} />
                 <span className="text-sm text-gray-300">I commit to completing this challenge daily and giving it my full effort.</span>
               </label>
               <Button

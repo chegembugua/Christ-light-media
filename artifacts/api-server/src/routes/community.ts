@@ -101,7 +101,7 @@ router.post("/community/prayers", requireAuth, async (req, res) => {
 router.get("/community/prayers/:id", async (req, res) => {
   try {
     const row = await db.query.prayerRequests.findFirst({
-      where: eq(prayerRequests.id, req.params.id),
+      where: eq(prayerRequests.id, req.params.id as string),
       with: { user: { columns: { id: true, fullName: true, avatarUrl: true } } },
     });
     if (!row) return res.status(404).json({ error: "Prayer request not found" });
@@ -118,7 +118,7 @@ router.get("/community/prayers/:id", async (req, res) => {
  */
 router.post("/community/prayers/:id/pray", requireAuth, async (req, res) => {
   const { id: userId } = (req as AuthReq).user;
-  const prayerRequestId = req.params.id;
+  const prayerRequestId = req.params.id as string;
   try {
     const existing = await db.query.prayerVotes.findFirst({
       where: and(
@@ -150,7 +150,7 @@ router.post("/community/prayers/:id/pray", requireAuth, async (req, res) => {
 
 router.delete("/community/prayers/:id/pray", requireAuth, async (req, res) => {
   const { id: userId } = (req as AuthReq).user;
-  const prayerRequestId = req.params.id;
+  const prayerRequestId = req.params.id as string;
   try {
     const existing = await db.query.prayerVotes.findFirst({
       where: and(
@@ -206,7 +206,7 @@ router.get("/community/chat/:roomId/messages", async (req, res) => {
   const offset = Number(req.query.offset ?? 0);
   try {
     const where = and(
-      eq(chatMessages.roomId, req.params.roomId),
+      eq(chatMessages.roomId, req.params.roomId as string),
       eq(chatMessages.isDeleted, false)
     );
     const [rows, [{ total }]] = await Promise.all([
@@ -228,7 +228,7 @@ router.get("/community/chat/:roomId/messages", async (req, res) => {
 router.post("/community/chat/:roomId/messages", requireAuth, async (req, res) => {
   const { id: userId } = (req as AuthReq).user;
   const { content } = req.body as { content: string };
-  const { roomId } = req.params;
+  const { roomId } = req.params as { roomId: string };
   try {
     const [created] = await db
       .insert(chatMessages)
@@ -249,7 +249,7 @@ router.delete(
   requireAuth,
   async (req, res) => {
     const { id: userId } = (req as AuthReq).user;
-    const { messageId } = req.params;
+    const { messageId } = req.params as { messageId: string };
     try {
       const msg = await db.query.chatMessages.findFirst({
         where: eq(chatMessages.id, messageId),

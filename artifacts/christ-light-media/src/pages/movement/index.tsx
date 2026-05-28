@@ -4,8 +4,8 @@ import { Link } from 'wouter';
 ;
 import { Users, Flame, BookOpen, Quote, ChevronRight, CheckCircle, Calendar, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
 import { useAuth } from '@/context/AuthContext';
@@ -40,7 +40,7 @@ const MOVEMENT_UPDATES: MovementUpdate[] = [
     id: '1',
     title: 'A Word for the Season: Press In',
     author: 'Pastor David Chen',
-    authorTitle: 'Founder, Christ Light Media',
+    authorTitle: 'Founder, In For Christ Media',
     date: 'May 18, 2026',
     preview: 'The Lord is calling His people to a deeper place of consecration. This is not a time to pull back — it is a time to press in with everything we have...',
   },

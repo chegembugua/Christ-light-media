@@ -1,6 +1,6 @@
 import { Link } from 'wouter';
 import { BookOpen } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import type { DevotionDTO } from '../types';
 
 function formatDate(iso: string): string {

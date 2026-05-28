@@ -101,7 +101,7 @@ export default function GivePage() {
                   Where Does Your Seed Go?
                 </h2>
                 <p className="text-gray-400 font-inter text-lg leading-relaxed mb-12">
-                  Christ Light Media operates entirely through the faithful partnership of believers. 
+                  In For Christ Media operates entirely through the faithful partnership of believers. 
                   Every dollar goes directly toward ministry expansion, operational costs, and global outreach.
                 </p>
 
@@ -123,7 +123,7 @@ export default function GivePage() {
                 <div className="mt-12 p-6 rounded-2xl bg-white/5 border border-white/10 flex gap-4 items-start">
                   <Check size={20} className="text-gold shrink-0 mt-0.5" />
                   <p className="text-sm text-gray-400 leading-relaxed font-inter">
-                    Christ Light Media is a registered 501(c)(3) non-profit organization. 
+                    In For Christ Media is a registered 501(c)(3) non-profit organization. 
                     All donations are tax-deductible to the full extent allowed by law. 
                     A receipt will be emailed instantly.
                   </p>

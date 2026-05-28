@@ -4,8 +4,8 @@ import { Link } from 'wouter';
 import { useLocation } from 'wouter';
 import { Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import type { MediaDTO } from '../types';
 
 export function MediaAdminList({ items }: { items: MediaDTO[] }) {

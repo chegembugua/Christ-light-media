@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Heart, Globe, Radio, BookOpen, Check, ArrowRight, Lock } from 'lucide-react';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const IMPACT_AREAS = [
   { icon: Radio, title: 'Global Broadcasts', desc: 'Keeping our servers running 24/7 to stream the gospel to 120+ countries.' },
@@ -100,7 +100,7 @@ export default function GivePage() {
                   Where Does Your Seed Go?
                 </h2>
                 <p className="text-gray-400 font-inter text-lg leading-relaxed mb-12">
-                  Christ Light Media operates entirely through the faithful partnership of believers. 
+                  In For Christ Media aims for financial sustainability to fund ministry work, create youth employment, and empower communities, alongside the faithful partnership of believers. 
                   Every dollar goes directly toward ministry expansion, operational costs, and global outreach.
                 </p>
 
@@ -122,8 +122,8 @@ export default function GivePage() {
                 <div className="mt-12 p-6 rounded-2xl bg-white/5 border border-white/10 flex gap-4 items-start">
                   <Check size={20} className="text-gold shrink-0 mt-0.5" />
                   <p className="text-sm text-gray-400 leading-relaxed font-inter">
-                    Christ Light Media is a registered 501(c)(3) non-profit organization. 
-                    All donations are tax-deductible to the full extent allowed by law. 
+                    In For Christ envisions becoming a fully registered, independent Christian organization. 
+                    All partnerships help build sustainable structures for Kingdom business and outreach. 
                     A receipt will be emailed instantly.
                   </p>
                 </div>

@@ -16,7 +16,7 @@ export default function CallToAction() {
             <Link to="/portfolio" className="border border-white/20 hover:border-white text-white transition-colors duration-300 px-8 py-4 rounded-full font-bold tracking-widest uppercase text-sm">
               Explore Content
             </Link>
-            <a href="mailto:contact@christlightmedia.com" className="text-gold hover:text-white transition-colors duration-300 px-8 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center">
+            <a href="mailto:contact@inforchristmedia.com" className="text-gold hover:text-white transition-colors duration-300 px-8 py-4 font-bold tracking-widest uppercase text-sm flex items-center justify-center">
               Contact Us <ArrowRight className="w-4 h-4 ml-2" />
             </a>
           </div>

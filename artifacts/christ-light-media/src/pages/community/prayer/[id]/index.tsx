@@ -16,7 +16,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import PrayerCard from '@/components/prayer/PrayerCard';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { formatRelativeTime } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 

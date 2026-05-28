@@ -311,7 +311,7 @@ export default function SettingsPage() {
             <h2 className="text-lg font-cinzel font-semibold">About</h2>
           </div>
           <div className="bg-card border border-white/10 rounded-2xl p-5 space-y-3 text-sm text-gray-400">
-            <p>Christ Light Media v1.0.0</p>
+            <p>In For Christ Media v1.0.0</p>
             <div className="flex flex-wrap gap-4">
               <a href="/privacy" className="text-[#C8A24A] hover:underline inline-flex items-center gap-1">
                 Privacy Policy <ExternalLink size={12} />

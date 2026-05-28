@@ -4,8 +4,8 @@ import { Link } from 'wouter';
 import { useLocation } from 'wouter';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import {
   hasValidationErrors,
@@ -56,7 +56,7 @@ export function RegisterForm() {
       toast.success('Check your email to confirm your account.');
       navigate('/login');
     } else {
-      toast.success('Welcome to Christ Light Media!');
+      toast.success('Welcome to In For Christ Media!');
       navigate('/');
     }
   };
@@ -74,7 +74,7 @@ export function RegisterForm() {
           label="Full Name"
           placeholder="Grace Thompson"
           value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          onChange={(e: any) => setFullName(e.target.value)}
           error={errors.fullName}
         />
         <Input
@@ -82,7 +82,7 @@ export function RegisterForm() {
           placeholder="grace@example.com"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: any) => setEmail(e.target.value)}
           error={errors.email}
         />
         <Input
@@ -90,7 +90,7 @@ export function RegisterForm() {
           placeholder="••••••••"
           type={showPassword ? 'text' : 'password'}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: any) => setPassword(e.target.value)}
           error={errors.password}
           rightElement={
             <button
@@ -108,7 +108,7 @@ export function RegisterForm() {
           placeholder="••••••••"
           type={showPassword ? 'text' : 'password'}
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e: any) => setConfirmPassword(e.target.value)}
           error={errors.confirmPassword}
         />
 
@@ -116,7 +116,7 @@ export function RegisterForm() {
           <input
             type="checkbox"
             checked={agreeTerms}
-            onChange={(e) => setAgreeTerms(e.target.checked)}
+            onChange={(e: any) => setAgreeTerms(e.target.checked)}
             className="mt-0.5 h-4 w-4 rounded border-white/10 bg-card text-gold focus:ring-gold/30"
           />
           <span className="text-[10px] font-medium text-gray-500">

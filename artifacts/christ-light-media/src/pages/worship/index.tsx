@@ -356,7 +356,7 @@ export default function WorshipPage() {
 
               <select
                 value={activeLeader}
-                onChange={(event) => setActiveLeader(event.target.value)}
+                onChange={(event: any) => setActiveLeader(event.target.value)}
                 className="w-full rounded-xl border border-white/10 bg-card px-4 py-3 text-sm text-gray-300 outline-none transition focus:border-gold/60 lg:max-w-xs"
               >
                 <option>All Leaders</option>

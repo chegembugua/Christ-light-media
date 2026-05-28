@@ -1,4 +1,4 @@
-# Christ Light Media — Module Architecture
+# In For Christ Media — Module Architecture
 
 Each feature lives in `modules/<name>/` with a consistent layout:
 

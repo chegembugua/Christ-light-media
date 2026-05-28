@@ -6,7 +6,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import ScrollReveal from '@/components/animations/ScrollReveal';
 import StaggerContainer from '@/components/animations/StaggerContainer';
 import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 
 const LIVE_STREAM = {
   id: 'radio-live',

@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { X } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { FileUploadInput } from '@/components/admin/FileUploadInput';
 import { generateSlug } from '@/lib/utils/slug';
 import { authFetch } from '@/lib/api/authFetch';
@@ -193,7 +193,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
         label="Title"
         placeholder="New Worship Center Opens in Kenya"
         value={title}
-        onChange={(event) => {
+        onChange={(event: any) => {
           setTitle(event.target.value);
           if (!userEditedSlug.current) setSlug(generateSlug(event.target.value));
         }}
@@ -207,7 +207,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
           label="Slug"
           placeholder="new-worship-center-opens-in-kenya"
           value={slug}
-          onChange={(event) => {
+          onChange={(event: any) => {
             userEditedSlug.current = true;
             setSlug(generateSlug(event.target.value));
           }}
@@ -222,7 +222,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
           label="Excerpt"
           placeholder="A brief summary of the article..."
           value={excerpt}
-          onChange={(event) => setExcerpt(event.target.value)}
+          onChange={(event: any) => setExcerpt(event.target.value)}
           error={errors.excerpt}
           maxLength={180}
           className="min-h-[96px]"
@@ -239,7 +239,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
         </label>
         <select
           value={category}
-          onChange={(event) => setCategory(event.target.value)}
+          onChange={(event: any) => setCategory(event.target.value)}
           className={`w-full rounded-xl border bg-card px-4 py-3.5 text-sm text-white outline-none transition focus:border-gold/60 ${
             errors.category ? 'border-red-500/60' : 'border-white/10'
           }`}
@@ -297,7 +297,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
           label="Content"
           placeholder="Write the full article..."
           value={content}
-          onChange={(event) => setContent(event.target.value)}
+          onChange={(event: any) => setContent(event.target.value)}
           error={errors.content}
           className="min-h-[320px]"
           required
@@ -309,7 +309,7 @@ export function NewsForm({ mode, article, onSubmit }: NewsFormProps) {
         label="Author"
         placeholder="Staff Writer"
         value={author}
-        onChange={(event) => setAuthor(event.target.value)}
+        onChange={(event: any) => setAuthor(event.target.value)}
       />
 
       <fieldset className="space-y-3">

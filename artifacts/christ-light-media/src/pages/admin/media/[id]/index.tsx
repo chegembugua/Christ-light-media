@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { authFetch } from '@/lib/api/authFetch';
 
 type MediaItem = {
@@ -152,51 +152,51 @@ export default function AdminMediaEditPage() {
         <Input
           label="Title"
           value={form.title}
-          onChange={(e) => updateForm('title', e.target.value)}
+          onChange={(e: any) => updateForm('title', e.target.value)}
           required
         />
         <Input
           label="Speaker / Artist"
           value={form.speaker}
-          onChange={(e) => updateForm('speaker', e.target.value)}
+          onChange={(e: any) => updateForm('speaker', e.target.value)}
           required
         />
         <Select
           label="Type"
           value={form.type}
           options={typeOptions}
-          onChange={(e) => updateForm('type', e.target.value)}
+          onChange={(e: any) => updateForm('type', e.target.value)}
         />
         <Input
           label="Category"
           value={form.category}
-          onChange={(e) => updateForm('category', e.target.value)}
+          onChange={(e: any) => updateForm('category', e.target.value)}
         />
         <Input
           label="Duration (e.g. 45:30)"
           value={form.duration}
-          onChange={(e) => updateForm('duration', e.target.value)}
+          onChange={(e: any) => updateForm('duration', e.target.value)}
         />
         <Input
           label="Cover Image URL"
           value={form.coverImage}
-          onChange={(e) => updateForm('coverImage', e.target.value)}
+          onChange={(e: any) => updateForm('coverImage', e.target.value)}
         />
         <Input
           label="Audio URL"
           value={form.audioUrl}
-          onChange={(e) => updateForm('audioUrl', e.target.value)}
+          onChange={(e: any) => updateForm('audioUrl', e.target.value)}
         />
         <Input
           label="Video URL (optional)"
           value={form.videoUrl}
-          onChange={(e) => updateForm('videoUrl', e.target.value)}
+          onChange={(e: any) => updateForm('videoUrl', e.target.value)}
         />
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={form.isPublished}
-            onChange={(e) => updateForm('isPublished', e.target.checked)}
+            onChange={(e: any) => updateForm('isPublished', e.target.checked)}
             className="h-4 w-4 rounded border-white/20 text-gold"
           />
           <span className="text-sm text-gray-300">Published</span>

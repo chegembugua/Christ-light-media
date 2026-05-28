@@ -4,8 +4,8 @@ import { Link } from 'wouter';
 import { useLocation } from 'wouter';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { validateLogin } from '../lib/validators';
 import { AuthCard } from './AuthCard';
@@ -61,7 +61,7 @@ export function LoginForm() {
           placeholder="grace@example.com"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e: any) => setEmail(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
         />
 
@@ -70,7 +70,7 @@ export function LoginForm() {
           placeholder="••••••••"
           type={showPassword ? 'text' : 'password'}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: any) => setPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
           rightElement={
             <button

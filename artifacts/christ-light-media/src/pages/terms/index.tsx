@@ -5,7 +5,7 @@ export default function TermsPage() {
     <article className="container mx-auto max-w-3xl px-6 pt-28 pb-16 prose prose-invert">
       <h1 className="font-cinzel text-4xl text-white">Terms of Service</h1>
       <p className="mt-4 text-gray-400">
-        By using Christ Light Media you agree to use the platform for edification,
+        By using In For Christ Media you agree to use the platform for edification,
         respectful fellowship, and lawful purposes. Content must honor biblical values.
         We reserve the right to moderate or remove content that violates community standards.
       </p>

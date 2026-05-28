@@ -66,7 +66,7 @@ export default function Footer() {
 
         <div className="border-t border-surface-hover mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-gray-500 text-xs">
-            © {new Date().getFullYear()} Christ Light Media. All rights reserved.
+            © {new Date().getFullYear()} In For Christ Media. All rights reserved.
           </p>
           <div className="flex space-x-6">
             <a href="#" className="text-gray-500 hover:text-white text-xs transition-colors">Privacy Policy</a>

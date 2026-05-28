@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import NotificationBell from '@/components/notifications/NotificationBell';
 
@@ -146,8 +146,8 @@ export default function Navbar() {
           {/* ── Logo ─────────────────────────────────────────────── */}
           <Link href="/" className="flex items-center shrink-0 z-10 group">
             <img
-              src="/logo.png"
-              alt="Christ Light Media"
+              src="/logo.jpg"
+              alt="In For Christ Media"
               className="h-14 w-auto transition-all duration-300 group-hover:scale-105 drop-shadow-[0_0_16px_rgba(200,162,74,0.5)]"
             />
           </Link>

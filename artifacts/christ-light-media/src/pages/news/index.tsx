@@ -12,7 +12,7 @@ import {
   User
 } from 'lucide-react';
 import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import { useDebounce } from '@/hooks/useDebounce';
 
 type NewsArticle = {

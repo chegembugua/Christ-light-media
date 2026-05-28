@@ -113,7 +113,7 @@ export function FileUploadInput({
           type="file"
           accept={accept}
           className="hidden"
-          onChange={(event) => {
+          onChange={(event: any) => {
             const file = event.target.files?.item(0);
             if (file) selectFile(file);
           }}

@@ -4,8 +4,8 @@ import { Link } from 'wouter';
 import { useLocation } from 'wouter';
 import { Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { validateNewPassword } from '../lib/validators';
 import { AuthCard } from './AuthCard';
@@ -55,7 +55,7 @@ export function ResetPasswordForm() {
           placeholder="••••••••"
           type={showPassword ? 'text' : 'password'}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e: any) => setPassword(e.target.value)}
           rightElement={
             <button
               type="button"
@@ -71,7 +71,7 @@ export function ResetPasswordForm() {
           placeholder="••••••••"
           type={showPassword ? 'text' : 'password'}
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e: any) => setConfirmPassword(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
         />
         <Button className="w-full py-4 text-xs" onClick={handleSubmit} disabled={loading}>

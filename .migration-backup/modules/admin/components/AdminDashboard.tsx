@@ -49,7 +49,7 @@ export async function AdminDashboard() {
     <div className="space-y-10">
       <header>
         <h1 className="font-cinzel text-3xl text-white">Dashboard</h1>
-        <p className="mt-2 text-gray-400">Christ Light Media — Phase 1 foundation</p>
+        <p className="mt-2 text-gray-400">In For Christ Media — Phase 1 foundation</p>
       </header>
 
       <section className="grid gap-6 sm:grid-cols-3">

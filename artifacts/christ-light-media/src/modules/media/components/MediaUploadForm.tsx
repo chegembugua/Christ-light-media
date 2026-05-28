@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
-import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { MEDIA_TYPE_OPTIONS } from '../types';
 import type { MediaType } from '../types';
 
@@ -63,25 +63,25 @@ export function MediaUploadForm() {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-      <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+      <Input label="Title" value={title} onChange={(e: any) => setTitle(e.target.value)} required />
       <Textarea
         label="Description"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={(e: any) => setDescription(e.target.value)}
       />
       <Select
         label="Type"
         value={type}
-        onChange={(e) => setType(e.target.value as MediaType)}
+        onChange={(e: any) => setType(e.target.value as MediaType)}
         options={MEDIA_TYPE_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
       />
-      <Input label="Category" value={category} onChange={(e) => setCategory(e.target.value)} />
-      <Input label="Speaker / Artist" value={speaker} onChange={(e) => setSpeaker(e.target.value)} />
+      <Input label="Category" value={category} onChange={(e: any) => setCategory(e.target.value)} />
+      <Input label="Speaker / Artist" value={speaker} onChange={(e: any) => setSpeaker(e.target.value)} />
       <Input
         label="Duration"
         placeholder="42:18"
         value={duration}
-        onChange={(e) => setDuration(e.target.value)}
+        onChange={(e: any) => setDuration(e.target.value)}
       />
       <div className="space-y-4">
         <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -90,7 +90,7 @@ export function MediaUploadForm() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => setCoverFile(e.target.files?.[0] ?? null)}
+          onChange={(e: any) => setCoverFile(e.target.files?.[0] ?? null)}
           className="w-full text-sm text-gray-400"
         />
         <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -99,7 +99,7 @@ export function MediaUploadForm() {
         <input
           type="file"
           accept="audio/*"
-          onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
+          onChange={(e: any) => setAudioFile(e.target.files?.[0] ?? null)}
           className="w-full text-sm text-gray-400"
         />
         <label className="block text-xs font-bold uppercase tracking-widest text-gray-400">
@@ -108,7 +108,7 @@ export function MediaUploadForm() {
         <input
           type="file"
           accept="video/*"
-          onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+          onChange={(e: any) => setVideoFile(e.target.files?.[0] ?? null)}
           className="w-full text-sm text-gray-400"
         />
       </div>
@@ -116,7 +116,7 @@ export function MediaUploadForm() {
         <input
           type="checkbox"
           checked={isPublished}
-          onChange={(e) => setIsPublished(e.target.checked)}
+          onChange={(e: any) => setIsPublished(e.target.checked)}
           className="h-4 w-4 rounded border-white/10 bg-card text-gold"
         />
         <span className="text-sm text-gray-400">Publish immediately</span>

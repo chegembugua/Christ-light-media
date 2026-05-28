@@ -1,5 +1,5 @@
 /**
- * Tailwind CSS configuration — Christ Light Media enhanced design system.
+ * Tailwind CSS configuration — In For Christ Media enhanced design system.
  */
 import type { Config } from 'tailwindcss';
 

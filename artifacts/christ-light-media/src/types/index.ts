@@ -1,6 +1,5 @@
-import { Notification } from '@prisma/client';
-
-export type { Notification };
+// Notification type moved or defined here
+export type Notification = any;
 
 export type NotificationType =
   | 'prayer'

@@ -5,10 +5,10 @@ import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import PrayerCard from '@/components/prayer/PrayerCard';
 import PrayerStats from '@/components/prayer/PrayerStats';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Select } from '@/components/ui/Select';
-import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 const PAGE_SIZE = 12;
@@ -65,7 +65,7 @@ export default function PrayerWallPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialMount = useRef(true);
 
   const fetchPrayers = useCallback(
@@ -203,7 +203,7 @@ export default function PrayerWallPage() {
               options={CATEGORY_OPTIONS}
               className="!w-auto !min-w-[140px] !py-2"
               value={category}
-              onChange={(e) => {
+              onChange={(e: any) => {
                 setCategory(e.target.value);
                 setOffset(0);
               }}
@@ -213,7 +213,7 @@ export default function PrayerWallPage() {
               options={SORT_OPTIONS}
               className="!w-auto !min-w-[140px] !py-2"
               value={sort}
-              onChange={(e) => {
+              onChange={(e: any) => {
                 setSort(e.target.value);
                 setOffset(0);
               }}
@@ -225,7 +225,7 @@ export default function PrayerWallPage() {
                 type="text"
                 placeholder="Search prayers..."
                 value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={(e: any) => handleSearchChange(e.target.value)}
                 className="!w-full !min-w-[200px] !pl-9 !py-2 text-sm"
               />
             </div>

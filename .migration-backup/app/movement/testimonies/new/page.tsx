@@ -271,7 +271,7 @@ export default function NewTestimonyPage() {
                 </div>
                 <input type="checkbox" className="sr-only" checked={hasPermission} onChange={(e) => { setHasPermission(e.target.checked); setErrors((prev) => ({ ...prev, permission: undefined })); }} />
                 <span className="text-sm text-gray-300 leading-relaxed">
-                  I give Christ Light Media permission to share my testimony on the platform and in ministry materials.
+                  I give In For Christ Media permission to share my testimony on the platform and in ministry materials.
                 </span>
               </label>
               {errors.permission && (

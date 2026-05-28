@@ -193,7 +193,7 @@ export default function Footer() {
           style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
         >
           <p className="text-xs text-white/18 font-inter tracking-wide">
-            © {year} Christ Light Media. All rights reserved.
+            © {year} In For Christ Media. All rights reserved.
           </p>
 
           <div className="flex items-center gap-5 text-xs text-white/18 font-inter">

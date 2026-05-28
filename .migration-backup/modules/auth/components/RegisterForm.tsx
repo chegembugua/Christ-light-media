@@ -57,7 +57,7 @@ export function RegisterForm() {
       toast.success('Check your email to confirm your account.');
       router.push('/login');
     } else {
-      toast.success('Welcome to Christ Light Media!');
+      toast.success('Welcome to In For Christ Media!');
       router.push('/');
     }
   };

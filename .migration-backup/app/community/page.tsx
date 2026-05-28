@@ -4,7 +4,7 @@ import { MessageSquare, Heart } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Community',
-  description: 'Prayer wall, fellowship chat, and community at Christ Light Media.',
+  description: 'Prayer wall, fellowship chat, and community at In For Christ Media.',
 };
 
 const hubs = [

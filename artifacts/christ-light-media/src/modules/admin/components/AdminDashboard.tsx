@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { BookOpen, Upload, Users, Radio } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 
 export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export function AdminDashboard() {
     <div className="space-y-10 p-6">
       <header>
         <h1 className="font-cinzel text-3xl text-white">Dashboard</h1>
-        <p className="mt-2 text-text-secondary">Christ Light Media Admin</p>
+        <p className="mt-2 text-text-secondary">In For Christ Media Admin</p>
       </header>
       <section>
         <h2 className="mb-4 font-cinzel text-xl text-white">Quick Actions</h2>

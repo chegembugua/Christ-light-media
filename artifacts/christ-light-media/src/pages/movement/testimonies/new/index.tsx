@@ -6,10 +6,10 @@ import { authFetch } from '@/lib/api/authFetch';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
-import { Select } from '@/components/ui/Select';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 
 const CATEGORIES = [
@@ -162,7 +162,7 @@ export default function NewTestimonyPage() {
               label="Title *"
               placeholder='How God Healed My Marriage'
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: any) => setTitle(e.target.value)}
               error={errors.title}
               maxLength={100}
             />
@@ -173,7 +173,7 @@ export default function NewTestimonyPage() {
               label="Category *"
               options={CATEGORIES}
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e: any) => setCategory(e.target.value)}
               error={errors.category}
             />
 
@@ -215,7 +215,7 @@ export default function NewTestimonyPage() {
                 label="Your Story *"
                 placeholder="Share your story — how God worked in your life, what you experienced, and how it changed you..."
                 value={story}
-                onChange={(e) => setStory(e.target.value)}
+                onChange={(e: any) => setStory(e.target.value)}
                 error={errors.story}
                 className="min-h-[240px]"
                 maxLength={5000}
@@ -231,13 +231,13 @@ export default function NewTestimonyPage() {
                 label="Your Title / Role"
                 placeholder="e.g., Teacher, Business Owner, Parent"
                 value={authorTitle}
-                onChange={(e) => setAuthorTitle(e.target.value)}
+                onChange={(e: any) => setAuthorTitle(e.target.value)}
               />
               <Input
                 label="Location"
                 placeholder="City, Country"
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e: any) => setLocation(e.target.value)}
               />
             </div>
 
@@ -269,9 +269,9 @@ export default function NewTestimonyPage() {
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${hasPermission ? 'bg-gold border-gold' : 'border-white/30 group-hover:border-gold/50'}`}>
                   {hasPermission && <span className="text-black text-xs font-bold">✓</span>}
                 </div>
-                <input type="checkbox" className="sr-only" checked={hasPermission} onChange={(e) => { setHasPermission(e.target.checked); setErrors((prev) => ({ ...prev, permission: undefined })); }} />
+                <input type="checkbox" className="sr-only" checked={hasPermission} onChange={(e: any) => { setHasPermission(e.target.checked); setErrors((prev) => ({ ...prev, permission: undefined })); }} />
                 <span className="text-sm text-gray-300 leading-relaxed">
-                  I give Christ Light Media permission to share my testimony on the platform and in ministry materials.
+                  I give In For Christ Media permission to share my testimony on the platform and in ministry materials.
                 </span>
               </label>
               {errors.permission && (

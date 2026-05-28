@@ -13,7 +13,7 @@ interface HeroProps {
 export default function Hero({ featuredSermon, featuredDevotion, featuredPodcast, loading }: HeroProps) {
   const defaultSlide = {
     id: 'default',
-    title: 'Christ Light Media',
+    title: 'In For Christ Media',
     description: 'A Light of Christ Through Media, Music & Ministry.',
     image: 'https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2073&auto=format&fit=crop',
     type: 'brand',

@@ -31,7 +31,7 @@ export function AdminSidebar() {
           <Shield className="text-gold" size={20} />
           <div>
             <p className="font-cinzel text-lg text-white">Admin</p>
-            <p className="text-[10px] uppercase tracking-widest text-gray-500">Christ Light Media</p>
+            <p className="text-[10px] uppercase tracking-widest text-gray-500">In For Christ Media</p>
           </div>
         </div>
       </div>

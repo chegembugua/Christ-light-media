@@ -11,7 +11,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import PageHeader from '@/components/layout/PageHeader';
-import { Card } from '@/components/ui/Card';
+import { Card } from '@/components/ui/card';
 import NewsArchiveRow from '@/components/news/NewsArchiveRow';
 import { useDebounce } from '@/hooks/useDebounce';
 

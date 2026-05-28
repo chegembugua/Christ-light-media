@@ -74,9 +74,9 @@ export default function AdminLogin() {
 
       <div className="z-10 w-full max-w-md">
         <div className="text-center mb-10 text-white animate-fade-in-up flex flex-col items-center">
-          <img src="/logo.png" alt="Christ Light Media Logo" className="h-32 mb-6 object-contain drop-shadow-[0_0_15px_rgba(200,162,74,0.4)]" />
+          <img src="/logo.png" alt="In For Christ Media Logo" className="h-32 mb-6 object-contain drop-shadow-[0_0_15px_rgba(200,162,74,0.4)]" />
           <h1 className="sr-only">
-            Christ Light Media
+            In For Christ Media
           </h1>
           <p className="text-gray-400 text-sm tracking-widest uppercase">
             A Light of Christ Through Media & Ministry
@@ -103,7 +103,7 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-black/40 border border-white/10 rounded-lg p-3.5 text-white focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/50 transition-all placeholder-gray-600"
-                placeholder="admin@christlightmedia.com"
+                placeholder="admin@inforchristmedia.com"
               />
             </div>
             

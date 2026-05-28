@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { DevotionForm, type Devotion } from '@/components/admin/DevotionForm';
 import { authFetch } from '@/lib/api/authFetch';
 

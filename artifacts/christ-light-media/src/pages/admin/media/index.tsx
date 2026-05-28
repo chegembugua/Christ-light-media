@@ -6,8 +6,8 @@ import { useLocation } from 'wouter';
 import toast from 'react-hot-toast';
 import { FileUploadInput } from '@/components/admin/FileUploadInput';
 import { MediaTable } from '@/components/admin/MediaTable';
-import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
+import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { authFetch } from '@/lib/api/authFetch';
 
@@ -226,7 +226,7 @@ export default function AdminMediaPage() {
             <Input
               label="Title"
               value={form.title}
-              onChange={(event) => updateForm('title', event.target.value)}
+              onChange={(event: any) => updateForm('title', event.target.value)}
               error={errors.title}
               placeholder="The Light of Christ"
               required
@@ -235,7 +235,7 @@ export default function AdminMediaPage() {
             <Input
               label="Speaker/Artist"
               value={form.speaker}
-              onChange={(event) => updateForm('speaker', event.target.value)}
+              onChange={(event: any) => updateForm('speaker', event.target.value)}
               error={errors.speaker}
               placeholder="Pastor Grace"
               required
@@ -244,14 +244,14 @@ export default function AdminMediaPage() {
             <Select
               label="Media Type"
               value={form.type}
-              onChange={(event) => handleTypeChange(event.target.value as MediaType)}
+              onChange={(event: any) => handleTypeChange(event.target.value as MediaType)}
               options={typeOptions}
             />
 
             <Select
               label="Category"
               value={form.category}
-              onChange={(event) => updateForm('category', event.target.value)}
+              onChange={(event: any) => updateForm('category', event.target.value)}
               options={categoryOptions}
               error={errors.category}
             />
@@ -259,7 +259,7 @@ export default function AdminMediaPage() {
             <Input
               label="Duration"
               value={form.duration}
-              onChange={(event) => updateForm('duration', event.target.value)}
+              onChange={(event: any) => updateForm('duration', event.target.value)}
               error={errors.duration}
               placeholder="42:15"
             />
