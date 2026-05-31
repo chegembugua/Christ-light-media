@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure sign in and account creation for In For Christ Media.">
+  <title>In For Christ Media | Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Single-page auth experience that can be hosted directly on GitHub Pages. -->
+  <main class="auth-shell">
+    <section class="auth-card" aria-labelledby="auth-title">
+      <div class="brand-mark" aria-hidden="true">IFC</div>
+
+      <!-- The heading and subtitle are updated by auth.js when the user switches modes. -->
+      <header class="auth-header">
+        <p class="eyebrow">In For Christ Media</p>
+        <h1 id="auth-title">Welcome back</h1>
+        <p id="auth-subtitle">Sign in to continue to your ministry dashboard.</p>
+      </header>
+
+      <!-- Accessible tab-style toggle for moving between sign in and account creation. -->
+      <div class="mode-toggle" role="tablist" aria-label="Authentication mode">
+        <button id="signin-tab" class="mode-tab active" type="button" role="tab" aria-selected="true" aria-controls="signin-form">
+          Sign In
+        </button>
+        <button id="signup-tab" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="signup-form">
+          Create Account
+        </button>
+        <span class="mode-indicator" aria-hidden="true"></span>
+      </div>
+
+      <!-- Screen-reader-friendly region for success messages such as email confirmation notices. -->
+      <div id="alert-region" class="alert-region" role="status" aria-live="polite"></div>
+
+      <!-- Sign in form: Supabase auth.signInWithPassword is wired in auth.js. -->
+      <form id="signin-form" class="auth-form active" novalidate>
+        <div class="field">
+          <label for="signin-email">Email address</label>
+          <input id="signin-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+          <p id="signin-email-error" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="field">
+          <label for="signin-password">Password</label>
+          <input id="signin-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+          <p id="signin-password-error" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <p id="signin-global-error" class="form-error" aria-live="polite"></p>
+
+        <button id="signin-submit" class="primary-button" type="submit">
+          <span>Sign In</span>
+        </button>
+      </form>
+
+      <!-- Sign up form: Supabase auth.signUp is wired in auth.js. -->
+      <form id="signup-form" class="auth-form" novalidate hidden>
+        <div class="field">
+          <label for="signup-email">Email address</label>
+          <input id="signup-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+          <p id="signup-email-error" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <div class="field">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" name="password" type="password" autocomplete="new-password" placeholder="Create a strong password" minlength="6" required>
+          <p id="signup-password-error" class="field-error" aria-live="polite"></p>
+        </div>
+
+        <p id="signup-global-error" class="form-error" aria-live="polite"></p>
+
+        <button id="signup-submit" class="primary-button" type="submit">
+          <span>Create Account</span>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <!-- Official Supabase JS v2 CDN package. The publishable key in auth.js is safe for browser use. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js" defer></script>
+</body>
+</html>

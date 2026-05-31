@@ -1,0 +1,290 @@
+:root {
+  /* Centralized design tokens keep the page easy to brand and maintain. */
+  --navy: #081735;
+  --royal: #1d4ed8;
+  --royal-dark: #143f9e;
+  --gold: #d7a84d;
+  --charcoal: #1f2937;
+  --muted: #64748b;
+  --line: #dbe3ef;
+  --surface: #ffffff;
+  --surface-soft: #f6f8fc;
+  --danger: #b42318;
+  --danger-bg: #fff4f2;
+  --success: #137333;
+  --success-bg: #ecfdf3;
+  --shadow: 0 24px 70px rgba(8, 23, 53, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  color: var(--charcoal);
+  background:
+    radial-gradient(circle at top left, rgba(215, 168, 77, 0.18), transparent 32rem),
+    linear-gradient(135deg, #07142f 0%, #102a62 48%, #07142f 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* The shell keeps the card centered on desktop and comfortable on mobile. */
+.auth-shell {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+/* The card uses a subtle glass treatment without sacrificing readability. */
+.auth-card {
+  width: min(100%, 460px);
+  padding: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+/* Compact brand mark for a polished ministry identity cue. */
+.brand-mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--royal), var(--navy));
+  box-shadow: 0 12px 26px rgba(29, 78, 216, 0.32);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--royal);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.auth-header h1 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 30px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.auth-header p:last-child {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Tab toggle styles: the indicator slides between modes via a class from auth.js. */
+.mode-toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 22px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.mode-tab {
+  position: relative;
+  z-index: 1;
+  min-height: 42px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
+  transition: color 180ms ease;
+}
+
+.mode-tab.active {
+  color: var(--navy);
+}
+
+.mode-indicator {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: calc(50% - 5px);
+  height: calc(100% - 10px);
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mode-toggle.signup .mode-indicator {
+  transform: translateX(100%);
+}
+
+/* Alerts are injected with textContent in auth.js to avoid rendering unsafe HTML. */
+.alert-region {
+  min-height: 0;
+}
+
+.alert {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.alert.success {
+  color: var(--success);
+  border: 1px solid #b7ebc6;
+  background: var(--success-bg);
+}
+
+.alert.error {
+  color: var(--danger);
+  border: 1px solid #ffd0c9;
+  background: var(--danger-bg);
+}
+
+/* Forms fade in after toggling without shifting the card layout harshly. */
+.auth-form {
+  display: grid;
+  gap: 16px;
+  animation: formIn 260ms ease both;
+}
+
+.auth-form[hidden] {
+  display: none;
+}
+
+@keyframes formIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--charcoal);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--navy);
+  background: #ffffff;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.field input:focus {
+  border-color: var(--royal);
+  box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.13);
+  background: #fbfdff;
+}
+
+/* Error states are tied to aria-invalid for both visual and assistive feedback. */
+.field input[aria-invalid="true"] {
+  border-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.field-error,
+.form-error {
+  margin: 7px 0 0;
+  min-height: 18px;
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.form-error {
+  margin-top: -2px;
+}
+
+/* Button states support async Supabase requests. */
+.primary-button {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--royal), var(--royal-dark));
+  box-shadow: 0 14px 28px rgba(29, 78, 216, 0.28);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(29, 78, 216, 0.34);
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  transform: none;
+}
+
+/* Mobile adjustments preserve tap targets and prevent cramped text. */
+@media (max-width: 520px) {
+  .auth-shell {
+    padding: 18px 12px;
+  }
+
+  .auth-card {
+    padding: 26px 18px;
+  }
+
+  .auth-header h1 {
+    font-size: 26px;
+  }
+}
