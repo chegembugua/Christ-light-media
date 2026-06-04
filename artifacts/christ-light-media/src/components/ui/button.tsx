@@ -1,68 +1,54 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0" +
-" hover-elevate active-elevate-2",
-  {
-    variants: {
-      variant: {
-        default:
-           // @replit: no hover, and add primary border
-           "bg-primary text-primary-foreground border border-primary-border",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm border-destructive-border",
-        outline:
-          // @replit Shows the background color of whatever card / sidebar / accent background it is inside of.
-          // Inherits the current text color. Uses shadow-xs. no shadow on active
-          // No hover state
-          " border [border-color:var(--button-outline)] shadow-xs active:shadow-none ",
-        secondary:
-          // @replit border, no hover, no shadow, secondary border.
-          "border bg-secondary text-secondary-foreground border border-secondary-border ",
-        // @replit no hover, transparent border
-        ghost: "border border-transparent",
-        link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-gold text-black hover:bg-gold/90 shadow-lg",
-        surface: "bg-card text-card-foreground border border-white/10 hover:bg-white/5",
-      },
-      size: {
-        // @replit changed sizes
-        default: "min-h-9 px-4 py-2",
-        sm: "min-h-8 rounded-md px-3 text-xs",
-        md: "min-h-10 rounded-md px-6 text-sm",
-        lg: "min-h-10 rounded-md px-8",
-        icon: "h-9 w-9",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'gold' | 'ghost' | 'outline' | 'surface' | 'danger';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  children: ReactNode;
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
-Button.displayName = "Button"
+export function Button({
+  variant = 'gold',
+  size = 'md',
+  children,
+  className,
+  ...props
+}: ButtonProps) {
+  const base =
+    'inline-flex items-center justify-center gap-2 font-semibold rounded-xl tracking-wide transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg select-none';
 
-export { Button, buttonVariants }
+  const variants: Record<string, string> = {
+    gold:    'text-black hover:scale-[1.02] hover:shadow-gold',
+    ghost:   'bg-white/5 text-white hover:bg-white/10 hover:text-gold',
+    outline: 'bg-transparent text-white hover:border-gold/50 hover:text-gold hover:bg-gold/5',
+    surface: 'bg-[#181818] text-white hover:bg-[#202020]',
+    danger:  'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40',
+  };
+
+  const variantStyles: Record<string, React.CSSProperties> = {
+    gold: {
+      background: 'linear-gradient(135deg, #C8A24A 0%, #B38A3D 100%)',
+      boxShadow: '0 0 16px rgba(200,162,74,0.2)',
+    },
+    outline: { border: '1px solid rgba(255,255,255,0.12)' },
+    surface: { border: '1px solid rgba(255,255,255,0.06)' },
+  };
+
+  const sizes: Record<string, string> = {
+    xs: 'px-3 py-1.5 text-xs',
+    sm: 'px-4 py-2 text-xs',
+    md: 'px-5 py-2.5 text-sm',
+    lg: 'px-7 py-3.5 text-sm',
+    xl: 'px-9 py-4 text-base',
+  };
+
+  return (
+    <button
+      className={cn(base, variants[variant], sizes[size], className)}
+      style={variantStyles[variant]}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
