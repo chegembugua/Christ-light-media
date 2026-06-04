@@ -11,10 +11,9 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * (useful for local builds and CI where secrets may be absent).
  */
 const PUBLIC_SUPABASE_URL = 'https://kbuwignrgxlzcszriyqh.supabase.co';
-const PUBLIC_SUPABASE_KEY = 'sb_publishable_b2cv8iiGHvtvquh9zkyWBQ_68VSypyn';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || PUBLIC_SUPABASE_KEY;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 function isValidHttpUrl(value: string | undefined) {
   if (!value) return false;
